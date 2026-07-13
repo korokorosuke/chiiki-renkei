@@ -1,0 +1,43 @@
+{
+  "name": "chiiki-renkei",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 3000",
+    "generate-routes": "tsr generate",
+    "build": "vite build",
+    "start": "node .output/server/index.mjs",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@tanstack/router-plugin": "^1.168.19",
+    "@tanstack/solid-query": "^5.101.2",
+    "@tanstack/solid-query-devtools": "^5.101.2",
+    "@tanstack/solid-router": "^1.170.17",
+    "@tanstack/solid-router-devtools": "^1.167.0",
+    "@tanstack/solid-router-ssr-query": "^1.167.1",
+    "@tanstack/solid-start": "^1.168.27",
+    "@std/crypto": "npm:@jsr/std__crypto@1.1.0",
+    "@std/encoding": "npm:@jsr/std__encoding@1.0.11",
+    "@std/uuid": "npm:@jsr/std__uuid@1.1.1",
+    "nitro": "npm:nitro-nightly@^3.0.1-20260707-232134-a13bd4ee",
+    "solid-js": "^1.9.14"
+  },
+  "devDependencies": {
+    "@solidjs/testing-library": "^0.8.10",
+    "@tanstack/devtools-vite": "^0.8.1",
+    "@tanstack/router-cli": "^1.167.18",
+    "jsdom": "^29.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.4",
+    "vite-plugin-solid": "^2.11.12",
+    "vitest": "^4.1.10"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lightningcss"
+    ]
+  }
+}

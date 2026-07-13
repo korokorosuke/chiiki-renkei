@@ -1,0 +1,1 @@
+export { encodeBase64 as encode, decodeBase64 as decode } from "@std/encoding"

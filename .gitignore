@@ -1,0 +1,48 @@
+dist
+dist-ssr
+.solid
+.output
+.vercel
+.netlify
+.vinxi
+app.config.timestamp_*.js
+.cursorrules
+*.csv
+
+# Environment
+.env
+.env*.local
+
+# dependencies
+/node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+*.launch
+.settings/
+
+
+.nitro
+.tanstack
+.wrangler
+.output
+.vinxi
+__unconfig*
+
+# System Files
+.DS_Store
+Thumbs.db
+
+*.exe
+reco.db
+test.db
+bun.lockb
+
+## Panda
+styled-system
+styled-system-studio
+
+# drizzle
+/drizzle/

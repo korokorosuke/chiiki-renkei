@@ -1,0 +1,115 @@
+import type { AuthUser, Condition } from "../../domain/user.ts"
+import type { IUserRepository } from "../../domain/userService.ts"
+import { Db } from "./db.ts"
+import { user } from "../../db/schema.ts"
+import { and, eq } from "drizzle-orm"
+
+type UserData = typeof user.$inferInsert;
+
+export class UserRepository implements IUserRepository {
+  database: Db
+  base: string
+  constructor(base: string){
+    this.database = new Db();
+    this.base = base;
+  }
+
+  toData(val: AuthUser): UserData {
+    return {
+      base: this.base,
+      id: val.id,
+      name: val.name,
+      departmentId: val.department,
+      authFacility: val.authFacility,
+      authReferral: val.authReferral,
+      authActivity: val.authActivity,
+      authStatistics: val.authStatistics,
+      authMaster: val.authMaster,
+      authWeb: val.authWeb,
+      password: val.password ??  "",
+      facilityId: val.facilityId ?? "",
+      locked: val.locked ? 1 : 0,
+      failCount: val.failCount ?? 0,
+    };
+  }
+  toDataWithoutKey(act: AuthUser): Partial<UserData> {
+    // deno-lint-ignore no-unused-vars
+    const {base, id, ...etc} = this.toData(act);
+    return etc;
+  }
+  fromData(val: UserData): AuthUser {
+    return {
+      base: this.base,
+      id: val.id,
+      name: val.name,
+      department: val.departmentId,
+      authFacility: val.authFacility,
+      authReferral: val.authReferral,
+      authActivity: val.authActivity,
+      authStatistics: val.authStatistics,
+      authMaster: val.authMaster,
+      authWeb: val.authWeb,
+      password: val.password,
+      facilityId: val.facilityId,
+      locked: val.locked === 1 ? true : false,
+      failCount: val.failCount
+    };
+  }
+
+  async insert(val: AuthUser): Promise<boolean> {
+    const db = await this.database.open();
+    const res = (await db.insert(user).values(this.toData(val))).rowsAffected;
+    return res >= 1;
+  }
+
+  async update(val: AuthUser): Promise<boolean> {
+    const db = await this.database.open();
+    const res = (await db.update(user).set(this.toDataWithoutKey(val))
+      .where(
+        and(
+          eq(user.base, this.base),
+          eq(user.id, val.id),
+        ))).rowsAffected;
+    return res >= 1;
+  }
+
+  async delete(val: AuthUser): Promise<void> {
+    const db = await this.database.open();
+    (await db.delete(user)
+      .where(
+        and(
+          eq(user.base, this.base),
+          eq(user.id, val.id),
+        ))).rowsAffected;
+  }
+
+  async read(id: string): Promise<AuthUser|undefined> {
+    const db = await this.database.open();
+    const res = await db.query.user.findFirst({
+      where: {
+        base: this.base,
+        id: id
+      }
+    });
+    if(res){
+      return this.fromData(res);
+    }
+    return undefined;
+  }
+
+  async list(cond: Condition): Promise<AuthUser[]> {
+    const db = await this.database.open();
+    const res = await db.query.user.findMany({
+      where: {
+        base: this.base,
+        name: {
+          like: `%${cond.name}%`,
+        },
+      }
+    });
+    if(res.length > 0){
+      return res.map((val) => this.fromData(val));
+    }
+    return [];
+  }
+}

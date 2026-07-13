@@ -1,0 +1,52 @@
+{
+  "tasks": {
+    "dev": "deno run -A --unstable-kv --node-modules-dir npm:vite dev --port 3000",
+    "build": "deno run -A --unstable-kv --node-modules-dir npm:vite build",
+    "start": "deno run -allow-env -allow-net .output/server/index.mjs",
+    "test": "deno test --failfast --allow-read --allow-env --allow-write --trace-leaks --unstable-kv --allow-ffi",
+    "panda": "deno run -A npm:@pandacss/dev",
+    "drizzle": "deno run -A npm:drizzle-kit"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "solid-js",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "dom.asynciterable",
+      "deno.ns",
+      "ESNext"
+    ],
+    "types": [
+      "vite/client"
+    ],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "unstable": [
+    "sloppy-imports",
+    "kv"
+  ],
+  "lint": {
+    "rules": {
+      "exclude": ["no-sloppy-imports"]
+    }
+  },
+  "importMap": "import_map.json",
+  "deploy": {
+    "project": "",
+    "exclude": [
+      "**/node_modules"
+    ],
+    "include": [],
+    "root": ".output",
+    "import-map": "import_map.json",
+    "entrypoint": ".output\\server\\index.ts"
+  },
+  "allowScripts": {
+    "allow": [],
+    "deny": []
+  }
+}
