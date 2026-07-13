@@ -3,7 +3,7 @@ import { UserService } from "../domain/userService.ts"
 import { UserRepository } from "./userRepository.ts"
 import type { AuthUser } from "../domain/user.ts"
 import { Kv } from "./kv.ts"
-import * as base64 from "../../../../lib/base64.ts"
+import * as base64 from "../../lib/base64.ts"
 import { AuthService } from "../domain/authService.ts"
 import { BASE } from "./testdata/settings.ts"
 
