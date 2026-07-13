@@ -1,13 +1,13 @@
 import { varchar, text, uuid, integer, smallint, date, timestamp, time,
-  boolean, index, primaryKey, pgTable } from "drizzle-orm/pg-core"
+  boolean, index, primaryKey, snakeCase } from "drizzle-orm/pg-core"
 
-export const address = pgTable("address", {
+export const address = snakeCase.table("address", {
   postalCode: varchar({ length: 8 }).primaryKey().notNull(),
   name: varchar({ length: 100 }).notNull(),
   plus: varchar({ length: 100 }).notNull(),
 });
 
-export const activity = pgTable("activity", {
+export const activity = snakeCase.table("activity", {
   base: text().notNull(),
   id: uuid().notNull(),
   date: date().notNull(),
@@ -24,7 +24,7 @@ export const activity = pgTable("activity", {
   index("idx_activity_date").on(table.base, table.date),
 ]);
 
-export const activityPurpose = pgTable("activity_purpose", {
+export const activityPurpose = snakeCase.table("activity_purpose", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   activityId: uuid().notNull(),
   purpose: varchar({ length: 10 }).notNull(),
@@ -32,7 +32,7 @@ export const activityPurpose = pgTable("activity_purpose", {
   index("idx_activity_purpose").on(table.activityId),
 ]);
 
-export const answer = pgTable("answer", {
+export const answer = snakeCase.table("answer", {
   base: text().notNull(),
   id: uuid().notNull(),
   questionnaireId: uuid().notNull(),
@@ -44,7 +44,7 @@ export const answer = pgTable("answer", {
   index("idx_answer_appointment").on(table.base, table.appointmentId),
 ]);
 
-export const answerItem = pgTable("answer_item", {
+export const answerItem = snakeCase.table("answer_item", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   answerId: uuid().notNull(),
   itemId: varchar({ length: 3 }).notNull(),
@@ -52,13 +52,13 @@ export const answerItem = pgTable("answer_item", {
   index("idx_answer_item").on(table.answerId),
 ]);
 
-export const answerPassword = pgTable("answer_password", {
+export const answerPassword = snakeCase.table("answer_password", {
   appointmentId: uuid().primaryKey().notNull(),
   password: varchar({ length: 10 }).notNull(),
   failCount: smallint().notNull(),
 });
 
-export const appointment = pgTable("appointment", {
+export const appointment = snakeCase.table("appointment", {
   base: text().notNull(),
   id: uuid().notNull(),
   patientId: varchar({ length: 10 }).notNull(),
@@ -82,7 +82,7 @@ export const appointment = pgTable("appointment", {
   index("idx_appointment_date").on(table.base, table.date),
 ]);
 
-export const department = pgTable("department", {
+export const department = snakeCase.table("department", {
   base: text().notNull(),
   id: varchar({ length: 10 }).notNull(),
   name: varchar({ length: 50 }).notNull(),
@@ -91,7 +91,7 @@ export const department = pgTable("department", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const dr = pgTable("dr", {
+export const dr = snakeCase.table("dr", {
   base: text().notNull(),
   id: varchar({ length: 10 }).notNull(),
   name: varchar({ length: 50 }).notNull(),
@@ -101,7 +101,7 @@ export const dr = pgTable("dr", {
   index("idx_dr_dept").on(table.base, table.department),
 ]);
 
-export const due = pgTable("due", {
+export const due = snakeCase.table("due", {
   base: text().notNull(),
   id: smallint().notNull(),
   name: varchar({ length: 50 }).notNull(),
@@ -110,7 +110,7 @@ export const due = pgTable("due", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const facility = pgTable("facility", {
+export const facility = snakeCase.table("facility", {
   base: text().notNull(),
   id: varchar({ length: 20 }).notNull(),
   attribute: varchar({ length: 10 }).notNull(),
@@ -133,7 +133,7 @@ export const facility = pgTable("facility", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const facilityContact = pgTable("facility_contact", {
+export const facilityContact = snakeCase.table("facility_contact", {
   id: integer().primaryKey(),
   base: text().notNull(),
   facilityId: varchar({ length: 20 }).notNull(),
@@ -145,7 +145,7 @@ export const facilityContact = pgTable("facility_contact", {
   index("idx_facility_contact_facility").on(table.base, table.facilityId),
 ]);
 
-export const inquiry = pgTable("inquiry", {
+export const inquiry = snakeCase.table("inquiry", {
   base: text().notNull(),
   id: uuid().notNull(),
   patientInfo: varchar({ length: 100 }).notNull(),
@@ -164,7 +164,7 @@ export const inquiry = pgTable("inquiry", {
   index("idx_inquiry_date").on(table.base, table.datetime),
 ]);
 
-export const response = pgTable("response", {
+export const response = snakeCase.table("response", {
   base: text().notNull(),
   inquiryId: uuid().notNull(),
   responderId: varchar({ length: 10 }).notNull(),
@@ -174,7 +174,7 @@ export const response = pgTable("response", {
   index("idx_response_inquiry").on(table.inquiryId),
 ]);
 
-export const master = pgTable("master", {
+export const master = snakeCase.table("master", {
   base: text().notNull(),
   kind: varchar({ length: 10 }).notNull(),
   id: varchar({ length: 10 }).notNull(),
@@ -183,7 +183,7 @@ export const master = pgTable("master", {
   primaryKey({ columns: [table.base, table.kind, table.id] }),
 ]);
 
-export const notice = pgTable("notice", {
+export const notice = snakeCase.table("notice", {
   base: text().notNull(),
   id: varchar({ length: 10 }).notNull(),
   type: varchar().notNull(),
@@ -195,7 +195,7 @@ export const notice = pgTable("notice", {
   index("idx_notice_date").on(table.base, table.fromDate),
 ]);
 
-export const patient = pgTable("patient", {
+export const patient = snakeCase.table("patient", {
   base: text().notNull(),
   id: varchar({ length: 10 }).notNull(),
   lastName: varchar({ length: 50 }).notNull(),
@@ -214,7 +214,7 @@ export const patient = pgTable("patient", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const questionCondition = pgTable("question_condition", {
+export const questionCondition = snakeCase.table("question_condition", {
   questionnaireId: uuid().notNull(),
   questionId: uuid().primaryKey().notNull(),
   q: uuid().notNull(),
@@ -223,7 +223,7 @@ export const questionCondition = pgTable("question_condition", {
   index("idx_question_condition_qid").on(table.questionnaireId),
 ]);
 
-export const questionChoice = pgTable("question_choice", {
+export const questionChoice = snakeCase.table("question_choice", {
   questionnaireId: uuid().notNull(),
   questionId: uuid().notNull(),
   id: varchar({ length: 30 }).notNull(),
@@ -234,7 +234,7 @@ export const questionChoice = pgTable("question_choice", {
   index("idx_question_choice_qid").on(table.questionnaireId),
 ]);
 
-export const question = pgTable("question", {
+export const question = snakeCase.table("question", {
   questionnaireId: uuid().notNull(),
   id: uuid().notNull(),
   type: varchar().notNull(),
@@ -247,14 +247,14 @@ export const question = pgTable("question", {
   index("idx_question_sort").on(table.questionnaireId, table.sort),
 ]);
 
-export const questionnaireDept = pgTable("questionnaire_dept", {
+export const questionnaireDept = snakeCase.table("questionnaire_dept", {
   questionnaireId: uuid().notNull(),
   deptId: varchar({ length: 10 }).notNull(),
 }, (table) => [
   primaryKey({ columns: [table.questionnaireId, table.deptId] }),
 ]);
 
-export const questionnaire = pgTable("questionnaire", {
+export const questionnaire = snakeCase.table("questionnaire", {
   base: text().notNull(),
   id: uuid().notNull(),
   title: varchar({ length: 100 }).notNull(),
@@ -263,7 +263,7 @@ export const questionnaire = pgTable("questionnaire", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const referralTo = pgTable("referral_to", {
+export const referralTo = snakeCase.table("referral_to", {
   base: text().notNull(),
   id: uuid().notNull(),
   patientId: varchar({ length: 10 }).notNull(),
@@ -284,7 +284,7 @@ export const referralTo = pgTable("referral_to", {
   index("idx_referralto_date").on(table.base, table.date),
 ]);
 
-export const reply = pgTable("reply", {
+export const reply = snakeCase.table("reply", {
   base: text().notNull(),
   id: uuid().notNull(),
   refId: uuid().notNull(),
@@ -301,7 +301,7 @@ export const reply = pgTable("reply", {
   index("idx_reply_ref").on(table.refId, table.date),
 ]);
 
-export const staff = pgTable("staff", {
+export const staff = snakeCase.table("staff", {
   base: text().notNull(),
   id: uuid().notNull(),
   name: varchar({ length: 100 }).notNull(),
@@ -319,7 +319,7 @@ export const staff = pgTable("staff", {
   index("idx_staff_faclility").on(table.base, table.facilityId),
 ]);
 
-export const user = pgTable("user", {
+export const user = snakeCase.table("user", {
   base: text().notNull(),
   id: varchar({ length: 50 }).notNull(),
   name: varchar({ length: 100 }).notNull(),
@@ -339,14 +339,14 @@ export const user = pgTable("user", {
   index("idx_user_faclility").on(table.base, table.facilityId),
 ]);
 
-export const webConsultation = pgTable("web_consultation", {
+export const webConsultation = snakeCase.table("web_consultation", {
   appointmentId: uuid().notNull(),
   first: varchar({ length: 20 }).notNull(),
   second: varchar({ length: 20 }).notNull(),
   etc: text().notNull(),
 });
 
-export const webPatient = pgTable("web_patient", {
+export const webPatient = snakeCase.table("web_patient", {
   appointmentId: uuid().notNull().primaryKey(),
   id: varchar({ length: 10 }).notNull(),
   lastName: varchar({ length: 50 }).notNull(),
@@ -363,7 +363,7 @@ export const webPatient = pgTable("web_patient", {
   addressPlus: text().notNull(),
 });
 
-export const webAppointment = pgTable("web_appointment", {
+export const webAppointment = snakeCase.table("web_appointment", {
   base: text().notNull(),
   id: uuid().notNull(),
   date: date().notNull(),
@@ -384,7 +384,7 @@ export const webAppointment = pgTable("web_appointment", {
   index("idx_web_appointment_date").on(table.base, table.date),
 ]);
 
-export const webDepartment = pgTable("web_department", {
+export const webDepartment = snakeCase.table("web_department", {
   base: text().notNull(),
   id: varchar({ length: 10 }).notNull(),
   name: varchar({ length: 100 }).notNull(),
@@ -393,7 +393,7 @@ export const webDepartment = pgTable("web_department", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const webDr = pgTable("web_dr", {
+export const webDr = snakeCase.table("web_dr", {
   base: text().notNull(),
   id: varchar({ length: 10 }).notNull(),
   name: varchar({ length: 50 }).notNull(),
@@ -403,7 +403,7 @@ export const webDr = pgTable("web_dr", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const webReserv = pgTable("web_master_reserv", {
+export const webReserv = snakeCase.table("web_master_reserv", {
   base: text().notNull(),
   departmentId: varchar({ length: 10 }).notNull(),
   drId: varchar({ length: 10 }).notNull(),
@@ -414,7 +414,7 @@ export const webReserv = pgTable("web_master_reserv", {
   primaryKey({ columns: [table.base, table.departmentId, table.drId, table.week, table.time] }),
 ]);
 
-export const webMaster = pgTable("web_master", {
+export const webMaster = snakeCase.table("web_master", {
   base: text().notNull(),
   departmentId: varchar({ length: 10 }).notNull(),
   drId: varchar({ length: 10 }).notNull(),
@@ -423,7 +423,7 @@ export const webMaster = pgTable("web_master", {
   primaryKey({ columns: [table.base, table.departmentId, table.drId, table.week] }),
 ]);
 
-export const webNotice = pgTable("web_notice", {
+export const webNotice = snakeCase.table("web_notice", {
   base: text().notNull(),
   id: varchar({ length: 10 }).notNull(),
   type: varchar().notNull(),
@@ -435,7 +435,7 @@ export const webNotice = pgTable("web_notice", {
   index("idx_web_notice_date").on(table.base, table.fromDate),
 ]);
 
-export const webReservation = pgTable("web_reservation", {
+export const webReservation = snakeCase.table("web_reservation", {
   base: text().notNull(),
   departmentId: varchar({ length: 10 }).notNull(),
   drId: varchar({ length: 10 }).notNull(),

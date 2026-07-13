@@ -1,12 +1,12 @@
-import { text, integer, index, primaryKey, sqliteTable } from "drizzle-orm/sqlite-core"
+import { text, integer, index, primaryKey, snakeCase } from "drizzle-orm/sqlite-core"
 
-export const address = sqliteTable("address", {
+export const address = snakeCase.table("address", {
   postalCode: text().primaryKey().notNull(),
   name: text().notNull(),
   plus: text().notNull(),
 });
 
-export const activity = sqliteTable("activity", {
+export const activity = snakeCase.table("activity", {
   base: text().notNull(),
   id: text().notNull(),
   date: text().notNull(),
@@ -23,7 +23,7 @@ export const activity = sqliteTable("activity", {
   index("idx_activity_date").on(table.base, table.date),
 ]);
 
-export const activityPurpose = sqliteTable("activity_purpose", {
+export const activityPurpose = snakeCase.table("activity_purpose", {
   id: integer().primaryKey().notNull(),
   activityId: text().notNull(),
   purpose: text().notNull(),
@@ -31,7 +31,7 @@ export const activityPurpose = sqliteTable("activity_purpose", {
   index("idx_activity_purpose").on(table.activityId),
 ]);
 
-export const answer = sqliteTable("answer", {
+export const answer = snakeCase.table("answer", {
   base: text().notNull(),
   id: text().notNull(),
   questionnaireId: text().notNull(),
@@ -43,7 +43,7 @@ export const answer = sqliteTable("answer", {
   index("idx_answer_appointment").on(table.base, table.appointmentId),
 ]);
 
-export const answerItem = sqliteTable("answer_item", {
+export const answerItem = snakeCase.table("answer_item", {
   id: integer().primaryKey().notNull(),
   answerId: text().notNull(),
   itemId: text().notNull(),
@@ -51,13 +51,13 @@ export const answerItem = sqliteTable("answer_item", {
   index("idx_answer_item").on(table.answerId),
 ]);
 
-export const answerPassword = sqliteTable("answer_password", {
+export const answerPassword = snakeCase.table("answer_password", {
   appointmentId: text().primaryKey().notNull(),
   password: text().notNull(),
   failCount: integer().notNull(),
 });
 
-export const appointment = sqliteTable("appointment", {
+export const appointment = snakeCase.table("appointment", {
   base: text().notNull(),
   id: text().notNull(),
   patientId: text().notNull(),
@@ -81,7 +81,7 @@ export const appointment = sqliteTable("appointment", {
   index("idx_appointment_date").on(table.base, table.date),
 ]);
 
-export const department = sqliteTable("department", {
+export const department = snakeCase.table("department", {
   base: text().notNull(),
   id: text().notNull(),
   name: text().notNull(),
@@ -90,7 +90,7 @@ export const department = sqliteTable("department", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const dr = sqliteTable("dr", {
+export const dr = snakeCase.table("dr", {
   base: text().notNull(),
   id: text().notNull(),
   name: text().notNull(),
@@ -100,7 +100,7 @@ export const dr = sqliteTable("dr", {
   index("idx_dr_dept").on(table.base, table.department),
 ]);
 
-export const due = sqliteTable("due", {
+export const due = snakeCase.table("due", {
   base: text().notNull(),
   id: integer().notNull(),
   name: text().notNull(),
@@ -109,7 +109,7 @@ export const due = sqliteTable("due", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const facility = sqliteTable("facility", {
+export const facility = snakeCase.table("facility", {
   base: text().notNull(),
   id: text().notNull(),
   attribute: text().notNull(),
@@ -132,7 +132,7 @@ export const facility = sqliteTable("facility", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const facilityContact = sqliteTable("facility_contact", {
+export const facilityContact = snakeCase.table("facility_contact", {
   id: integer().primaryKey(),
   base: text().notNull(),
   facilityId: text().notNull(),
@@ -144,7 +144,7 @@ export const facilityContact = sqliteTable("facility_contact", {
   index("idx_facility_contact_facility").on(table.base, table.facilityId),
 ]);
 
-export const inquiry = sqliteTable("inquiry", {
+export const inquiry = snakeCase.table("inquiry", {
   base: text().notNull(),
   id: text().notNull(),
   patientInfo: text().notNull(),
@@ -163,7 +163,7 @@ export const inquiry = sqliteTable("inquiry", {
   index("idx_inquiry_date").on(table.base, table.datetime),
 ]);
 
-export const response = sqliteTable("response", {
+export const response = snakeCase.table("response", {
   base: text().notNull(),
   inquiryId: text().notNull(),
   responderId: text().notNull(),
@@ -173,7 +173,7 @@ export const response = sqliteTable("response", {
   index("idx_response_inquiry").on(table.inquiryId),
 ]);
 
-export const master = sqliteTable("master", {
+export const master = snakeCase.table("master", {
   base: text().notNull(),
   kind: text().notNull(),
   id: integer().notNull(),
@@ -182,7 +182,7 @@ export const master = sqliteTable("master", {
   primaryKey({ columns: [table.base, table.kind, table.id] }),
 ]);
 
-export const notice = sqliteTable("notice", {
+export const notice = snakeCase.table("notice", {
   base: text().notNull(),
   id: text().notNull(),
   type: text().notNull(),
@@ -194,7 +194,7 @@ export const notice = sqliteTable("notice", {
   index("idx_notice_date").on(table.base, table.fromDate),
 ]);
 
-export const patient = sqliteTable("patient", {
+export const patient = snakeCase.table("patient", {
   base: text().notNull(),
   id: text().notNull(),
   lastName: text().notNull(),
@@ -213,7 +213,7 @@ export const patient = sqliteTable("patient", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const questionCondition = sqliteTable("question_condition", {
+export const questionCondition = snakeCase.table("question_condition", {
   questionnaireId: text().notNull(),
   questionId: text().notNull(),
   q: text().notNull(),
@@ -222,7 +222,7 @@ export const questionCondition = sqliteTable("question_condition", {
   primaryKey({ columns: [table.questionnaireId, table.questionId] }),
 ]);
 
-export const questionChoice = sqliteTable("question_choice", {
+export const questionChoice = snakeCase.table("question_choice", {
   questionnaireId: text().notNull(),
   questionId: text().notNull(),
   id: text().notNull(),
@@ -232,7 +232,7 @@ export const questionChoice = sqliteTable("question_choice", {
   primaryKey({ columns: [table.questionnaireId, table.questionId, table.id] }),
 ]);
 
-export const question = sqliteTable("question", {
+export const question = snakeCase.table("question", {
   questionnaireId: text().notNull(),
   id: text().notNull(),
   type: text().notNull(),
@@ -244,14 +244,14 @@ export const question = sqliteTable("question", {
   index("idx_question_order").on(table.questionnaireId, table.order),
 ]);
 
-export const questionnaireDept = sqliteTable("questionnaire_dept", {
+export const questionnaireDept = snakeCase.table("questionnaire_dept", {
   questionnaireId: text().notNull(),
   deptId: text().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.questionnaireId, table.deptId] }),
 ]);
 
-export const questionnaire = sqliteTable("questionnaire", {
+export const questionnaire = snakeCase.table("questionnaire", {
   base: text().notNull(),
   id: text().notNull(),
   title: text().notNull(),
@@ -260,7 +260,7 @@ export const questionnaire = sqliteTable("questionnaire", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const referralTo = sqliteTable("referral_to", {
+export const referralTo = snakeCase.table("referral_to", {
   base: text().notNull(),
   id: text().notNull(),
   patientId: text().notNull(),
@@ -281,7 +281,7 @@ export const referralTo = sqliteTable("referral_to", {
   index("idx_referralto_date").on(table.base, table.date),
 ]);
 
-export const reply = sqliteTable("reply", {
+export const reply = snakeCase.table("reply", {
   base: text().notNull(),
   id: text().notNull(),
   refId: text().notNull(),
@@ -298,7 +298,7 @@ export const reply = sqliteTable("reply", {
   index("idx_reply_ref").on(table.refId, table.date),
 ]);
 
-export const staff = sqliteTable("staff", {
+export const staff = snakeCase.table("staff", {
   base: text().notNull(),
   id: text().notNull(),
   name: text().notNull(),
@@ -316,7 +316,7 @@ export const staff = sqliteTable("staff", {
   index("idx_staff_faclility").on(table.base, table.facilityId),
 ]);
 
-export const user = sqliteTable("user", {
+export const user = snakeCase.table("user", {
   base: text().notNull(),
   id: text().notNull(),
   name: text().notNull(),
@@ -336,14 +336,14 @@ export const user = sqliteTable("user", {
   index("idx_user_faclility").on(table.base, table.facilityId),
 ]);
 
-export const webConsultation = sqliteTable("web_consultation", {
+export const webConsultation = snakeCase.table("web_consultation", {
   appointmentId: text().notNull(),
   first: text().notNull(),
   second: text().notNull(),
   etc: text().notNull(),
 });
 
-export const webPatient = sqliteTable("web_patient", {
+export const webPatient = snakeCase.table("web_patient", {
   appointmentId: text().primaryKey().notNull(),
   id: text().notNull(),
   lastName: text().notNull(),
@@ -360,7 +360,7 @@ export const webPatient = sqliteTable("web_patient", {
   addressPlus: text().notNull(),
 });
 
-export const webAppointment = sqliteTable("web_appointment", {
+export const webAppointment = snakeCase.table("web_appointment", {
   base: text().notNull(),
   id: text().notNull(),
   date: text().notNull(),
@@ -381,7 +381,7 @@ export const webAppointment = sqliteTable("web_appointment", {
   index("idx_web_appointment_date").on(table.base, table.date),
 ]);
 
-export const webDepartment = sqliteTable("web_department", {
+export const webDepartment = snakeCase.table("web_department", {
   base: text().notNull(),
   id: text().notNull(),
   name: text().notNull(),
@@ -390,7 +390,7 @@ export const webDepartment = sqliteTable("web_department", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const webDr = sqliteTable("web_dr", {
+export const webDr = snakeCase.table("web_dr", {
   base: text().notNull(),
   id: text().notNull(),
   name: text().notNull(),
@@ -400,7 +400,7 @@ export const webDr = sqliteTable("web_dr", {
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
-export const webReserv = sqliteTable("web_master_reserv", {
+export const webReserv = snakeCase.table("web_master_reserv", {
   base: text().notNull(),
   departmentId: text().notNull(),
   drId: text().notNull(),
@@ -411,7 +411,7 @@ export const webReserv = sqliteTable("web_master_reserv", {
   primaryKey({ columns: [table.base, table.departmentId, table.drId, table.week, table.time] }),
 ]);
 
-export const webMaster = sqliteTable("web_master", {
+export const webMaster = snakeCase.table("web_master", {
   base: text().notNull(),
   departmentId: text().notNull(),
   drId: text().notNull(),
@@ -420,7 +420,7 @@ export const webMaster = sqliteTable("web_master", {
   primaryKey({ columns: [table.base, table.departmentId, table.drId, table.week] }),
 ]);
 
-export const webNotice = sqliteTable("web_notice", {
+export const webNotice = snakeCase.table("web_notice", {
   base: text().notNull(),
   id: text().notNull(),
   type: text().notNull(),
@@ -432,7 +432,7 @@ export const webNotice = sqliteTable("web_notice", {
   index("idx_web_notice_date").on(table.base, table.fromDate),
 ]);
 
-export const webReservation = sqliteTable("web_reservation", {
+export const webReservation = snakeCase.table("web_reservation", {
   base: text().notNull(),
   departmentId: text().notNull(),
   drId: text().notNull(),

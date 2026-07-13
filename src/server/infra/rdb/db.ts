@@ -13,7 +13,7 @@ export class Db implements Database{
     }
     const sqlite = createClient({ url: filename });
     await sqlite.execute("PRAGMA busy_timeout = 5000;");
-    return Promise.resolve(drizzle({...options, client: sqlite, casing: "snake_case", relations }));
+    return Promise.resolve(drizzle({...options, client: sqlite, relations }));
   }
 
   close(): void {
