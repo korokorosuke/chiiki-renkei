@@ -36,18 +36,6 @@
     }
   },
   "importMap": "import_map.json",
-  "deploy": {
-    "install": "deno install",
-    "build": "deno run buildall",
-    "project": "",
-    "exclude": [
-      "**/node_modules"
-    ],
-    "include": [],
-    "root": ".output",
-    "import-map": "import_map.json",
-    "entrypoint": ".output\\server\\index.mjs"
-  },
   "allowScripts": {
     "allow": [],
     "deny": []
