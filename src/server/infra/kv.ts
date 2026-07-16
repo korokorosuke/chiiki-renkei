@@ -10,8 +10,13 @@ export class Kv implements Database{
         if(Kv.test){
             return this.openTest();
         }
-        this.kv = await Deno.openKv("reco.db");
+        this.kv = await Deno.openKv();
         return this.kv;
+    }
+
+    async openDev(): Promise<Deno.Kv> {
+      this.kv = await Deno.openKv("reco.db");
+      return this.kv;
     }
 
     async openTest(): Promise<Deno.Kv> {
