@@ -12,7 +12,7 @@ import { Authenticator, authenticatedUser as user } from "../../components/Authe
 import { area, input, button } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/answer/patient/$id")({ component: App });
+export const Route = createFileRoute("/answer/patient/{-$id}")({ component: App });
 
 let refInput: HTMLInputElement | undefined;
 

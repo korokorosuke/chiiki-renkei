@@ -25,7 +25,7 @@ import { Route as ProcessChar123PatientChar125RouteImport } from './routes/proce
 import { Route as LoginBaseRouteImport } from './routes/login/$base'
 import { Route as FacilityChar123FacilityChar125RouteImport } from './routes/facility/{-$facility}'
 import { Route as AppointmentChar123PatientChar125RouteImport } from './routes/appointment/{-$patient}'
-import { Route as AnswerPatientIdRouteImport } from './routes/answer/patient.$id'
+import { Route as AnswerPatientChar123IdChar125RouteImport } from './routes/answer/patient.{-$id}'
 import { Route as AnswerBaseAppidRouteImport } from './routes/answer/$base.$appid'
 
 const IndexRoute = IndexRouteImport.update({
@@ -113,11 +113,12 @@ const AppointmentChar123PatientChar125Route =
     path: '/appointment/{-$patient}',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AnswerPatientIdRoute = AnswerPatientIdRouteImport.update({
-  id: '/answer/patient/$id',
-  path: '/answer/patient/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const AnswerPatientChar123IdChar125Route =
+  AnswerPatientChar123IdChar125RouteImport.update({
+    id: '/answer/patient/{-$id}',
+    path: '/answer/patient/{-$id}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AnswerBaseAppidRoute = AnswerBaseAppidRouteImport.update({
   id: '/answer/$base/$appid',
   path: '/answer/$base/$appid',
@@ -142,7 +143,7 @@ export interface FileRoutesByFullPath {
   '/user/': typeof UserIndexRoute
   '/webapp/': typeof WebappIndexRoute
   '/answer/$base/$appid': typeof AnswerBaseAppidRoute
-  '/answer/patient/$id': typeof AnswerPatientIdRoute
+  '/answer/patient/{-$id}': typeof AnswerPatientChar123IdChar125Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -162,7 +163,7 @@ export interface FileRoutesByTo {
   '/user': typeof UserIndexRoute
   '/webapp': typeof WebappIndexRoute
   '/answer/$base/$appid': typeof AnswerBaseAppidRoute
-  '/answer/patient/$id': typeof AnswerPatientIdRoute
+  '/answer/patient/{-$id}': typeof AnswerPatientChar123IdChar125Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -183,7 +184,7 @@ export interface FileRoutesById {
   '/user/': typeof UserIndexRoute
   '/webapp/': typeof WebappIndexRoute
   '/answer/$base/$appid': typeof AnswerBaseAppidRoute
-  '/answer/patient/$id': typeof AnswerPatientIdRoute
+  '/answer/patient/{-$id}': typeof AnswerPatientChar123IdChar125Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -205,7 +206,7 @@ export interface FileRouteTypes {
     | '/user/'
     | '/webapp/'
     | '/answer/$base/$appid'
-    | '/answer/patient/$id'
+    | '/answer/patient/{-$id}'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -225,7 +226,7 @@ export interface FileRouteTypes {
     | '/user'
     | '/webapp'
     | '/answer/$base/$appid'
-    | '/answer/patient/$id'
+    | '/answer/patient/{-$id}'
   id:
     | '__root__'
     | '/'
@@ -245,7 +246,7 @@ export interface FileRouteTypes {
     | '/user/'
     | '/webapp/'
     | '/answer/$base/$appid'
-    | '/answer/patient/$id'
+    | '/answer/patient/{-$id}'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -266,7 +267,7 @@ export interface RootRouteChildren {
   UserIndexRoute: typeof UserIndexRoute
   WebappIndexRoute: typeof WebappIndexRoute
   AnswerBaseAppidRoute: typeof AnswerBaseAppidRoute
-  AnswerPatientIdRoute: typeof AnswerPatientIdRoute
+  AnswerPatientChar123IdChar125Route: typeof AnswerPatientChar123IdChar125Route
 }
 
 declare module '@tanstack/solid-router' {
@@ -383,11 +384,11 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof AppointmentChar123PatientChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/answer/patient/$id': {
-      id: '/answer/patient/$id'
-      path: '/answer/patient/$id'
-      fullPath: '/answer/patient/$id'
-      preLoaderRoute: typeof AnswerPatientIdRouteImport
+    '/answer/patient/{-$id}': {
+      id: '/answer/patient/{-$id}'
+      path: '/answer/patient/{-$id}'
+      fullPath: '/answer/patient/{-$id}'
+      preLoaderRoute: typeof AnswerPatientChar123IdChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/answer/$base/$appid': {
@@ -418,7 +419,7 @@ const rootRouteChildren: RootRouteChildren = {
   UserIndexRoute: UserIndexRoute,
   WebappIndexRoute: WebappIndexRoute,
   AnswerBaseAppidRoute: AnswerBaseAppidRoute,
-  AnswerPatientIdRoute: AnswerPatientIdRoute,
+  AnswerPatientChar123IdChar125Route: AnswerPatientChar123IdChar125Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
