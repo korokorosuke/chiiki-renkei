@@ -252,8 +252,12 @@ const facdept = ["内科", "消化器内科", "呼吸器内科", "糖尿病内�
 
 
 async function main(){
-    //const kv = await Deno.openKv();
-    const kv = await Deno.openKv(KV_PATH);
+    let kv: Deno.Kv;
+    if(KV_PATH){
+      kv = await Deno.openKv(KV_PATH);
+    }else{
+      kv = await Deno.openKv();
+    }
 
     console.log("department create ...");
     department.forEach(async (d)=>{
@@ -313,4 +317,6 @@ async function main(){
     kv.close();
 }
 
-await main();
+if (import.meta.main) {
+    await main();
+}

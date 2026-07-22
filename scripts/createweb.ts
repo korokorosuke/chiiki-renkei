@@ -174,8 +174,12 @@ const master: WebMaster[] = [
 const BASE = "demo";
 
 async function main(){
-    //const kv = await Deno.openKv();
-    const kv = await Deno.openKv(KV_PATH);
+    let kv: Deno.Kv;
+    if(KV_PATH){
+      kv = await Deno.openKv(KV_PATH);
+    }else{
+      kv = await Deno.openKv();
+    }
     console.log("department create ...");
     department.forEach(async (d)=>{
         await kv.set([BASE, "webdept", d.id], d);
@@ -197,4 +201,6 @@ async function main(){
     kv.close();
 }
 
-await main();
+if (import.meta.main) {
+    await main();
+}
