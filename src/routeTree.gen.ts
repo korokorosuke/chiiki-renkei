@@ -10,57 +10,32 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as WebappIndexRouteImport } from './routes/webapp/index'
-import { Route as UserIndexRouteImport } from './routes/user/index'
-import { Route as StaffIndexRouteImport } from './routes/staff/index'
-import { Route as PatientIndexRouteImport } from './routes/patient/index'
-import { Route as MasterIndexRouteImport } from './routes/master/index'
-import { Route as InquiryIndexRouteImport } from './routes/inquiry/index'
-import { Route as AddressIndexRouteImport } from './routes/address/index'
 import { Route as ActivityIndexRouteImport } from './routes/activity/index'
-import { Route as StatisticsChar123IdChar125RouteImport } from './routes/statistics/{-$id}'
-import { Route as ReplyChar123IdChar125RouteImport } from './routes/reply/{-$id}'
-import { Route as ReferraltoChar123IdChar125RouteImport } from './routes/referralto/{-$id}'
-import { Route as ProcessChar123PatientChar125RouteImport } from './routes/process/{-$patient}'
-import { Route as LoginBaseRouteImport } from './routes/login/$base'
-import { Route as FacilityChar123FacilityChar125RouteImport } from './routes/facility/{-$facility}'
+import { Route as AddressIndexRouteImport } from './routes/address/index'
 import { Route as AppointmentChar123PatientChar125RouteImport } from './routes/appointment/{-$patient}'
-import { Route as AnswerPatientChar123IdChar125RouteImport } from './routes/answer/patient.{-$id}'
+import { Route as FacilityChar123FacilityChar125RouteImport } from './routes/facility/{-$facility}'
+import { Route as InquiryIndexRouteImport } from './routes/inquiry/index'
+import { Route as LoginBaseRouteImport } from './routes/login/$base'
+import { Route as MasterIndexRouteImport } from './routes/master/index'
+import { Route as PatientIndexRouteImport } from './routes/patient/index'
+import { Route as ProcessChar123PatientChar125RouteImport } from './routes/process/{-$patient}'
+import { Route as ReferraltoChar123IdChar125RouteImport } from './routes/referralto/{-$id}'
+import { Route as ReplyChar123IdChar125RouteImport } from './routes/reply/{-$id}'
+import { Route as StaffIndexRouteImport } from './routes/staff/index'
+import { Route as StatisticsChar123IdChar125RouteImport } from './routes/statistics/{-$id}'
+import { Route as UserIndexRouteImport } from './routes/user/index'
+import { Route as WebappIndexRouteImport } from './routes/webapp/index'
 import { Route as AnswerBaseAppidRouteImport } from './routes/answer/$base.$appid'
+import { Route as AnswerPatientChar123IdChar125RouteImport } from './routes/answer/patient.{-$id}'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WebappIndexRoute = WebappIndexRouteImport.update({
-  id: '/webapp/',
-  path: '/webapp/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserIndexRoute = UserIndexRouteImport.update({
-  id: '/user/',
-  path: '/user/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StaffIndexRoute = StaffIndexRouteImport.update({
-  id: '/staff/',
-  path: '/staff/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PatientIndexRoute = PatientIndexRouteImport.update({
-  id: '/patient/',
-  path: '/patient/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MasterIndexRoute = MasterIndexRouteImport.update({
-  id: '/master/',
-  path: '/master/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InquiryIndexRoute = InquiryIndexRouteImport.update({
-  id: '/inquiry/',
-  path: '/inquiry/',
+const ActivityIndexRoute = ActivityIndexRouteImport.update({
+  id: '/activity/',
+  path: '/activity/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AddressIndexRoute = AddressIndexRouteImport.update({
@@ -68,9 +43,58 @@ const AddressIndexRoute = AddressIndexRouteImport.update({
   path: '/address/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ActivityIndexRoute = ActivityIndexRouteImport.update({
-  id: '/activity/',
-  path: '/activity/',
+const AppointmentChar123PatientChar125Route =
+  AppointmentChar123PatientChar125RouteImport.update({
+    id: '/appointment/{-$patient}',
+    path: '/appointment/{-$patient}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const FacilityChar123FacilityChar125Route =
+  FacilityChar123FacilityChar125RouteImport.update({
+    id: '/facility/{-$facility}',
+    path: '/facility/{-$facility}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const InquiryIndexRoute = InquiryIndexRouteImport.update({
+  id: '/inquiry/',
+  path: '/inquiry/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginBaseRoute = LoginBaseRouteImport.update({
+  id: '/login/$base',
+  path: '/login/$base',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasterIndexRoute = MasterIndexRouteImport.update({
+  id: '/master/',
+  path: '/master/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientIndexRoute = PatientIndexRouteImport.update({
+  id: '/patient/',
+  path: '/patient/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProcessChar123PatientChar125Route =
+  ProcessChar123PatientChar125RouteImport.update({
+    id: '/process/{-$patient}',
+    path: '/process/{-$patient}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ReferraltoChar123IdChar125Route =
+  ReferraltoChar123IdChar125RouteImport.update({
+    id: '/referralto/{-$id}',
+    path: '/referralto/{-$id}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ReplyChar123IdChar125Route = ReplyChar123IdChar125RouteImport.update({
+  id: '/reply/{-$id}',
+  path: '/reply/{-$id}',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StaffIndexRoute = StaffIndexRouteImport.update({
+  id: '/staff/',
+  path: '/staff/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StatisticsChar123IdChar125Route =
@@ -79,51 +103,27 @@ const StatisticsChar123IdChar125Route =
     path: '/statistics/{-$id}',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ReplyChar123IdChar125Route = ReplyChar123IdChar125RouteImport.update({
-  id: '/reply/{-$id}',
-  path: '/reply/{-$id}',
+const UserIndexRoute = UserIndexRouteImport.update({
+  id: '/user/',
+  path: '/user/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ReferraltoChar123IdChar125Route =
-  ReferraltoChar123IdChar125RouteImport.update({
-    id: '/referralto/{-$id}',
-    path: '/referralto/{-$id}',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ProcessChar123PatientChar125Route =
-  ProcessChar123PatientChar125RouteImport.update({
-    id: '/process/{-$patient}',
-    path: '/process/{-$patient}',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LoginBaseRoute = LoginBaseRouteImport.update({
-  id: '/login/$base',
-  path: '/login/$base',
+const WebappIndexRoute = WebappIndexRouteImport.update({
+  id: '/webapp/',
+  path: '/webapp/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FacilityChar123FacilityChar125Route =
-  FacilityChar123FacilityChar125RouteImport.update({
-    id: '/facility/{-$facility}',
-    path: '/facility/{-$facility}',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AppointmentChar123PatientChar125Route =
-  AppointmentChar123PatientChar125RouteImport.update({
-    id: '/appointment/{-$patient}',
-    path: '/appointment/{-$patient}',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const AnswerBaseAppidRoute = AnswerBaseAppidRouteImport.update({
+  id: '/answer/$base/$appid',
+  path: '/answer/$base/$appid',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnswerPatientChar123IdChar125Route =
   AnswerPatientChar123IdChar125RouteImport.update({
     id: '/answer/patient/{-$id}',
     path: '/answer/patient/{-$id}',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AnswerBaseAppidRoute = AnswerBaseAppidRouteImport.update({
-  id: '/answer/$base/$appid',
-  path: '/answer/$base/$appid',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -279,46 +279,11 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/webapp/': {
-      id: '/webapp/'
-      path: '/webapp'
-      fullPath: '/webapp/'
-      preLoaderRoute: typeof WebappIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/user/': {
-      id: '/user/'
-      path: '/user'
-      fullPath: '/user/'
-      preLoaderRoute: typeof UserIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/staff/': {
-      id: '/staff/'
-      path: '/staff'
-      fullPath: '/staff/'
-      preLoaderRoute: typeof StaffIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/patient/': {
-      id: '/patient/'
-      path: '/patient'
-      fullPath: '/patient/'
-      preLoaderRoute: typeof PatientIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/master/': {
-      id: '/master/'
-      path: '/master'
-      fullPath: '/master/'
-      preLoaderRoute: typeof MasterIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/inquiry/': {
-      id: '/inquiry/'
-      path: '/inquiry'
-      fullPath: '/inquiry/'
-      preLoaderRoute: typeof InquiryIndexRouteImport
+    '/activity/': {
+      id: '/activity/'
+      path: '/activity'
+      fullPath: '/activity/'
+      preLoaderRoute: typeof ActivityIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/address/': {
@@ -328,46 +293,11 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof AddressIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/activity/': {
-      id: '/activity/'
-      path: '/activity'
-      fullPath: '/activity/'
-      preLoaderRoute: typeof ActivityIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/statistics/{-$id}': {
-      id: '/statistics/{-$id}'
-      path: '/statistics/{-$id}'
-      fullPath: '/statistics/{-$id}'
-      preLoaderRoute: typeof StatisticsChar123IdChar125RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reply/{-$id}': {
-      id: '/reply/{-$id}'
-      path: '/reply/{-$id}'
-      fullPath: '/reply/{-$id}'
-      preLoaderRoute: typeof ReplyChar123IdChar125RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/referralto/{-$id}': {
-      id: '/referralto/{-$id}'
-      path: '/referralto/{-$id}'
-      fullPath: '/referralto/{-$id}'
-      preLoaderRoute: typeof ReferraltoChar123IdChar125RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/process/{-$patient}': {
-      id: '/process/{-$patient}'
-      path: '/process/{-$patient}'
-      fullPath: '/process/{-$patient}'
-      preLoaderRoute: typeof ProcessChar123PatientChar125RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login/$base': {
-      id: '/login/$base'
-      path: '/login/$base'
-      fullPath: '/login/$base'
-      preLoaderRoute: typeof LoginBaseRouteImport
+    '/appointment/{-$patient}': {
+      id: '/appointment/{-$patient}'
+      path: '/appointment/{-$patient}'
+      fullPath: '/appointment/{-$patient}'
+      preLoaderRoute: typeof AppointmentChar123PatientChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/facility/{-$facility}': {
@@ -377,18 +307,81 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof FacilityChar123FacilityChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/appointment/{-$patient}': {
-      id: '/appointment/{-$patient}'
-      path: '/appointment/{-$patient}'
-      fullPath: '/appointment/{-$patient}'
-      preLoaderRoute: typeof AppointmentChar123PatientChar125RouteImport
+    '/inquiry/': {
+      id: '/inquiry/'
+      path: '/inquiry'
+      fullPath: '/inquiry/'
+      preLoaderRoute: typeof InquiryIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/answer/patient/{-$id}': {
-      id: '/answer/patient/{-$id}'
-      path: '/answer/patient/{-$id}'
-      fullPath: '/answer/patient/{-$id}'
-      preLoaderRoute: typeof AnswerPatientChar123IdChar125RouteImport
+    '/login/$base': {
+      id: '/login/$base'
+      path: '/login/$base'
+      fullPath: '/login/$base'
+      preLoaderRoute: typeof LoginBaseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/': {
+      id: '/master/'
+      path: '/master'
+      fullPath: '/master/'
+      preLoaderRoute: typeof MasterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/': {
+      id: '/patient/'
+      path: '/patient'
+      fullPath: '/patient/'
+      preLoaderRoute: typeof PatientIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/process/{-$patient}': {
+      id: '/process/{-$patient}'
+      path: '/process/{-$patient}'
+      fullPath: '/process/{-$patient}'
+      preLoaderRoute: typeof ProcessChar123PatientChar125RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/referralto/{-$id}': {
+      id: '/referralto/{-$id}'
+      path: '/referralto/{-$id}'
+      fullPath: '/referralto/{-$id}'
+      preLoaderRoute: typeof ReferraltoChar123IdChar125RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reply/{-$id}': {
+      id: '/reply/{-$id}'
+      path: '/reply/{-$id}'
+      fullPath: '/reply/{-$id}'
+      preLoaderRoute: typeof ReplyChar123IdChar125RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/staff/': {
+      id: '/staff/'
+      path: '/staff'
+      fullPath: '/staff/'
+      preLoaderRoute: typeof StaffIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/statistics/{-$id}': {
+      id: '/statistics/{-$id}'
+      path: '/statistics/{-$id}'
+      fullPath: '/statistics/{-$id}'
+      preLoaderRoute: typeof StatisticsChar123IdChar125RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user/': {
+      id: '/user/'
+      path: '/user'
+      fullPath: '/user/'
+      preLoaderRoute: typeof UserIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/webapp/': {
+      id: '/webapp/'
+      path: '/webapp'
+      fullPath: '/webapp/'
+      preLoaderRoute: typeof WebappIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/answer/$base/$appid': {
@@ -396,6 +389,13 @@ declare module '@tanstack/solid-router' {
       path: '/answer/$base/$appid'
       fullPath: '/answer/$base/$appid'
       preLoaderRoute: typeof AnswerBaseAppidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/answer/patient/{-$id}': {
+      id: '/answer/patient/{-$id}'
+      path: '/answer/patient/{-$id}'
+      fullPath: '/answer/patient/{-$id}'
+      preLoaderRoute: typeof AnswerPatientChar123IdChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
   }

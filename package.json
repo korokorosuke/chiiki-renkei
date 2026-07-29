@@ -11,13 +11,13 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@tanstack/router-plugin": "^1.168.20",
-    "@tanstack/solid-query": "^5.101.2",
-    "@tanstack/solid-query-devtools": "^5.101.2",
+    "@tanstack/router-plugin": "^1.168.23",
+    "@tanstack/solid-query": "^5.101.4",
+    "@tanstack/solid-query-devtools": "^5.101.4",
     "@tanstack/solid-router": "^1.170.18",
     "@tanstack/solid-router-devtools": "^1.167.0",
     "@tanstack/solid-router-ssr-query": "^1.167.1",
-    "@tanstack/solid-start": "^1.168.28",
+    "@tanstack/solid-start": "^1.168.32",
     "@std/crypto": "npm:@jsr/std__crypto@1.1.0",
     "@std/encoding": "npm:@jsr/std__encoding@1.0.11",
     "@std/uuid": "npm:@jsr/std__uuid@1.1.1",
@@ -26,12 +26,12 @@
   },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.10",
-    "@tanstack/devtools-vite": "^0.8.1",
-    "@tanstack/router-cli": "^1.167.19",
+    "@tanstack/devtools-vite": "^0.8.3",
+    "@tanstack/router-cli": "^1.167.21",
     "jsdom": "^29.1.1",
     "typescript": "^7.0.2",
-    "vite": "^8.1.4",
-    "vite-plugin-solid": "^2.11.12",
+    "vite": "^8.1.5",
+    "vite-plugin-solid": "^2.11.14",
     "vitest": "^4.1.10"
   },
   "pnpm": {
