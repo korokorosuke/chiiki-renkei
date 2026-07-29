@@ -1,5 +1,7 @@
 /// <reference lib="deno.unstable" />
 import type { Database } from "./database.ts"
+import { PRODUCTION_TYPE, DEV } from "../settings.ts"
+
 
 export class Kv implements Database{
     private kv?: Deno.Kv
@@ -10,6 +12,12 @@ export class Kv implements Database{
         if(Kv.test){
             return this.openTest();
         }
+
+        const dev = Deno.env.get(PRODUCTION_TYPE)
+        if(dev === DEV){
+          return this.openDev();
+        }
+
         this.kv = await Deno.openKv();
         return this.kv;
     }
