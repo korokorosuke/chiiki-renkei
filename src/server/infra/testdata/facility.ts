@@ -198,8 +198,13 @@ export async function list(repo: IFacilityRepository){
   }
   res = await repo.list("病院");
   if(res.length === 2){
-    assert(compare(facility3, res[0]));
-    assert(compare(facility2, res[1]));
+    for(const r of res){
+      if(r.id === facility3.id) {
+        assert(compare(facility3, r));
+      }else if(r.id === facility2.id) {
+        assert(compare(facility2, r));
+      }
+    }
   }else{
     console.log(`list2: ${res.length}`);
     fail();

@@ -10,7 +10,7 @@ import { Db } from "./db.ts"
 
 Db.test = true;
 
-Deno.test("inquiry repository sqlite", async (t) => {
+Deno.test("inquiry repository rdb", async (t) => {
   const repo = new InquiryRepository(BASE);
   const repoDue = new DueRepository(BASE);
   const repoFac = new FacilityRepository(BASE);

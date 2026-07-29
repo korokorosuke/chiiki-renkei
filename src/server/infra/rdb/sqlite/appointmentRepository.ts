@@ -1,13 +1,13 @@
-import type { Appointment, Condition } from "../../domain/appointment.ts"
-import type { IAppointmentRepository } from "../../domain/appointmentService.ts"
-import { initializeDept } from "../../domain/department.ts"
-import { initialize as initializeDr } from "../../domain/dr.ts"
-import { Db } from "./db.ts"
-import { appointment } from "../../db/schema.ts"
+import type { Appointment, Condition } from "../../../domain/appointment.ts"
+import type { IAppointmentRepository } from "../../../domain/appointmentService.ts"
+import { initializeDept } from "../../../domain/department.ts"
+import { initialize as initializeDr } from "../../../domain/dr.ts"
+import { Db } from "./dbSQLite.ts"
+import { appointment } from "../../../db/schemaSQLite.ts"
 import { type PatientDBResult, type FacilityDBResult, type UserDBResult, type DepartmentDBResult,
-  toFacility, toUser, toPatient } from "./types.ts"
+  toFacility, toUser, toPatient } from "../types.ts"
 import { and, eq } from "drizzle-orm"
-import { addDay } from "../../lib/datetime.ts"
+import { addDay } from "../../../lib/datetime.ts"
 
 type AppointmentData = typeof appointment.$inferInsert;
 
@@ -30,8 +30,7 @@ type AppointmentDBResult = {
   appointmentPersonInCharge: UserDBResult | null,
   memo: string,
   appointmentUpdatedBy: UserDBResult | null,
-  updatedAt: string,
-  updatedAtString?: string,
+  updatedAt: string
 }
 
 export function toAppointment(val: AppointmentDBResult): Appointment {
@@ -43,7 +42,6 @@ export function toAppointment(val: AppointmentDBResult): Appointment {
     facility: toFacility(val.facility),
     personInCharge: toUser(val.appointmentPersonInCharge),
     updatedBy: toUser(val.appointmentUpdatedBy),
-    updatedAt: val.updatedAtString!
   };
 }
 
@@ -151,9 +149,6 @@ export class AppointmentRepository implements IAppointmentRepository {
         means: true,
         memo: true,
         updatedAt: true,
-      },
-      extras: {
-        updatedAtString: (record, { sql }) => sql<string>`to_char(${record.updatedAt}, 'YYYY-MM-DD"T"HH24:MI:SS')`,
       },
       with: {
         department: {

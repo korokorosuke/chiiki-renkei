@@ -100,8 +100,15 @@ export async function read(repo: IUserRepository){
 export async function list(repo: IUserRepository){
   let res = await repo.list({name:"usagi"});
   if(res.length === 2){
-    assert(compare(user3, res[0]));
-    assert(compare(user2, res[1]));
+    for(const r of res){
+      if(r.id === user3.id){
+        assert(compare(user3, r));
+      }else if(r.id === user2.id){
+        assert(compare(user2, r));
+      }else{
+        fail();
+      }
+    }
   }else{
     fail();
   }

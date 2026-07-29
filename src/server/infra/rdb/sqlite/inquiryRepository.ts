@@ -1,13 +1,13 @@
-import type { Inquiry, Condition } from "../../domain/inquiry.ts"
-import type { IInquiryRepository } from "../../domain/inquiryService.ts"
-import { initialize as initializeDue } from "../../domain/due.ts"
-import { initialize as initializePatient } from "../../domain/patient.ts"
-import { Db } from "./db.ts"
-import { inquiry, response } from "../../db/schema.ts"
+import type { Inquiry, Condition } from "../../../domain/inquiry.ts"
+import type { IInquiryRepository } from "../../../domain/inquiryService.ts"
+import { initialize as initializeDue } from "../../../domain/due.ts"
+import { initialize as initializePatient } from "../../../domain/patient.ts"
+import { Db } from "./dbSQLite.ts"
+import { inquiry, response } from "../../../db/schemaSQLite.ts"
 import { type PatientDBResult, type FacilityDBResult, type UserDBResult,
-  toFacility, toUser, toPatient } from "./types.ts"
+  toFacility, toUser, toPatient } from "../types.ts"
 import { and, eq } from "drizzle-orm"
-import { addDay } from "../../lib/datetime.ts"
+import { addDay } from "../../../lib/datetime.ts"
 
 type InquiryData = typeof inquiry.$inferInsert;
 
@@ -20,19 +20,17 @@ type InquiryDBResult = {
   user: UserDBResult | null,
   tel: string,
   datetime: string,
-  datetimeString?: string,
   due: {
     id: number,
     name: string,
     days: number,
   } | null,
   details: string,
-  done: boolean,
+  done: number,
   responses: {
     responder: UserDBResult | null,
     datetime: string,
     details: string,
-    datetimeString?: string,
   }[] | null,
 }
 
@@ -55,7 +53,7 @@ export class InquiryRepository implements IInquiryRepository {
       datetime: val.datetime,
       dueId: val.due.id,
       details: val.details,
-      done: val.done,
+      done: val.done ? 1 : 0,
       personInChargeId: val.personInCharge.id,
     };
   }
@@ -68,16 +66,16 @@ export class InquiryRepository implements IInquiryRepository {
     return {
       id: val.id,
       tel: val.tel,
-      datetime: val.datetimeString!,
+      datetime: val.datetime,
       facilityStaff: val.facilityStaff,
       details: val.details,
-      done: val.done,
+      done: val.done === 1 ? true : false,
       patient: val.patient ? toPatient(val.patient) : {...initializePatient(), id: val.patientInfo},
       facility: toFacility(val.facility),
       due: val.due ?? initializeDue(),
       responses: val.responses ? val.responses.map(r => ({
         responder: toUser(r.responder),
-        datetime: r.datetimeString!,
+        datetime: r.datetime,
         details: r.details,
       })) : [],
       personInCharge: toUser(val.user),
@@ -174,9 +172,6 @@ export class InquiryRepository implements IInquiryRepository {
         details: true,
         done: true,
       },
-      extras: {
-        datetimeString: (record, { sql }) => sql<string>`to_char(${record.datetime}, 'YYYY-MM-DD"T"HH24:MI')`,
-      },
       with: {
         patient: {
           columns: {
@@ -212,9 +207,6 @@ export class InquiryRepository implements IInquiryRepository {
           columns: {
             datetime: true,
             details: true,
-          },
-          extras: {
-            datetimeString: (record, { sql }) => sql<string>`to_char(${record.datetime}, 'YYYY-MM-DD"T"HH24:MI')`,
           },
           with: {
             responder: {

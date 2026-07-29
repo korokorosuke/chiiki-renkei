@@ -11,7 +11,7 @@ import { UserRepository } from "./userRepository.ts"
 
 Db.test = true;
 
-Deno.test("reply repository sqlite", async (t) => {
+Deno.test("reply repository rdb", async (t) => {
 const repoApp = new AppointmentRepository(BASE);
 const repo = new ReplyRepository(BASE);
 const repoUser = new UserRepository(BASE);

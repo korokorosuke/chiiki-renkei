@@ -13,22 +13,42 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
   }
 
   async insert(val: AnswerPassword): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.insert(answerPassword).values(val)).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.insert(answerPassword).values(val);
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async update(val: AnswerPassword): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.update(answerPassword).set(val)
-      .where(eq(answerPassword.appointmentId, val.appointmentId))).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.update(answerPassword).set(val)
+        .where(eq(answerPassword.appointmentId, val.appointmentId));
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async delete(val: AnswerPassword): Promise<void> {
-    const db = await this.database.open();
-    (await db.delete(answerPassword)
-      .where(eq(answerPassword.appointmentId, val.appointmentId))).rowsAffected;
+    try{
+      const db = await this.database.open();
+      await db.delete(answerPassword)
+        .where(eq(answerPassword.appointmentId, val.appointmentId));
+    }catch(e){
+      console.log(e);
+    }finally{
+      this.database.close();
+    }
   }
 
   async read(appId: string): Promise<AnswerPassword|undefined> {
@@ -44,11 +64,16 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
   async countUp(appId: string): Promise<boolean> {
     const ap = await this.read(appId);
     if(ap){
-      const db = await this.database.open();
-      const res = (await db.update(answerPassword).set({ failCount: ap.failCount + 1})
-        .where(eq(answerPassword.appointmentId, appId))).rowsAffected;
-      if(res > 0){
+      try{
+        const db = await this.database.open();
+        await db.update(answerPassword).set({ failCount: ap.failCount + 1})
+          .where(eq(answerPassword.appointmentId, appId));
         return true;
+      }catch(e){
+        console.log(e);
+        return false;
+      }finally{
+        this.database.close();
       }
     }
     return false;

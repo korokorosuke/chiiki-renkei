@@ -1,20 +1,19 @@
-import type { Appointment, Condition } from "../../domain/appointment.ts"
-import type { IAppointmentRepository } from "../../domain/appointmentService.ts"
-import { initializeDept } from "../../domain/department.ts"
-import { initialize as initializeDr } from "../../domain/dr.ts"
-import { Db } from "./db.ts"
-import { appointment } from "../../db/schema.ts"
+import type { ReferralTo, Condition } from "../../../domain/referralto.ts"
+import type { IReferralToRepository } from "../../../domain/referraltoService.ts"
+import { initializeDept } from "../../../domain/department.ts"
+import { initialize as initializeDr } from "../../../domain/dr.ts"
+import { Db } from "./dbSQLite.ts"
+import { referralTo } from "../../../db/schemaSQLite.ts"
 import { type PatientDBResult, type FacilityDBResult, type UserDBResult, type DepartmentDBResult,
-  toFacility, toUser, toPatient } from "./types.ts"
+  toFacility, toUser, toPatient } from "../types.ts"
 import { and, eq } from "drizzle-orm"
-import { addDay } from "../../lib/datetime.ts"
+import { addDay } from "../../../lib/datetime.ts"
 
-type AppointmentData = typeof appointment.$inferInsert;
+type ReferralToData = typeof referralTo.$inferInsert;
 
-type AppointmentDBResult = {
+type ReferralToDBResult = {
   id: string,
   date: string,
-  time: string,
   patient: PatientDBResult | null,
   facility: FacilityDBResult | null,
   facilityDr: string,
@@ -25,29 +24,13 @@ type AppointmentDBResult = {
     name: string,
     department: string,
   } | null,
-  appDisplay: string,
-  means: string,
-  appointmentPersonInCharge: UserDBResult | null,
+  referralToPersonInCharge: UserDBResult | null,
   memo: string,
-  appointmentUpdatedBy: UserDBResult | null,
-  updatedAt: string,
-  updatedAtString?: string,
+  referralToUpdatedBy: UserDBResult | null,
+  updatedAt: string
 }
 
-export function toAppointment(val: AppointmentDBResult): Appointment {
-  return {
-    ...val,
-    department: val.department ?? initializeDept(),
-    dr: val.dr ?? initializeDr(),
-    patient: toPatient(val.patient),
-    facility: toFacility(val.facility),
-    personInCharge: toUser(val.appointmentPersonInCharge),
-    updatedBy: toUser(val.appointmentUpdatedBy),
-    updatedAt: val.updatedAtString!
-  };
-}
-
-export class AppointmentRepository implements IAppointmentRepository {
+export class ReferralToRepository implements IReferralToRepository {
   database: Db
   base: string
   constructor(base: string){
@@ -55,42 +38,49 @@ export class AppointmentRepository implements IAppointmentRepository {
     this.base = base;
   }
 
-  toData(val: Appointment): AppointmentData {
+  toData(val: ReferralTo): ReferralToData {
     return {
       base: this.base,
       id: val.id,
       patientId: val.patient.id,
       date: val.date,
-      time: val.time,
       facilityId: val.facility.id,
       facilityDr: val.facilityDr,
       facilityDept: val.facilityDept,
       departmentId: val.department.id,
       drId: val.dr.id,
-      appDisplay: val.appDisplay,
-      means: val.means,
       personInChargeId: val.personInCharge.id,
       memo: val.memo,
       updatedBy: val.updatedBy.id,
       updatedAt: val.updatedAt,
     };
   }
-  toDataWithoutKey(val: Appointment): Partial<AppointmentData> {
+  toDataWithoutKey(val: ReferralTo): Partial<ReferralToData> {
     // deno-lint-ignore no-unused-vars
     const {base, id, ...etc} = this.toData(val);
     return etc;
   }
-  fromData(val: AppointmentDBResult): Appointment {
-    return toAppointment(val);
+  fromData(val: ReferralToDBResult): ReferralTo {
+    return {
+      id: val.id,
+      date: val.date,
+      facilityDr: val.facilityDr,
+      facilityDept: val.facilityDept,
+      memo: val.memo,
+      department: val.department ?? initializeDept(),
+      dr: val.dr ?? initializeDr(),
+      patient: toPatient(val.patient),
+      facility: toFacility(val.facility),
+      personInCharge: toUser(val.referralToPersonInCharge),
+      updatedAt: val.updatedAt,
+      updatedBy: toUser(val.referralToUpdatedBy),
+    };
   }
 
-  async insert(val: Appointment): Promise<boolean> {
-    if(!val.patient){
-      return false;
-    }
+  async insert(val: ReferralTo): Promise<boolean> {
     try{
       const db = await this.database.open();
-      await db.insert(appointment).values(this.toData(val));
+      await db.insert(referralTo).values(this.toData(val));
       return true;
     }catch(e){
       console.log(e);
@@ -100,18 +90,14 @@ export class AppointmentRepository implements IAppointmentRepository {
     }
   }
 
-  async update(val: Appointment): Promise<boolean> {
-    const data = await this.read(val.id);
-    if(!data || !data.patient || !val.patient){
-        return false;
-    }
+  async update(val: ReferralTo): Promise<boolean> {
     try{
       const db = await this.database.open();
-      await db.update(appointment).set(this.toDataWithoutKey(val))
+      await db.update(referralTo).set(this.toDataWithoutKey(val))
         .where(
           and(
-            eq(appointment.base, this.base),
-            eq(appointment.id, val.id),
+            eq(referralTo.base, this.base),
+            eq(referralTo.id, val.id),
           ));
       return true;
     }catch(e){
@@ -122,14 +108,14 @@ export class AppointmentRepository implements IAppointmentRepository {
     }
   }
 
-  async delete(val: Appointment): Promise<void> {
+  async delete(val: ReferralTo): Promise<void> {
     try{
       const db = await this.database.open();
-      await db.delete(appointment)
+      await db.delete(referralTo)
         .where(
           and(
-            eq(appointment.base, this.base),
-            eq(appointment.id, val.id),
+            eq(referralTo.base, this.base),
+            eq(referralTo.id, val.id),
           ));
     }catch(e){
       console.log(e);
@@ -138,22 +124,16 @@ export class AppointmentRepository implements IAppointmentRepository {
     }
   }
 
-  private async select(cond: object): Promise<AppointmentDBResult[]> {
+  private async select(cond: object): Promise<ReferralToDBResult[]> {
     const db = await this.database.open();
-    return await db.query.appointment.findMany({
+    return await db.query.referralTo.findMany({
       columns: {
         id: true,
         date: true,
-        time: true,
         facilityDr: true,
         facilityDept: true,
-        appDisplay: true,
-        means: true,
         memo: true,
         updatedAt: true,
-      },
-      extras: {
-        updatedAtString: (record, { sql }) => sql<string>`to_char(${record.updatedAt}, 'YYYY-MM-DD"T"HH24:MI:SS')`,
       },
       with: {
         department: {
@@ -184,14 +164,14 @@ export class AppointmentRepository implements IAppointmentRepository {
             addressPlus: true,
           },
         },
-        appointmentPersonInCharge: {
+        referralToPersonInCharge: {
           columns: {
             id: true,
             name: true,
             departmentId: true,
           }
         },
-        appointmentUpdatedBy: {
+        referralToUpdatedBy: {
           columns: {
             id: true,
             name: true,
@@ -206,7 +186,7 @@ export class AppointmentRepository implements IAppointmentRepository {
     });
   }
 
-  async read(id: string): Promise<Appointment|undefined> {
+  async read(id: string): Promise<ReferralTo|undefined> {
     const res = await this.select({base: this.base, id: id});
     if(res.length > 0){
       return this.fromData(res[0]);
@@ -241,9 +221,9 @@ export class AppointmentRepository implements IAppointmentRepository {
     return conditions;
   }
 
-  async list(cond: Condition): Promise<Appointment[]> {
+  async list(cond: Condition): Promise<ReferralTo[]> {
     const res = await this.select(this.buildCondition(cond));
-    const list: Appointment[] = [];
+    const list: ReferralTo[] = [];
     for await (const r of res){
       list.push(this.fromData(r));
     }

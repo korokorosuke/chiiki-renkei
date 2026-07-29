@@ -1,19 +1,17 @@
-import type { Activity, Condition } from "../../domain/activity.ts"
-import type { IActivityRepository } from "../../domain/activityService.ts"
-import { Db } from "./db.ts"
-import { activity, activityPurpose } from "../../db/schema.ts"
-import { UserDBResult, FacilityDBResult, toFacility, toUser } from "./types.ts"
+import type { Activity, Condition } from "../../../domain/activity.ts"
+import type { IActivityRepository } from "../../../domain/activityService.ts"
+import { Db } from "./dbSQLite.ts"
+import { activity, activityPurpose } from "../../../db/schemaSQLite.ts"
+import { UserDBResult, FacilityDBResult, toFacility, toUser } from "../types.ts"
 import { and, eq } from "drizzle-orm"
-import { addDay } from "../../lib/datetime.ts"
+import { addDay } from "../../../lib/datetime.ts"
 
 type ActivityData = typeof activity.$inferInsert;
 
 type ActivityDBResult = {
   id: string,
   date: string,
-  toDate: string | null,
-  dateString?: string,
-  toDateString?: string,
+  toDate: string,
   participants: string,
   facilityParticipants: string,
   details: string,
@@ -22,8 +20,7 @@ type ActivityDBResult = {
   }[],
   facility: FacilityDBResult | null,
   user: UserDBResult | null,
-  updatedAt: string,
-  updatedAtString?: string
+  updatedAt: string
 }
 
 export class ActivityRepository implements IActivityRepository {
@@ -39,7 +36,7 @@ export class ActivityRepository implements IActivityRepository {
       base: this.base,
       id: val.id,
       date: val.date,
-      toDate: val.toDate === "" ? null : val.toDate,
+      toDate: val.toDate,
       participants: val.participants,
       facilityParticipants: val.facilityParticipants,
       details: val.details,
@@ -56,12 +53,10 @@ export class ActivityRepository implements IActivityRepository {
   fromData(val: ActivityDBResult): Activity {
     return {
       ...val,
-      date: val.dateString ?? "",
-      toDate: val.toDateString ?? "",
       facility: toFacility(val.facility),
       purpose: val.activityPurposes.map(p => p.purpose),
       updatedBy: toUser(val.user),
-      updatedAt: val.updatedAtString!,
+      updatedAt: val.updatedAt,
     };
   }
 
@@ -139,11 +134,6 @@ export class ActivityRepository implements IActivityRepository {
         facilityParticipants: true,
         details: true,
         updatedAt: true,
-      },
-      extras: {
-        dateString: (record, { sql }) => sql<string>`to_char(${record.date}, 'YYYY-MM-DD"T"HH24:MI')`,
-        toDateString: (record, { sql }) => sql<string>`to_char(${record.toDate}, 'YYYY-MM-DD"T"HH24:MI')`,
-        updatedAtString: (record, { sql }) => sql<string>`to_char(${record.updatedAt}, 'YYYY-MM-DD"T"HH24:MI:SS')`,
       },
       with: {
         activityPurposes: {

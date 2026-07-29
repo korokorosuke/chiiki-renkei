@@ -5,7 +5,7 @@ import { Db } from "./db.ts"
 
 Db.test = true;
 
-Deno.test("webDr repository sqlite", async (t) => {
+Deno.test("webDr repository rdb", async (t) => {
   const repo = new WebDrRepository(BASE);
   await t.step("insert", async () => {await insert(repo);});
   await t.step("update", async () => {await update(repo);});

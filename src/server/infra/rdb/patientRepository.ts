@@ -34,14 +34,15 @@ export class PatientRepository implements IPatientRepository {
     return {
       ...val,
       base: this.base,
+      birthday: val.birthday,
       postalCode: val.address.postalCode,
       addressName: val.address.name,
       addressPlus: val.address.plus,
     };
   }
-  toDataWithoutKey(act: Patient): Partial<PatientData> {
+  toDataWithoutKey(val: Patient): Partial<PatientData> {
     // deno-lint-ignore no-unused-vars
-    const {base, id, ...etc} = this.toData(act);
+    const {base, id, ...etc} = this.toData(val);
     return etc;
   }
   fromData(val: PatientDBResult): Patient {
@@ -65,30 +66,50 @@ export class PatientRepository implements IPatientRepository {
   }
 
   async insert(val: Patient): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.insert(patient).values(this.toData(val))).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.insert(patient).values(this.toData(val));
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async update(val: Patient): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.update(patient).set(this.toDataWithoutKey(val))
-      .where(
-        and(
-          eq(patient.base, this.base),
-          eq(patient.id, val.id),
-        ))).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.update(patient).set(this.toDataWithoutKey(val))
+        .where(
+          and(
+            eq(patient.base, this.base),
+            eq(patient.id, val.id),
+          ));
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async delete(val: Patient): Promise<void> {
-    const db = await this.database.open();
-    (await db.delete(patient)
-      .where(
-        and(
-          eq(patient.base, this.base),
-          eq(patient.id, val.id),
-        ))).rowsAffected;
+    try{
+      const db = await this.database.open();
+      await db.delete(patient)
+        .where(
+          and(
+            eq(patient.base, this.base),
+            eq(patient.id, val.id),
+          ));
+    }catch(e){
+      console.log(e);
+    }finally{
+      this.database.close();
+    }
   }
 
   async read(id: string): Promise<Patient|undefined> {

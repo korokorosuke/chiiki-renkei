@@ -65,9 +65,17 @@ export async function read(repo: IDueRepository){
 export async function all(repo: IDueRepository){
   const res = await repo.all();
   if(res.length === 3){
-    assert(compare(due3, res[0]));
-    assert(compare(due2, res[1]));
-    assert(compare(due4, res[2]));
+    for(const r of res){
+      if(r.id === due3.id){
+        assert(compare(due3, r));
+      }else if(r.id === due2.id){
+        assert(compare(due2, r));
+      }else if(r.id === due4.id){
+        assert(compare(due4, r));
+      }else{
+        fail();
+      }
+    }
   }else{
     console.log(`list2: ${res.length}`);
     fail();

@@ -22,30 +22,50 @@ export class WebNoticeRepository implements IWebNoticeRepository {
   }
 
   async insert(val: WebNotice): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.insert(webNotice).values(this.toData(val))).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.insert(webNotice).values(this.toData(val));
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async update(val: WebNotice): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.update(webNotice).set(this.toData(val))
-      .where(
-        and(
-          eq(webNotice.base, this.base),
-          eq(webNotice.id, val.id),
-        ))).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.update(webNotice).set(this.toData(val))
+        .where(
+          and(
+            eq(webNotice.base, this.base),
+            eq(webNotice.id, val.id),
+          ))
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async delete(val: WebNotice): Promise<void> {
-    const db = await this.database.open();
-    (await db.delete(webNotice)
-      .where(
-        and(
-          eq(webNotice.base, this.base),
-          eq(webNotice.id, val.id),
-        ))).rowsAffected;
+    try{
+      const db = await this.database.open();
+      await db.delete(webNotice)
+        .where(
+          and(
+            eq(webNotice.base, this.base),
+            eq(webNotice.id, val.id),
+          ));
+    }catch(e){
+      console.log(e);
+    }finally{
+      this.database.close();
+    }
   }
 
   async read(id: string): Promise<WebNotice|undefined> {
@@ -58,13 +78,16 @@ export class WebNoticeRepository implements IWebNoticeRepository {
         base: this.base,
         id: id,
       },
-    })
+    });
     return res;
   }
 
   async list(date?: string): Promise<WebNotice[]> {
     const db = await this.database.open();
     const res = await db.query.webNotice.findMany({
+      columns: {
+        base: false,
+      },
       where: (date ? {
         base: this.base,
         fromDate: { lte: date },

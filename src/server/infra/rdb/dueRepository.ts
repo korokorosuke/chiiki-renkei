@@ -24,30 +24,50 @@ export class DueRepository implements IDueRepository {
   }
 
   async insert(val: Due): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.insert(due).values(this.toData(val))).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.insert(due).values(this.toData(val));
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async update(val: Due): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.update(due).set(this.toData(val))
-      .where(
-        and(
-          eq(due.base, this.base),
-          eq(due.id, val.id),
-        ))).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.update(due).set(this.toData(val))
+        .where(
+          and(
+            eq(due.base, this.base),
+            eq(due.id, val.id),
+          ));
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async delete(val: Due): Promise<void> {
-    const db = await this.database.open();
-    (await db.delete(due)
-      .where(
-        and(
-          eq(due.base, this.base),
-          eq(due.id, val.id),
-        ))).rowsAffected;
+    try{
+      const db = await this.database.open();
+      await db.delete(due)
+        .where(
+          and(
+            eq(due.base, this.base),
+            eq(due.id, val.id),
+          ));
+    }catch(e){
+      console.log(e);
+    }finally{
+      this.database.close();
+    }
   }
 
   async read(id: number): Promise<Due|undefined> {

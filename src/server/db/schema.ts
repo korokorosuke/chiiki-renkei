@@ -4,4 +4,4 @@ export { address, activity, activityPurpose, answer, answerItem, answerPassword,
   questionnaire, questionnaireDept, referralTo, reply, staff, user,
   webConsultation, webPatient, webAppointment, webDepartment, webDr,webReserv,
   webMaster, webNotice, webReservation,
-} from "./schemaSQLite.ts"
+} from "./schemaPostgres.ts"

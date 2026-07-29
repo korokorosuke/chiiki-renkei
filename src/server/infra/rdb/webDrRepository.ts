@@ -25,30 +25,50 @@ export class WebDrRepository implements IWebDrRepository {
   }
 
   async insert(val: WebDr): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.insert(webDr).values(this.toData(val))).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.insert(webDr).values(this.toData(val));
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async update(val: WebDr): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.update(webDr).set(this.toData(val))
-      .where(
-        and(
-          eq(webDr.base, this.base),
-          eq(webDr.id, val.id),
-        ))).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.update(webDr).set(this.toData(val))
+        .where(
+          and(
+            eq(webDr.base, this.base),
+            eq(webDr.id, val.id),
+          ));
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async delete(val: WebDr): Promise<void> {
-    const db = await this.database.open();
-    (await db.delete(webDr)
-      .where(
-        and(
-          eq(webDr.base, this.base),
-          eq(webDr.id, val.id),
-        ))).rowsAffected;
+    try{
+      const db = await this.database.open();
+      await db.delete(webDr)
+        .where(
+          and(
+            eq(webDr.base, this.base),
+            eq(webDr.id, val.id),
+          ));
+    }catch(e){
+      console.log(e);
+    }finally{
+      this.database.close();
+    }
   }
 
   async read(id: string): Promise<WebDr|undefined> {

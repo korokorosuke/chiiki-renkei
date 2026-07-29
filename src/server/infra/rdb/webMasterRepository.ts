@@ -57,66 +57,69 @@ export class WebMasterRepository implements IWebMasterRepository {
 
   async insert(val: WebMaster): Promise<boolean> {
     const db = await this.database.open();
-    const res: number = await db.transaction(async (tx) => {
-      const res1 = (await tx.insert(webMaster).values(this.toData(val))).rowsAffected;
-      if(res1 >= 1){
+    const res = await db.transaction(async (tx) => {
+      try{
+        await tx.insert(webMaster).values(this.toData(val));
         if(val.reservs.length > 0){
-          const res2 = (await tx.insert(webReserv)
-            .values(this.toReservData(val))).rowsAffected;
-          if(res2 === 0){
-            tx.rollback();
-            return 0;
-          }
+          await tx.insert(webReserv)
+            .values(this.toReservData(val));
         }
-        return res1;
+        return true;
+      }catch(e){
+        console.log(e);
+        return false;
       }
-      tx.rollback()
-      return 0;
     });
-    return res >= 1;
+    this.database.close();
+    return res;
   }
 
   async update(val: WebMaster): Promise<boolean> {
     const db = await this.database.open();
-    const res: number = await db.transaction(async (tx) => {
-      await tx.delete(webReserv).where(
-        and(
-          eq(webReserv.base, this.base),
-          eq(webReserv.departmentId, val.dept),
-          eq(webReserv.drId, val.dr),
-          eq(webReserv.week, val.week),
-        ));
-      if(val.reservs.length > 0){
-        const res2 = (await tx.insert(webReserv)
-          .values(this.toReservData(val))).rowsAffected;
-        if(res2 === 0){
-          tx.rollback();
-          return 0;
+    const res = await db.transaction(async (tx) => {
+      try{
+        await tx.delete(webReserv).where(
+          and(
+            eq(webReserv.base, this.base),
+            eq(webReserv.departmentId, val.dept),
+            eq(webReserv.drId, val.dr),
+            eq(webReserv.week, val.week),
+          ));
+        if(val.reservs.length > 0){
+          await tx.insert(webReserv)
+            .values(this.toReservData(val));
         }
+        return true;
+      }catch(e){
+        console.log(e);
+        return false;
       }
-      return 1;
     });
-    return res >= 1;
+    return res;
   }
 
   async delete(val: WebMaster): Promise<void> {
     const db = await this.database.open();
     await db.transaction(async (tx) => {
-      await tx.delete(webReserv).where(
-        and(
-          eq(webReserv.base, this.base),
-          eq(webReserv.departmentId, val.dept),
-          eq(webReserv.drId, val.dr),
-          eq(webReserv.week, val.week),
-        ));
-      (await tx.delete(webMaster)
-        .where(
+      try{
+        await tx.delete(webReserv).where(
           and(
-            eq(webMaster.base, this.base),
-            eq(webMaster.departmentId, val.dept),
-            eq(webMaster.drId, val.dr),
-            eq(webMaster.week, val.week),
-          ))).rowsAffected;
+            eq(webReserv.base, this.base),
+            eq(webReserv.departmentId, val.dept),
+            eq(webReserv.drId, val.dr),
+            eq(webReserv.week, val.week),
+          ));
+        await tx.delete(webMaster)
+          .where(
+            and(
+              eq(webMaster.base, this.base),
+              eq(webMaster.departmentId, val.dept),
+              eq(webMaster.drId, val.dr),
+              eq(webMaster.week, val.week),
+            ));
+      }catch(e){
+        console.log(e);
+      }
     });
   }
 

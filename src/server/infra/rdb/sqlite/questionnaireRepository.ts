@@ -1,7 +1,7 @@
-import type { Questionnaire, Question } from "../../domain/questionnaire.ts"
-import type { IQuestionnaireRepository } from "../../domain/questionnaireService.ts"
-import { Db } from "./db.ts"
-import { questionnaire, question, questionChoice, questionCondition, questionnaireDept } from "../../db/schema.ts"
+import type { Questionnaire, Question } from "../../../domain/questionnaire.ts"
+import type { IQuestionnaireRepository } from "../../../domain/questionnaireService.ts"
+import { Db } from "./dbSQLite.ts"
+import { questionnaire, question, questionChoice, questionCondition, questionnaireDept } from "../../../db/schemaSQLite.ts"
 import { and, eq } from "drizzle-orm"
 
 type QuestionnaireData = typeof questionnaire.$inferInsert;
@@ -17,7 +17,7 @@ export type QuestionnaireDBResult = {
   questions: {
     id: string,
     type: string,
-    require: boolean,
+    require: number,
     title: string,
     questionChoices: {
       id: string,
@@ -39,7 +39,7 @@ export function toQuestionnaire(val: QuestionnaireDBResult): Questionnaire{
     items: val.questions?.map((question) => ({
       id: question.id,
       type: question.type,
-      require: question.require,
+      require: question.require ? true : false,
       question: question.title,
       choices: question.questionChoices?.map(choice=>({
         id: choice.id,
@@ -74,7 +74,7 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
       id: val.id,
       questionnaireId: id,
       type: val.type,
-      require: val.require,
+      require: val.require ? 1 : 0,
       title: val.question,
       order: i,
     };

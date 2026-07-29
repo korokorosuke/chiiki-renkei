@@ -1,10 +1,10 @@
-import type { Answer } from "../../domain/answer.ts"
-import type { IAnswerRepository } from "../../domain/answerService.ts"
-import { initialize } from "../../domain/questionnaire.ts"
+import type { Answer } from "../../../domain/answer.ts"
+import type { IAnswerRepository } from "../../../domain/answerService.ts"
+import { initialize } from "../../../domain/questionnaire.ts"
 import { AppointmentRepository } from "./appointmentRepository.ts"
 import { type QuestionnaireDBResult, toQuestionnaire } from "./questionnaireRepository.ts"
-import { Db } from "./db.ts"
-import { answer, answerItem } from "../../db/schema.ts"
+import { Db } from "./dbSQLite.ts"
+import { answer, answerItem } from "../../../db/schemaSQLite.ts"
 import { and, eq } from "drizzle-orm"
 
 type AnswerData = typeof answer.$inferInsert;
@@ -16,9 +16,8 @@ type AnswerDBResult = {
   appointment: {
     patientId: string,
   } | null,
-  appointmentDate: string | null,
-  inputDate: string | null,
-  inputDateString?: string,
+  appointmentDate: string,
+  inputDate: string,
   answerItems: {
     itemId: string,
   }[],
@@ -38,8 +37,8 @@ export class AnswerRepository implements IAnswerRepository {
       id: val.id,
       questionnaireId: val.questionnaire.id,
       appointmentId: val.appointmentId,
-      appointmentDate: val.appointmentDate === "" ? null : val.appointmentDate,
-      inputDate: val.inputDate === "" ? null : val.inputDate,
+      appointmentDate: val.appointmentDate ?? "",
+      inputDate: val.inputDate ?? "",
     };
   }
   fromData(val: AnswerDBResult): Answer {
@@ -47,8 +46,8 @@ export class AnswerRepository implements IAnswerRepository {
       id: val.id,
       questionnaire: val.questionnaire ? toQuestionnaire(val.questionnaire) : initialize(),
       appointmentId: val.appointmentId,
-      appointmentDate: val.appointmentDate ?? undefined,
-      inputDate: val.inputDateString,
+      appointmentDate: val.appointmentDate,
+      inputDate: val.inputDate,
       items: val.answerItems ? val.answerItems.map(item => item.itemId) : [],
     };
   }
@@ -143,9 +142,6 @@ export class AnswerRepository implements IAnswerRepository {
         appointmentId: true,
         appointmentDate: true,
         inputDate: true,
-      },
-      extras: {
-        inputDateString: (record, { sql }) => sql<string>`to_char(${record.inputDate}, 'YYYY-MM-DD"T"HH24:MI:SS')`,
       },
       where: cond,
       with: {

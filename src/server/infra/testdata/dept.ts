@@ -62,8 +62,15 @@ export async function read(repo: IDepartmentRepository){
 export async function exam(repo: IDepartmentRepository){
   const res = await repo.exam();
   if(res.length === 2){
-    assert(compare(department3, res[0]));
-    assert(compare(department2, res[1]));
+    for(const r of res){
+      if(r.id === department3.id) {
+        assert(compare(department3, r));
+      }else if(r.id === department2.id) {
+        assert(compare(department2, r));
+      }else{
+        fail();
+      }
+    }
   }else{
     console.log(`exam: ${res.length}`);
     fail();
@@ -72,9 +79,17 @@ export async function exam(repo: IDepartmentRepository){
 export async function all(repo: IDepartmentRepository){
   const res = await repo.all();
   if(res.length === 3){
-    assert(compare(department3, res[0]));
-    assert(compare(department2, res[1]));
-    assert(compare(department4, res[2]));
+    for(const r of res){
+      if(r.id === department3.id) {
+        assert(compare(department3, r));
+      }else if(r.id === department2.id) {
+        assert(compare(department2, r));
+      }else if(r.id === department4.id) {
+        assert(compare(department4, r));
+      }else{
+        fail();
+      }
+    }
   }else{
     console.log(`all: ${res.length}`);
     fail();

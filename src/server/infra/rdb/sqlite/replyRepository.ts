@@ -1,14 +1,14 @@
-import type { Reply, Condition } from "../../domain/reply.ts"
-import type { IReplyRepository } from "../../domain/replyService.ts"
-import type { Referral } from "../../domain/referral.ts"
-import { initializeDept } from "../../domain/department.ts"
-import { initialize as initializeDr } from "../../domain/dr.ts"
-import { Db } from "./db.ts"
-import { reply } from "../../db/schema.ts"
+import type { Reply, Condition } from "../../../domain/reply.ts"
+import type { IReplyRepository } from "../../../domain/replyService.ts"
+import type { Referral } from "../../../domain/referral.ts"
+import { initializeDept } from "../../../domain/department.ts"
+import { initialize as initializeDr } from "../../../domain/dr.ts"
+import { Db } from "./dbSQLite.ts"
+import { reply } from "../../../db/schemaSQLite.ts"
 import { type PatientDBResult, type FacilityDBResult, type UserDBResult, type DepartmentDBResult,
-  toUser, toPatient, toFacility } from "./types.ts"
+  toUser, toPatient, toFacility } from "../types.ts"
 import { and, eq } from "drizzle-orm"
-import { addDay } from "../../lib/datetime.ts"
+import { addDay } from "../../../lib/datetime.ts"
 
 type ReplyData = typeof reply.$inferInsert;
 
@@ -36,8 +36,7 @@ type ReplyDBResult = {
     replyPersonInCharge: UserDBResult | null,
     memo: string,
     replyUpdatedBy: UserDBResult | null,
-    updatedAt: string,
-    updatedAtString?: string
+    updatedAt: string
   }[] | null
 }
 
@@ -83,7 +82,7 @@ export class ReplyRepository implements IReplyRepository {
           personInCharge: toUser(rep.replyPersonInCharge),
           memo: rep.memo,
           updatedBy: toUser(rep.replyUpdatedBy),
-          updatedAt: rep.updatedAtString!,
+          updatedAt: rep.updatedAt,
         });
       }
     }
@@ -167,9 +166,6 @@ export class ReplyRepository implements IReplyRepository {
             classification: true,
             memo: true,
             updatedAt: true,
-          },
-          extras: {
-            updatedAtString: (record, { sql }) => sql<string>`to_char(${record.updatedAt}, 'YYYY-MM-DD"T"HH24:MI:SS')`,
           },
           with: {
             department: {

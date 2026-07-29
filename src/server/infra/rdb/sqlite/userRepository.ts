@@ -1,7 +1,7 @@
-import type { AuthUser, Condition } from "../../domain/user.ts"
-import type { IUserRepository } from "../../domain/userService.ts"
-import { Db } from "./db.ts"
-import { user } from "../../db/schema.ts"
+import type { AuthUser, Condition } from "../../../domain/user.ts"
+import type { IUserRepository } from "../../../domain/userService.ts"
+import { Db } from "./dbSQLite.ts"
+import { user } from "../../../db/schemaSQLite.ts"
 import { and, eq } from "drizzle-orm"
 
 type UserData = typeof user.$inferInsert;
@@ -28,7 +28,7 @@ export class UserRepository implements IUserRepository {
       authWeb: val.authWeb,
       password: val.password ??  "",
       facilityId: val.facilityId ?? "",
-      locked: val.locked ? true : false,
+      locked: val.locked ? 1 : 0,
       failCount: val.failCount ?? 0,
     };
   }
@@ -51,7 +51,7 @@ export class UserRepository implements IUserRepository {
       authWeb: val.authWeb,
       password: val.password,
       facilityId: val.facilityId,
-      locked: val.locked,
+      locked: val.locked === 1 ? true : false,
       failCount: val.failCount
     };
   }

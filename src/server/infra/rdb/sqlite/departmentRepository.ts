@@ -1,7 +1,7 @@
-import type { Department } from "../../domain/department.ts"
-import type { IDepartmentRepository } from "../../domain/departmentService.ts"
-import { Db } from "./db.ts"
-import { department } from "../../db/schema.ts"
+import type { Department } from "../../../domain/department.ts"
+import type { IDepartmentRepository } from "../../../domain/departmentService.ts"
+import { Db } from "./dbSQLite.ts"
+import { department } from "../../../db/schemaSQLite.ts"
 import { and, eq } from "drizzle-orm"
 
 type DepartmentData = typeof department.$inferInsert;
@@ -19,14 +19,14 @@ export class DepartmentRepository implements IDepartmentRepository {
       base: this.base,
       id: val.id,
       name: val.name,
-      exam: val.exam
+      exam: val.exam ? 1 : 0
     };
   }
   fromData(val: DepartmentData): Department {
     return {
       id: val.id,
       name: val.name,
-      exam: val.exam
+      exam: val.exam ? true : false
     };
   }
 
@@ -109,7 +109,7 @@ export class DepartmentRepository implements IDepartmentRepository {
     const res = await db.query.department.findMany({
       where: {
         base: this.base,
-        exam: true
+        exam: 1
       }
     });
     if(res.length > 0){

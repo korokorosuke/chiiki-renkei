@@ -1,8 +1,8 @@
-import type { Staff, Condition } from "../../domain/staff.ts"
-import type { IStaffRepository } from "../../domain/staffService.ts"
-import { type UserDBResult, toUser } from "./types.ts"
-import { Db } from "./db.ts"
-import { staff } from "../../db/schema.ts"
+import type { Staff, Condition } from "../../../domain/staff.ts"
+import type { IStaffRepository } from "../../../domain/staffService.ts"
+import { type UserDBResult, toUser } from "../types.ts"
+import { Db } from "./dbSQLite.ts"
+import { staff } from "../../../db/schemaSQLite.ts"
 import { and, eq } from "drizzle-orm"
 
 type StaffData = typeof staff.$inferInsert;
@@ -12,14 +12,13 @@ export type StaffDBResult = {
   name: string,
   kana: string,
   department: string,
-  dr: boolean,
+  dr: number,
   post: string,
   facilityId: string,
   order: number,
-  hidden: boolean,
+  hidden: number,
   user: UserDBResult | null,
-  updatedAt: string,
-  updatedAtString?: string
+  updatedAt: string
 }
 
 export class StaffRepository implements IStaffRepository {
@@ -34,11 +33,10 @@ export class StaffRepository implements IStaffRepository {
     return {
       ...val,
       base: this.base,
-      dr: val.dr,
-      hidden: val.hidden,
+      dr: val.dr ? 1 : 0,
+      hidden: val.hidden ? 1: 0,
       order: val.sort,
       updatedBy: val.updatedBy.id,
-      updatedAt: val.updatedAt
     }
   }
   toDataWithoutKey(val: Staff): Partial<StaffData> {
@@ -53,7 +51,6 @@ export class StaffRepository implements IStaffRepository {
       hidden: val.hidden ? true : false,
       sort: val.order,
       updatedBy: toUser(val.user),
-      updatedAt: val.updatedAtString!
     };
   }
 
@@ -110,9 +107,6 @@ export class StaffRepository implements IStaffRepository {
       columns: {
         base: false,
         updatedBy: false,
-      },
-      extras: {
-        updatedAtString: (record, { sql }) => sql<string>`to_char(${record.updatedAt}, 'YYYY-MM-DD"T"HH24:MI:SS')`,
       },
       with: {
         user: {

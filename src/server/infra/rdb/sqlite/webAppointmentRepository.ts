@@ -1,15 +1,15 @@
-import type { WebAppointment, Condition } from "../../domain/webAppointment.ts"
-import type { IWebAppRepository } from "../../domain/webAppointmentService.ts"
-import { initialize as initializePatient } from "../../domain/patient.ts"
-import { initialize as initializeDept } from "../../domain/webDepartment.ts"
-import { initialize as initializeDr } from "../../domain/webDr.ts"
-import { Db } from "./db.ts"
-import { WebReservationRepository } from "./webReservationRepository.ts"
-import { DATE_EMPTY } from "../../domain/webAppointmentService.ts"
-import { webAppointment, webConsultation, webPatient } from "../../db/schema.ts"
-import { type FacilityDBResult, type UserDBResult, toFacility, toUser } from "./types.ts"
+import type { WebAppointment, Condition } from "../../../domain/webAppointment.ts"
+import type { IWebAppRepository } from "../../../domain/webAppointmentService.ts"
+import { initialize as initializePatient } from "../../../domain/patient.ts"
+import { initialize as initializeDept } from "../../../domain/webDepartment.ts"
+import { initialize as initializeDr } from "../../../domain/webDr.ts"
+import { Db } from "./dbSQLite.ts"
+import { WebReservationRepository } from "../webReservationRepository.ts"
+import { DATE_EMPTY } from "../../../domain/webAppointmentService.ts"
+import { webAppointment, webConsultation, webPatient } from "../../../db/schemaSQLite.ts"
+import { type FacilityDBResult, type UserDBResult, toFacility, toUser } from "../types.ts"
 import { and, eq } from "drizzle-orm"
-import { addDay } from "../../lib/datetime.ts"
+import { addDay } from "../../../lib/datetime.ts"
 
 type WebAppointmentData = typeof webAppointment.$inferInsert;
 type WebPatientData = typeof webPatient.$inferInsert;
@@ -51,14 +51,12 @@ type WebAppointmentDBResult = {
     etc: string
   } | null,
   mainComplaint: string,
-  cancel: boolean,
-  force: boolean,
+  cancel: number,
+  force: number,
   webAppointmentCreatedBy: UserDBResult | null,
-  createdAt: string,
+  createdAt: string
   webAppointmentUpdatedBy: UserDBResult | null,
-  updatedAt: string,
-  createdAtString?: string,
-  updatedAtString?: string,
+  updatedAt: string
 }
 
 export class WebAppRepository implements IWebAppRepository {
@@ -79,8 +77,8 @@ export class WebAppRepository implements IWebAppRepository {
       departmentId: val.department.id,
       drId: val.dr.id,
       mainComplaint: val.mainComplaint,
-      cancel: val.cancel,
-      force: val.force ? true : false,
+      cancel: val.cancel ? 1 : 0,
+      force: val.force ? 1 : 0,
       createdBy: val.createdBy.id,
       createdAt: val.createdAt,
       updatedBy: val.updatedBy.id,
@@ -144,9 +142,9 @@ export class WebAppRepository implements IWebAppRepository {
       consultation: val.webConsultation ?? undefined,
       force: val.force ? true : false,
       createdBy: toUser(val.webAppointmentCreatedBy),
-      createdAt: val.createdAtString!,
+      createdAt: val.createdAt,
       updatedBy: toUser(val.webAppointmentCreatedBy),
-      updatedAt: val.updatedAtString!,
+      updatedAt: val.updatedAt,
     };
   }
 
@@ -296,10 +294,6 @@ export class WebAppRepository implements IWebAppRepository {
         force: true,
         createdAt: true,
         updatedAt: true,
-      },
-      extras: {
-        createdAtString: (record, { sql }) => sql<string>`to_char(${record.createdAt}, 'YYYY-MM-DD"T"HH24:MI:SS')`,
-        updatedAtString: (record, { sql }) => sql<string>`to_char(${record.updatedAt}, 'YYYY-MM-DD"T"HH24:MI:SS')`,
       },
       with: {
         webConsultation: {

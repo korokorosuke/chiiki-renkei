@@ -11,22 +11,42 @@ export class AddressRepository implements IAddressRepository {
   }
 
   async insert(val: Address): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.insert(address).values(val)).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.insert(address).values(val);
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async update(val: Address): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.update(address).set(val)
-      .where(eq(address.postalCode, val.postalCode))).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.update(address).set(val)
+        .where(eq(address.postalCode, val.postalCode));
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async delete(val: Address): Promise<void> {
-    const db = await this.database.open();
-    (await db.delete(address)
-      .where(eq(address.postalCode, val.postalCode))).rowsAffected;
+    try{
+      const db = await this.database.open();
+      await db.delete(address)
+        .where(eq(address.postalCode, val.postalCode));
+    }catch(e){
+      console.log(e);
+    }finally{
+      this.database.close();
+    }
   }
 
   async read(postalCode: string): Promise<Address|undefined> {

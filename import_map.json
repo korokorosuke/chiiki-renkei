@@ -11,7 +11,7 @@
     "zod": "npm:zod@4.4.3",
     "drizzle-kit": "npm:drizzle-kit@1.0.0-rc.4",
     "drizzle-orm": "npm:drizzle-orm@1.0.0-rc.4",
-    "drizzle-orm/sqlite-core": "npm:drizzle-orm@1.0.0-rc.4/sqlite-core",
-    "@libsql/client": "npm:@libsql/client@0.17.4"
+    "@libsql/client": "npm:@libsql/client@0.17.4",
+    "pg": "npm:pg@8.22.0"
   }
 }

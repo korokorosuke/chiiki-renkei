@@ -1,8 +1,8 @@
-import type { Facility } from "../../domain/facility.ts"
-import type { IFacilityRepository } from "../../domain/facilityService.ts"
-import { Db } from "./db.ts"
-import { facility, facilityContact } from "../../db/schema.ts"
-import { type UserDBResult, toUser } from "./types.ts"
+import type { Facility } from "../../../domain/facility.ts"
+import type { IFacilityRepository } from "../../../domain/facilityService.ts"
+import { Db } from "./dbSQLite.ts"
+import { facility, facilityContact } from "../../../db/schemaSQLite.ts"
+import { type UserDBResult, toUser } from "../types.ts"
 import { and, eq } from "drizzle-orm"
 
 type FacilityData = typeof facility.$inferInsert;
@@ -26,13 +26,11 @@ type FacilityDBResult = {
   addressName: string,
   addressPlus: string,
   memo: string,
-  closedDate: string | null,
+  closedDate: string,
   facilityCreatedBy: UserDBResult | null,
   createdAt: string,
   facilityUpdatedBy: UserDBResult | null,
   updatedAt: string,
-  createdAtString: string,
-  updatedAtString: string,
 }
 
 export class FacilityRepository implements IFacilityRepository {
@@ -50,11 +48,8 @@ export class FacilityRepository implements IFacilityRepository {
       postalCode: val.address.postalCode,
       addressName: val.address.name,
       addressPlus: val.address.plus,
-      closedDate: val.closedDate === "" ? null : val.closedDate,
       createdBy: val.updatedBy.id,
-      createdAt: val.createdAt,
       updatedBy: val.updatedBy.id,
-      updatedAt: val.updatedAt,
     };
   }
   toDataWithoutKey(val: Facility): Partial<FacilityData> {
@@ -79,10 +74,10 @@ export class FacilityRepository implements IFacilityRepository {
         plus: val.addressPlus,
       },
       memo: val.memo,
-      closedDate: val.closedDate ?? "",
-      createdAt: val.createdAtString!,
+      closedDate: val.closedDate,
+      createdAt: val.createdAt,
       createdBy: toUser(val.facilityCreatedBy),
-      updatedAt: val.updatedAtString!,
+      updatedAt: val.updatedAt,
       updatedBy: toUser(val.facilityUpdatedBy),
     };
   }
@@ -177,10 +172,6 @@ export class FacilityRepository implements IFacilityRepository {
         base: false,
         createdBy: false,
         updatedBy: false,
-      },
-      extras: {
-        createdAtString: (record, { sql }) => sql<string>`to_char(${record.createdAt}, 'YYYY-MM-DD"T"HH24:MI:SS')`,
-        updatedAtString: (record, { sql }) => sql<string>`to_char(${record.updatedAt}, 'YYYY-MM-DD"T"HH24:MI:SS')`,
       },
       with: {
         facilityContacts: {

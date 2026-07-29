@@ -32,26 +32,29 @@ export class MasterRepository implements IMasterRepository {
 
   async update(kind: string, values: string[]): Promise<boolean> {
     const db = await this.database.open();
-    const res: number = await db.transaction(async (tx) => {
-      await tx.delete(master).where(
-        and(
-          eq(master.base, this.base),
-          eq(master.kind, kind),
-        ));
-      const res1 = (await tx.insert(master)
-          .values(values.map((val, i) => ({
-            base: this.base,
-            kind: kind,
-            id: i,
-            value: val
-          })))).rowsAffected;
-      if(res1 === 0 && values.length > 0){
+    const res = await db.transaction(async (tx) => {
+      try{
+        await tx.delete(master).where(
+          and(
+            eq(master.base, this.base),
+            eq(master.kind, kind),
+          ));
+        await tx.insert(master)
+            .values(values.map((val, i) => ({
+              base: this.base,
+              kind: kind,
+              id: i,
+              value: val
+            })));
+        return true;
+      }catch(e){
         tx.rollback();
-        return 0;
+        console.log(e);
+        return false;
       }
-      return res1;
     });
-    return res >= 1;
+    this.database.close();
+    return res;
   }
 
   async read(kind: string): Promise<string[]|undefined> {

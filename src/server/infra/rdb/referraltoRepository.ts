@@ -27,7 +27,8 @@ type ReferralToDBResult = {
   referralToPersonInCharge: UserDBResult | null,
   memo: string,
   referralToUpdatedBy: UserDBResult | null,
-  updatedAt: string
+  updatedAt: string,
+  updatedAtString?: string
 }
 
 export class ReferralToRepository implements IReferralToRepository {
@@ -72,36 +73,56 @@ export class ReferralToRepository implements IReferralToRepository {
       patient: toPatient(val.patient),
       facility: toFacility(val.facility),
       personInCharge: toUser(val.referralToPersonInCharge),
-      updatedAt: val.updatedAt,
+      updatedAt: val.updatedAtString!,
       updatedBy: toUser(val.referralToUpdatedBy),
     };
   }
 
   async insert(val: ReferralTo): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.insert(referralTo).values(this.toData(val))).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.insert(referralTo).values(this.toData(val));
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async update(val: ReferralTo): Promise<boolean> {
-    const db = await this.database.open();
-    const res = (await db.update(referralTo).set(this.toDataWithoutKey(val))
-      .where(
-        and(
-          eq(referralTo.base, this.base),
-          eq(referralTo.id, val.id),
-        ))).rowsAffected;
-    return res >= 1;
+    try{
+      const db = await this.database.open();
+      await db.update(referralTo).set(this.toDataWithoutKey(val))
+        .where(
+          and(
+            eq(referralTo.base, this.base),
+            eq(referralTo.id, val.id),
+          ));
+      return true;
+    }catch(e){
+      console.log(e);
+      return false;
+    }finally{
+      this.database.close();
+    }
   }
 
   async delete(val: ReferralTo): Promise<void> {
-    const db = await this.database.open();
-    (await db.delete(referralTo)
-      .where(
-        and(
-          eq(referralTo.base, this.base),
-          eq(referralTo.id, val.id),
-        ))).rowsAffected;
+    try{
+      const db = await this.database.open();
+      await db.delete(referralTo)
+        .where(
+          and(
+            eq(referralTo.base, this.base),
+            eq(referralTo.id, val.id),
+          ));
+    }catch(e){
+      console.log(e);
+    }finally{
+      this.database.close();
+    }
   }
 
   private async select(cond: object): Promise<ReferralToDBResult[]> {
@@ -114,6 +135,9 @@ export class ReferralToRepository implements IReferralToRepository {
         facilityDept: true,
         memo: true,
         updatedAt: true,
+      },
+      extras: {
+        updatedAtString: (record, { sql }) => sql<string>`to_char(${record.updatedAt}, 'YYYY-MM-DD"T"HH24:MI:SS')`,
       },
       with: {
         department: {

@@ -1,23 +1,23 @@
-import { varchar, text, uuid, integer, smallint, date, timestamp, time,
+import { varchar, text, integer, smallint, date, timestamp,
   boolean, index, primaryKey, snakeCase } from "drizzle-orm/pg-core"
 
 export const address = snakeCase.table("address", {
   postalCode: varchar({ length: 8 }).primaryKey().notNull(),
-  name: varchar({ length: 100 }).notNull(),
-  plus: varchar({ length: 100 }).notNull(),
+  name: text().notNull(),
+  plus: text().notNull(),
 });
 
 export const activity = snakeCase.table("activity", {
   base: text().notNull(),
-  id: uuid().notNull(),
-  date: date().notNull(),
-  toDate: date().notNull(),
-  participants: varchar({ length: 100 }).notNull(),
-  facilityParticipants: varchar({ length: 100 }).notNull(),
+  id: text().notNull(),
+  date: timestamp({ withTimezone: true, mode: "string" }).notNull(),
+  toDate: timestamp({ withTimezone: true, mode: "string" }),
+  participants: text().notNull(),
+  facilityParticipants: text().notNull(),
   details: text().notNull(),
-  facilityId: varchar({ length: 20 }).notNull(),
-  updatedBy: varchar({ length: 50 }).notNull(),
-  updatedAt: timestamp({ withTimezone: true }).notNull(),
+  facilityId: text().notNull(),
+  updatedBy: text().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: "string" }).notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
   index("idx_activity_facility").on(table.base, table.facilityId),
@@ -26,19 +26,19 @@ export const activity = snakeCase.table("activity", {
 
 export const activityPurpose = snakeCase.table("activity_purpose", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  activityId: uuid().notNull(),
-  purpose: varchar({ length: 10 }).notNull(),
+  activityId: text().notNull(),
+  purpose: text().notNull(),
 }, (table) => [
   index("idx_activity_purpose").on(table.activityId),
 ]);
 
 export const answer = snakeCase.table("answer", {
   base: text().notNull(),
-  id: uuid().notNull(),
-  questionnaireId: uuid().notNull(),
-  appointmentId: uuid().notNull(),
-  appointmentDate: date().notNull(),
-  inputDate: timestamp().notNull(),
+  id: text().notNull(),
+  questionnaireId: text().notNull(),
+  appointmentId: text().notNull(),
+  appointmentDate: date({ mode: "string" }),
+  inputDate: timestamp({ withTimezone: true, mode: "string" }),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
   index("idx_answer_appointment").on(table.base, table.appointmentId),
@@ -46,35 +46,35 @@ export const answer = snakeCase.table("answer", {
 
 export const answerItem = snakeCase.table("answer_item", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  answerId: uuid().notNull(),
-  itemId: varchar({ length: 3 }).notNull(),
+  answerId: text().notNull(),
+  itemId: text().notNull(),
 }, (table) => [
   index("idx_answer_item").on(table.answerId),
 ]);
 
 export const answerPassword = snakeCase.table("answer_password", {
-  appointmentId: uuid().primaryKey().notNull(),
-  password: varchar({ length: 10 }).notNull(),
+  appointmentId: text().primaryKey().notNull(),
+  password: text().notNull(),
   failCount: smallint().notNull(),
 });
 
 export const appointment = snakeCase.table("appointment", {
   base: text().notNull(),
-  id: uuid().notNull(),
-  patientId: varchar({ length: 10 }).notNull(),
-  date: date().notNull(),
-  time: time().notNull(),
-  facilityId: varchar({ length: 20 }).notNull(),
-  facilityDr: varchar({ length: 50 }).notNull(),
-  facilityDept: varchar({ length: 30 }).notNull(),
-  departmentId: varchar({ length: 10 }).notNull(),
-  drId: varchar({ length: 10 }).notNull(),
-  appDisplay: varchar({ length: 50 }).notNull(),
-  means: varchar({ length: 10 }).notNull(),
-  personInChargeId: varchar({ length: 10 }).notNull(),
+  id: text().notNull(),
+  patientId: text().notNull(),
+  date: date({ mode: "string" }).notNull(),
+  time: text().notNull(),
+  facilityId: text().notNull(),
+  facilityDr: text().notNull(),
+  facilityDept: text().notNull(),
+  departmentId: text().notNull(),
+  drId: text().notNull(),
+  appDisplay: text().notNull(),
+  means: text().notNull(),
+  personInChargeId: text().notNull(),
   memo: text().notNull(),
-  updatedBy: varchar({ length: 50 }).notNull(),
-  updatedAt: timestamp({ withTimezone: true }).notNull(),
+  updatedBy: text().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: "string" }).notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
   index("idx_appointment_patient").on(table.base, table.patientId),
@@ -84,8 +84,8 @@ export const appointment = snakeCase.table("appointment", {
 
 export const department = snakeCase.table("department", {
   base: text().notNull(),
-  id: varchar({ length: 10 }).notNull(),
-  name: varchar({ length: 50 }).notNull(),
+  id: text().notNull(),
+  name: text().notNull(),
   exam: boolean().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
@@ -93,9 +93,9 @@ export const department = snakeCase.table("department", {
 
 export const dr = snakeCase.table("dr", {
   base: text().notNull(),
-  id: varchar({ length: 10 }).notNull(),
-  name: varchar({ length: 50 }).notNull(),
-  department: varchar({ length: 10 }).notNull(),
+  id: text().notNull(),
+  name: text().notNull(),
+  department: text().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
   index("idx_dr_dept").on(table.base, table.department),
@@ -104,7 +104,7 @@ export const dr = snakeCase.table("dr", {
 export const due = snakeCase.table("due", {
   base: text().notNull(),
   id: smallint().notNull(),
-  name: varchar({ length: 50 }).notNull(),
+  name: text().notNull(),
   days: smallint().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
@@ -112,48 +112,48 @@ export const due = snakeCase.table("due", {
 
 export const facility = snakeCase.table("facility", {
   base: text().notNull(),
-  id: varchar({ length: 20 }).notNull(),
-  attribute: varchar({ length: 10 }).notNull(),
-  nameCorp: varchar({ length: 50 }).notNull(),
-  name: varchar({ length: 100 }).notNull(),
-  kana: varchar({ length: 100 }).notNull(),
-  tel: varchar({ length: 13 }).notNull(),
-  fax: varchar({ length: 13 }).notNull(),
-  email: varchar({ length: 100 }).notNull(),
+  id: text().notNull(),
+  attribute: text().notNull(),
+  nameCorp: text().notNull(),
+  name: text().notNull(),
+  kana: text().notNull(),
+  tel: text().notNull(),
+  fax: text().notNull(),
+  email: text().notNull(),
   postalCode: varchar({ length: 8 }).notNull(),
   addressName: text().notNull(),
   addressPlus: text().notNull(),
   memo: text().notNull(),
-  closedDate: date().notNull(),
-  createdBy: varchar({ length: 10 }).notNull(),
-  createdAt: timestamp({ withTimezone: true }).notNull(),
-  updatedBy: varchar({ length: 50 }).notNull(),
-  updatedAt: timestamp({ withTimezone: true }).notNull(),
+  closedDate: date({ mode: "string" }),
+  createdBy: text().notNull(),
+  createdAt: timestamp({ withTimezone: true, mode: "string" }).notNull(),
+  updatedBy: text().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: "string" }).notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
 export const facilityContact = snakeCase.table("facility_contact", {
-  id: integer().primaryKey(),
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
   base: text().notNull(),
-  facilityId: varchar({ length: 20 }).notNull(),
-  tel: varchar({ length: 13 }).notNull(),
-  fax: varchar({ length: 13 }).notNull(),
-  email: varchar({ length: 100 }).notNull(),
-  name: varchar({ length: 20 }).notNull(),
+  facilityId: text().notNull(),
+  tel: text().notNull(),
+  fax: text().notNull(),
+  email: text().notNull(),
+  name: text().notNull(),
 }, (table) => [
   index("idx_facility_contact_facility").on(table.base, table.facilityId),
 ]);
 
 export const inquiry = snakeCase.table("inquiry", {
   base: text().notNull(),
-  id: uuid().notNull(),
-  patientInfo: varchar({ length: 100 }).notNull(),
-  facilityId: varchar({ length: 20 }).notNull(),
-  facilityStaff: varchar({ length: 10 }).notNull(),
-  personInChargeId: varchar({ length: 10 }).notNull(),
-  tel: varchar({ length: 50 }).notNull(),
-  datetime: timestamp().notNull(),
+  id: text().notNull(),
+  patientInfo: text().notNull(),
+  facilityId: text().notNull(),
+  facilityStaff: text().notNull(),
+  personInChargeId: text().notNull(),
+  tel: text().notNull(),
+  datetime: timestamp({ withTimezone: true, mode: "string" }).notNull(),
   dueId: smallint().notNull(),
   details: text().notNull(),
   done: boolean().notNull(),
@@ -166,9 +166,9 @@ export const inquiry = snakeCase.table("inquiry", {
 
 export const response = snakeCase.table("response", {
   base: text().notNull(),
-  inquiryId: uuid().notNull(),
-  responderId: varchar({ length: 10 }).notNull(),
-  datetime: timestamp().notNull(),
+  inquiryId: text().notNull(),
+  responderId: text().notNull(),
+  datetime: timestamp({ withTimezone: true, mode: "string" }).notNull(),
   details: text().notNull(),
 }, (table) => [
   index("idx_response_inquiry").on(table.inquiryId),
@@ -176,20 +176,20 @@ export const response = snakeCase.table("response", {
 
 export const master = snakeCase.table("master", {
   base: text().notNull(),
-  kind: varchar({ length: 10 }).notNull(),
-  id: varchar({ length: 10 }).notNull(),
-  value: varchar({ length: 20 }).notNull(),
+  kind: text().notNull(),
+  id: integer().notNull(),
+  value: text().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.kind, table.id] }),
 ]);
 
 export const notice = snakeCase.table("notice", {
   base: text().notNull(),
-  id: varchar({ length: 10 }).notNull(),
-  type: varchar().notNull(),
+  id: text().notNull(),
+  type: text().notNull(),
   message: text().notNull(),
-  fromDate: date().notNull(),
-  toDate: date().notNull(),
+  fromDate: date({ mode: "string" }).notNull(),
+  toDate: date({ mode: "string" }).notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
   index("idx_notice_date").on(table.base, table.fromDate),
@@ -197,15 +197,15 @@ export const notice = snakeCase.table("notice", {
 
 export const patient = snakeCase.table("patient", {
   base: text().notNull(),
-  id: varchar({ length: 10 }).notNull(),
-  lastName: varchar({ length: 50 }).notNull(),
-  firstName: varchar({ length: 50 }).notNull(),
-  lastKana: varchar({ length: 50 }).notNull(),
-  firstKana: varchar({ length: 50 }).notNull(),
+  id: text().notNull(),
+  lastName: text().notNull(),
+  firstName: text().notNull(),
+  lastKana: text().notNull(),
+  firstKana: text().notNull(),
   sex: smallint().notNull(),
-  birthday: date().notNull(),
-  tel: varchar({ length: 13 }).notNull(),
-  tel2: varchar({ length: 13 }).notNull(),
+  birthday: date({ mode: "string" }).notNull(),
+  tel: text().notNull(),
+  tel2: text().notNull(),
   postalCode: varchar({ length: 8 }).notNull(),
   addressName: text().notNull(),
   addressPlus: text().notNull(),
@@ -215,49 +215,47 @@ export const patient = snakeCase.table("patient", {
 ]);
 
 export const questionCondition = snakeCase.table("question_condition", {
-  questionnaireId: uuid().notNull(),
-  questionId: uuid().primaryKey().notNull(),
-  q: uuid().notNull(),
-  a: varchar({ length: 10 }).notNull(),
+  questionnaireId: text().notNull(),
+  questionId: text().notNull(),
+  q: text().notNull(),
+  a: text().notNull(),
 }, (table) => [
-  index("idx_question_condition_qid").on(table.questionnaireId),
+  primaryKey({ columns: [table.questionnaireId ,table.questionId] })
 ]);
 
 export const questionChoice = snakeCase.table("question_choice", {
-  questionnaireId: uuid().notNull(),
-  questionId: uuid().notNull(),
-  id: varchar({ length: 30 }).notNull(),
-  text: varchar({ length: 100 }).notNull(),
-  sort: integer().notNull(),
+  questionnaireId: text().notNull(),
+  questionId: text().notNull(),
+  id: text().notNull(),
+  text: text().notNull(),
+  order: integer().notNull(),
 }, (table) => [
-  primaryKey({ columns: [table.questionId, table.id] }),
-  index("idx_question_choice_qid").on(table.questionnaireId),
+  primaryKey({ columns: [table.questionnaireId ,table.questionId, table.id] })
 ]);
 
 export const question = snakeCase.table("question", {
-  questionnaireId: uuid().notNull(),
-  id: uuid().notNull(),
-  type: varchar().notNull(),
+  questionnaireId: text().notNull(),
+  id: text().notNull(),
+  type: text().notNull(),
   require: boolean().notNull(),
-  title: varchar({ length: 200 }).notNull(),
-  sort: integer().notNull(),
+  title: text().notNull(),
+  order: integer().notNull(),
 }, (table) => [
-  primaryKey({ columns: [table.questionnaireId, table.sort] }),
-  index("idx_question_qid").on(table.questionnaireId, table.id),
-  index("idx_question_sort").on(table.questionnaireId, table.sort),
+  primaryKey({ columns: [table.questionnaireId, table.id] }),
+  index("idx_question_order").on(table.questionnaireId, table.order),
 ]);
 
 export const questionnaireDept = snakeCase.table("questionnaire_dept", {
-  questionnaireId: uuid().notNull(),
-  deptId: varchar({ length: 10 }).notNull(),
+  questionnaireId: text().notNull(),
+  deptId: text().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.questionnaireId, table.deptId] }),
 ]);
 
 export const questionnaire = snakeCase.table("questionnaire", {
   base: text().notNull(),
-  id: uuid().notNull(),
-  title: varchar({ length: 100 }).notNull(),
+  id: text().notNull(),
+  title: text().notNull(),
   description: text().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
@@ -265,18 +263,18 @@ export const questionnaire = snakeCase.table("questionnaire", {
 
 export const referralTo = snakeCase.table("referral_to", {
   base: text().notNull(),
-  id: uuid().notNull(),
-  patientId: varchar({ length: 10 }).notNull(),
-  date: date().notNull(),
-  facilityId: varchar({ length: 20 }).notNull(),
-  facilityDr: varchar({ length: 50 }).notNull(),
-  facilityDept: varchar({ length: 30 }).notNull(),
-  departmentId: varchar({ length: 10 }).notNull(),
-  drId: varchar({ length: 10 }).notNull(),
-  personInChargeId: varchar({ length: 10 }).notNull(),
+  id: text().notNull(),
+  patientId: text().notNull(),
+  date: date({ mode: "string" }).notNull(),
+  facilityId: text().notNull(),
+  facilityDr: text().notNull(),
+  facilityDept: text().notNull(),
+  departmentId: text().notNull(),
+  drId: text().notNull(),
+  personInChargeId: text().notNull(),
   memo: text().notNull(),
-  updatedBy: varchar({ length: 50 }).notNull(),
-  updatedAt: timestamp({ withTimezone: true }).notNull(),
+  updatedBy: text().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: "string" }).notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
   index("idx_referralto_patient").on(table.base, table.patientId),
@@ -286,16 +284,16 @@ export const referralTo = snakeCase.table("referral_to", {
 
 export const reply = snakeCase.table("reply", {
   base: text().notNull(),
-  id: uuid().notNull(),
-  refId: uuid().notNull(),
-  date: date().notNull(),
-  departmentId: varchar({ length: 10 }).notNull(),
-  drId: varchar({ length: 10 }).notNull(),
-  classification: varchar({ length: 10 }).notNull(),
-  personInChargeId: varchar({ length: 10 }).notNull(),
+  id: text().notNull(),
+  refId: text().notNull(),
+  date: date({ mode: "string" }).notNull(),
+  departmentId: text().notNull(),
+  drId: text().notNull(),
+  classification: text().notNull(),
+  personInChargeId: text().notNull(),
   memo: text().notNull(),
-  updatedBy: varchar({ length: 50 }).notNull(),
-  updatedAt: timestamp({ withTimezone: true }).notNull(),
+  updatedBy: text().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: "string" }).notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
   index("idx_reply_ref").on(table.refId, table.date),
@@ -303,17 +301,17 @@ export const reply = snakeCase.table("reply", {
 
 export const staff = snakeCase.table("staff", {
   base: text().notNull(),
-  id: uuid().notNull(),
-  name: varchar({ length: 100 }).notNull(),
-  kana: varchar({ length: 100 }).notNull(),
-  department: varchar({ length: 30 }).notNull(),
+  id: text().notNull(),
+  name: text().notNull(),
+  kana: text().notNull(),
+  department: text().notNull(),
   dr: boolean().notNull(),
-  post: varchar({ length: 100 }).notNull(),
-  facilityId: varchar({ length: 20 }).notNull(),
-  sort: smallint().notNull(),
+  post: text().notNull(),
+  facilityId: text().notNull(),
+  order: smallint().notNull(),
   hidden: boolean().notNull(),
-  updatedBy: varchar({ length: 50 }).notNull(),
-  updatedAt: timestamp({ withTimezone: true }).notNull(),
+  updatedBy: text().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: "string" }).notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
   index("idx_staff_faclility").on(table.base, table.facilityId),
@@ -321,17 +319,17 @@ export const staff = snakeCase.table("staff", {
 
 export const user = snakeCase.table("user", {
   base: text().notNull(),
-  id: varchar({ length: 50 }).notNull(),
-  name: varchar({ length: 100 }).notNull(),
-  departmentId: varchar({ length: 10 }).notNull(),
+  id: text().notNull(),
+  name: text().notNull(),
+  departmentId: text().notNull(),
   authFacility: smallint().notNull(),
   authReferral: smallint().notNull(),
   authActivity: smallint().notNull(),
   authStatistics: smallint().notNull(),
   authMaster: smallint().notNull(),
   authWeb: smallint().notNull(),
-  password: varchar({ length: 100 }).notNull(),
-  facilityId: varchar({ length: 20 }).notNull(),
+  password: text().notNull(),
+  facilityId: text().notNull(),
   locked: boolean().notNull(),
   failCount: smallint().notNull(),
 }, (table) => [
@@ -340,23 +338,23 @@ export const user = snakeCase.table("user", {
 ]);
 
 export const webConsultation = snakeCase.table("web_consultation", {
-  appointmentId: uuid().notNull(),
-  first: varchar({ length: 20 }).notNull(),
-  second: varchar({ length: 20 }).notNull(),
+  appointmentId: text().notNull(),
+  first: text().notNull(),
+  second: text().notNull(),
   etc: text().notNull(),
 });
 
 export const webPatient = snakeCase.table("web_patient", {
-  appointmentId: uuid().notNull().primaryKey(),
-  id: varchar({ length: 10 }).notNull(),
-  lastName: varchar({ length: 50 }).notNull(),
-  firstName: varchar({ length: 50 }).notNull(),
-  lastKana: varchar({ length: 50 }).notNull(),
-  firstKana: varchar({ length: 50 }).notNull(),
+  appointmentId: text().notNull().primaryKey(),
+  id: text().notNull(),
+  lastName: text().notNull(),
+  firstName: text().notNull(),
+  lastKana: text().notNull(),
+  firstKana: text().notNull(),
   sex: smallint().notNull(),
-  birthday: date().notNull(),
-  tel: varchar({ length: 13 }).notNull(),
-  tel2: varchar({ length: 13 }).notNull(),
+  birthday: date({ mode: "string" }).notNull(),
+  tel: text().notNull(),
+  tel2: text().notNull(),
   memo: text().notNull(),
   postalCode: varchar({ length: 8 }).notNull(),
   addressName: text().notNull(),
@@ -365,19 +363,19 @@ export const webPatient = snakeCase.table("web_patient", {
 
 export const webAppointment = snakeCase.table("web_appointment", {
   base: text().notNull(),
-  id: uuid().notNull(),
-  date: date().notNull(),
-  time: time().notNull(),
-  facilityId: varchar({ length: 20 }).notNull(),
-  departmentId: varchar({ length: 10 }).notNull(),
-  drId: varchar({ length: 10 }).notNull(),
+  id: text().notNull(),
+  date: date({ mode: "string" }).notNull(),
+  time: text().notNull(),
+  facilityId: text().notNull(),
+  departmentId: text().notNull(),
+  drId: text().notNull(),
   mainComplaint: text().notNull(),
   cancel: boolean().notNull(),
   force: boolean().notNull(),
-  createdBy: varchar({ length: 10 }).notNull(),
-  createdAt: timestamp({ withTimezone: true }).notNull(),
-  updatedBy: varchar({ length: 50 }).notNull(),
-  updatedAt: timestamp({ withTimezone: true }).notNull(),
+  createdBy: text().notNull(),
+  createdAt: timestamp({ withTimezone: true, mode: "string" }).notNull(),
+  updatedBy: text().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: "string" }).notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
   index("idx_web_appointment_facility").on(table.base, table.facilityId),
@@ -386,8 +384,8 @@ export const webAppointment = snakeCase.table("web_appointment", {
 
 export const webDepartment = snakeCase.table("web_department", {
   base: text().notNull(),
-  id: varchar({ length: 10 }).notNull(),
-  name: varchar({ length: 100 }).notNull(),
+  id: text().notNull(),
+  name: text().notNull(),
   description: text().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
@@ -395,20 +393,20 @@ export const webDepartment = snakeCase.table("web_department", {
 
 export const webDr = snakeCase.table("web_dr", {
   base: text().notNull(),
-  id: varchar({ length: 10 }).notNull(),
-  name: varchar({ length: 50 }).notNull(),
-  displayName: varchar({ length: 30 }).notNull(),
-  department: varchar({ length: 10 }).notNull(),
+  id: text().notNull(),
+  name: text().notNull(),
+  displayName: text().notNull(),
+  department: text().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
 ]);
 
 export const webReserv = snakeCase.table("web_master_reserv", {
   base: text().notNull(),
-  departmentId: varchar({ length: 10 }).notNull(),
-  drId: varchar({ length: 10 }).notNull(),
+  departmentId: text().notNull(),
+  drId: text().notNull(),
   week: smallint().notNull(),
-  time: time().notNull(),
+  time: text().notNull(),
   max: smallint().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.departmentId, table.drId, table.week, table.time] }),
@@ -416,8 +414,8 @@ export const webReserv = snakeCase.table("web_master_reserv", {
 
 export const webMaster = snakeCase.table("web_master", {
   base: text().notNull(),
-  departmentId: varchar({ length: 10 }).notNull(),
-  drId: varchar({ length: 10 }).notNull(),
+  departmentId: text().notNull(),
+  drId: text().notNull(),
   week: integer().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.departmentId, table.drId, table.week] }),
@@ -425,11 +423,11 @@ export const webMaster = snakeCase.table("web_master", {
 
 export const webNotice = snakeCase.table("web_notice", {
   base: text().notNull(),
-  id: varchar({ length: 10 }).notNull(),
-  type: varchar().notNull(),
+  id: text().notNull(),
+  type: text().notNull(),
   message: text().notNull(),
-  fromDate: date().notNull(),
-  toDate: date().notNull(),
+  fromDate: date({ mode: "string" }).notNull(),
+  toDate: date({ mode: "string" }).notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
   index("idx_web_notice_date").on(table.base, table.fromDate),
@@ -437,10 +435,10 @@ export const webNotice = snakeCase.table("web_notice", {
 
 export const webReservation = snakeCase.table("web_reservation", {
   base: text().notNull(),
-  departmentId: varchar({ length: 10 }).notNull(),
-  drId: varchar({ length: 10 }).notNull(),
-  date: date().notNull(),
-  time: time().notNull(),
+  departmentId: text().notNull(),
+  drId: text().notNull(),
+  date: date({ mode: "string" }).notNull(),
+  time: text().notNull(),
   max: smallint().notNull(),
   cnt: smallint().notNull(),
 }, (table) => [
