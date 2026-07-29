@@ -58,8 +58,15 @@ export async function read(repo: IWebDepartmentRepository){
 export async function all(repo: IWebDepartmentRepository){
   const res = await repo.all();
   if(res.length === 2){
-    assert(compare(department3, res[0]));
-    assert(compare(department2, res[1]));
+    for(const r of res){
+      if(r.id === department3.id){
+        assert(compare(department3, r));
+      }else if(r.id === department2.id){
+        assert(compare(department2, r));
+      }else{
+        fail();
+      }
+    }
   }else{
     console.log(`all: ${res.length}`)
     fail();
