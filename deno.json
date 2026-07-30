@@ -4,7 +4,7 @@
     "build": "deno run -A --unstable-kv --node-modules-dir npm:vite build",
     "buildall": "deno run panda codegen && deno run build",
     "start": "deno run -allow-env -allow-net .output/server/index.mjs",
-    "test": "deno test --failfast --allow-read --allow-env --allow-write --trace-leaks --unstable-kv --allow-ffi",
+    "test": "deno test --failfast --allow-net --allow-read --allow-env --allow-write --trace-leaks --unstable-kv --allow-ffi",
     "panda": "deno run -A npm:@pandacss/dev",
     "drizzle": "deno run -A npm:drizzle-kit"
   },
