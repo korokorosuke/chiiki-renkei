@@ -9,6 +9,7 @@ import { TanStackRouterDevtools } from '@tanstack/solid-router-devtools'
 import { HydrationScript } from 'solid-js/web'
 import { Suspense } from 'solid-js'
 
+// @ts-ignore: URLをimportするときの型定義がないため
 import styleCss from '../styles.css?url'
 
 export const Route = createRootRouteWithContext()({
