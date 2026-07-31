@@ -2,7 +2,7 @@ import { createSignal, Index, onMount } from "solid-js"
 import type { SetStoreFunction } from "solid-js/store"
 import { initWebDr } from "../../helper/webtypes.ts"
 import { toYM } from "../../lib/datetime.ts"
-import { Container } from "../../components/Container.tsx"
+import { ContainerWeb } from "../../components/Container.tsx"
 import { getWebDrs } from "../../server/func/webdr.ts"
 import { getWebReservations } from "../../server/func/webreservation.ts"
 import type { WebAppointment } from "../../server/domain/webAppointment.ts"
@@ -109,11 +109,11 @@ export function DecisionInput(props: Props){
       <div class={ css({ width: "100%" }) }>
       予約を決定してください。
       <div class={ css({ marginBottom: "1rem" }) }>
-        <Container title="予約日" require="[必須]">
+        <ContainerWeb title="予約日" require="[必須]">
           <input type="date" placeholder="2024-01-01" class={ input({ size: "date" }) } ref={refInput}
             value={date()} onChange={(e)=>handleDateChange(e.target.value)} />
-        </Container>
-        <Container title="予約時間" require="[必須]">
+        </ContainerWeb>
+        <ContainerWeb title="予約時間" require="[必須]">
           <input type="text" placeholder="09:00" class={ input({ size: "time" }) } list="time-list"
             value={time()} onChange={(e)=>setTime(e.target.value)} />
           <datalist id="time-list">
@@ -121,8 +121,8 @@ export function DecisionInput(props: Props){
               <option value={t()}>{t()}</option>
             }</Index>
           </datalist>
-        </Container>
-        <Container title="医師名" require="[必須]">
+        </ContainerWeb>
+        <ContainerWeb title="医師名" require="[必須]">
           <input type="text" class={ input({ size: "name" }) } list="dr-list"
             value={dr()} onChange={(e)=>setDr(e.target.value)} />
           <datalist id="dr-list">
@@ -130,7 +130,7 @@ export function DecisionInput(props: Props){
               <option value={name()}>{name()}</option>
             }</Index>
           </datalist>
-        </Container>
+        </ContainerWeb>
       </div>
       </div>
       <div class={ area({ type: "button" }) }>

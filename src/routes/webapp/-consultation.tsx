@@ -1,7 +1,7 @@
 import { createSignal, onMount } from "solid-js"
 import type { SetStoreFunction } from "solid-js/store"
 import { initWebDr } from "../../helper/webtypes.ts"
-import { Container } from "../../components/Container.tsx"
+import { ContainerWeb } from "../../components/Container.tsx"
 import type { WebAppointment } from "../../server/domain/webAppointment.ts"
 import { button, input, area } from "../../styled-system/recipes/"
 import { css } from "../../styled-system/css/"
@@ -58,18 +58,18 @@ export function ConsultationInput(props: Props){
     <div class={ css({ width: "100%" }) }>
       <div>ご希望の予約内容を入力してください。</div>
       <div class={ css({ marginBottom: "1rem" }) }>
-        <Container title="第一希望">
+        <ContainerWeb title="第一希望">
           <input type="date" class={ input({ size: "date" }) } ref={refInput}
             value={inputFirst()} onInput={(e)=>setInputFirst(e.target.value)} />
-        </Container>
-        <Container title="第二希望">
+        </ContainerWeb>
+        <ContainerWeb title="第二希望">
           <input type="date" class={ input({ size: "date" }) } value={inputSecond()}
             onInput={(e)=>setInputSecond(e.target.value)} />
-        </Container>
-        <Container title="その他の希望（医師指名等）">
+        </ContainerWeb>
+        <ContainerWeb title="その他の希望（医師指名等）">
           <textarea class={ input({ size: "textarea" }) } value={inputEtc()}
             onInput={(e)=>setInputEtc(e.target.value)} />
-        </Container>
+        </ContainerWeb>
       </div>
       <div class={ area({ type: "button" }) }>
         <button type="button" class={ button({ color: "cancel", size: "long" }) }
