@@ -9,7 +9,10 @@ const AUTH_READ = [
   {auth: Auth.WEB, role: Role.READ},
   {auth: Auth.MASTER, role: Role.READ},
 ];
-const AUTH_READ_ALL = {auth: Auth.MASTER, role: Role.READ};
+const AUTH_READ_ALL = [
+  {auth: Auth.MASTER, role: Role.READ},
+  {auth: Auth.WEB, role: Role.READ}
+];
 const AUTH_WRITE = {auth: Auth.MASTER, role: Role.WRITE};
 
 export const get = createServerFn({ method: "GET" })

@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/solid-start"
 import { FacilityService } from "../domain/facilityService.ts"
 import { FacilityRepository } from "../infra/allRepository.ts"
 import type { Facility, Fac } from "../domain/facility.ts"
-import { authenticate, Auth, Role } from "../lib/auth.ts"
+import { authenticate, Auth, Role, verify } from "../lib/auth.ts"
 import { type Result, ok, ng } from "../lib/response.ts"
 import { toFac } from "../lib/types.ts"
 
@@ -45,6 +45,22 @@ export const getFac = createServerFn({ method: "GET" })
     const fac = await getFacilityMain(data.id);
     if(fac){
       return toFac(fac);
+    }
+    return undefined;
+});
+
+export const getUserFac = createServerFn({ method: "GET" })
+  .validator((data : {id: string}) => data)
+  .handler(async ({ data }): Promise<Fac | undefined> => {
+    const auth = await verify();
+    if(auth.ok){
+      if(data.id){
+        const service = new FacilityService(new FacilityRepository(auth.user!.base));
+        const fac = await service.get(data.id);
+        if(fac){
+          return toFac(fac);
+        }
+      }
     }
     return undefined;
 });

@@ -5,21 +5,14 @@ import type { Address } from "../domain/address.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ok, ng } from "../lib/response.ts"
 
-const AUTH_READ = [
-  {auth: Auth.FACILITY, role: Role.READ},
-  {auth: Auth.MASTER, role: Role.READ},
-];
 const AUTH_WRITE = {auth: Auth.MASTER, role: Role.WRITE};
 
 export const getAddress = createServerFn({ method: "GET" })
   .validator((data : {postalCode: string}) => data)
   .handler(async ({ data }): Promise<Address|undefined> => {
-    const auth = await authenticate(AUTH_READ);
-    if(auth.ok){
-      if(data && data.postalCode){
-        const service = new AddressService(new AddressRepository());
-        return await service.get(data.postalCode);
-      }
+    if(data && data.postalCode){
+      const service = new AddressService(new AddressRepository());
+      return await service.get(data.postalCode);
     }
     return undefined;
 });

@@ -13,7 +13,7 @@ import { toUser } from "../../helper/types.ts"
 import { Header } from "./-header.tsx"
 import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { getWebDepartments } from "../../server/func/webdepartment.ts"
-import { getFac } from "../../server/func/facility.ts"
+import { getUserFac } from "../../server/func/facility.ts"
 import { insert, update as updateData, del as deleteData } from "../../server/func/webappointment.ts"
 import type { Fac } from "../../server/domain/facility.ts"
 import type { WebAppointment } from "../../server/domain/webAppointment.ts"
@@ -170,7 +170,7 @@ function App() {
     getWebDepartments().then(setDepts);
     if(isUser(user())){
       if(user().facilityId){
-        getFac({data: {id: user().facilityId!}}).then(res=>{
+        getUserFac({data: {id: user().facilityId!}}).then(res=>{
           if(res && res.name){
             facility = res;
           }else{
