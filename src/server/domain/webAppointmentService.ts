@@ -65,6 +65,18 @@ export class WebAppService{
         return list;
     }
 
+    async getByFacPatientId(facId: string, facPatientId: string): Promise<WebAppointment|undefined>{
+        const list = await this.i.list({facilityId: facId});
+        const apps = list.filter(app=>app.facPatientId === facPatientId);
+        apps.sort((a, b) => b.id.localeCompare(a.id));
+        for(const app of apps){
+            if(app){
+                return this.convertEmpty(app);
+            }
+        }
+        return undefined;
+    }
+
     async getNoID(): Promise<WebAppointment[]>{
         const list = await this.i.list({patientId: ID_EMPTY});
         for(const app of list){

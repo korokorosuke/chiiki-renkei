@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/solid-start"
 import { PatientService } from "../domain/patientService.ts"
-import { PatientRepository } from "../infra/allRepository.ts"
+import { WebAppService } from "../domain/webAppointmentService.ts"
+import { PatientRepository, WebAppRepository } from "../infra/allRepository.ts"
 import type { Patient } from "../domain/patient.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type FetchResult, ng} from "../lib/response.ts"
@@ -30,22 +31,21 @@ export const getPatientForId = createServerFn({ method: "GET" })
 });
 
 export const getPatient = createServerFn({ method: "GET" })
-  .validator((data : {id: string, birthday: string}) => data)
+  .validator((data : {facPatId: string}) => data)
   .handler(async ({ data }): Promise<FetchResult<Patient>> => {
     const auth = await authenticate(AUTH_READ);
     if(!auth.ok){
       return ng(auth.errors!);
     }
 
-    if(!data.id || !data.birthday){
-      return ng(["パラメータが不正です。"]);
+    if(!data.facPatId){
+      return ng(["患者IDを入力してください。"]);
     }
 
-    const service = new PatientService(new PatientRepository(auth.user!.base));
-    const p = await service.get(data.id);
-    if(p && (p.birthday === data.birthday)){
-      return {ok: true, data: p};
-    }else{
-      return ng(["患者IDと生年月日が一致しません。"]);
+    const service = new WebAppService(new WebAppRepository(auth.user!.base));
+    const app = await service.getByFacPatientId(auth.user!.facilityId!, data.facPatId)
+    if(app){
+      return {ok: true, data: app.patient};
     }
+    return ng(["対象データがありません。"]);
 });

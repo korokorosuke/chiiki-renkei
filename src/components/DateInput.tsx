@@ -1,10 +1,10 @@
-import { createSignal, Index, onMount, batch } from "solid-js"
+import { createSignal, createEffect, Index, onMount, batch, type Accessor } from "solid-js"
 import { css } from "../styled-system/css/"
 import { input } from "../styled-system/recipes/"
 import { flex } from "../styled-system/patterns/"
 
 type Props = {
-  date: string
+  date: Accessor<string>
   change: (date: string) => void
 }
 
@@ -48,21 +48,18 @@ export function DateInput(props: Props){
     props.change(date);
   }
 
+  createEffect(() => {
+    batch(()=>{
+      const ar = props.date().split("-");
+      setYear(ar[0]);
+      setMonth(ar[1]);
+      setDay(ar[2]);
+    });
+  });
+
   onMount(()=>{
     setYears(createYears());
-    batch(()=>{
-      if(props.date){
-        const ar = props.date.split("-");
-        setYear(ar[0]);
-        setMonth(ar[1]);
-        setDay(ar[2]);
-      }else{
-        setYear((new Date().getFullYear() + 1).toString());
-        setMonth("01");
-        setDay("01");
-      }
-    });
-  })
+  });
 
 
   return (
