@@ -32,6 +32,7 @@ export const webAppointmentSchema = z.object({
     facility: facSchema.refine((val) => val && val.id && val.name, "施設を入力してください。"),
     department: webDepartmentSchema.refine((val: WebDepartment) => val && val.id && val.name, "診療科を入力してください。"),
     dr: webDrBaseSchema,
+    facPatientId: z.string(),
     mainComplaint: z.string()
         .min(1, "主訴を入力してください。")
         .max(1000, "主訴は１０００文字までです。"),
@@ -84,6 +85,7 @@ export function initialize(): WebAppointment{
         facility: initializeFac(),
         department: initializeWebDept(),
         dr: initializeWebDr(),
+        facPatientId: "",
         mainComplaint: "",
         consultation: undefined,
         cancel: false,

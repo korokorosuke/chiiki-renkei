@@ -1,4 +1,4 @@
-import { createSignal, onMount, Show } from "solid-js"
+import { createSignal, onMount } from "solid-js"
 import { unwrap, type SetStoreFunction } from "solid-js/store"
 import { getPatient } from "../../server/func/webpatient.ts"
 import { DateInput } from "../../components/DateInput.tsx"
@@ -20,39 +20,41 @@ type Props = {
 
 export function PatientInput(props: Props){
   const [address, setAddress] = createSignal<Address>(initAddress());
+  const [birthday, setBirthday] = createSignal<string>("");
 
   let refInput: HTMLInputElement|undefined;
   let complaint: HTMLTextAreaElement|undefined;
 
   async function handleClick(){
-    const id = props.selected.patient.id;
-    const birth = props.selected.patient.birthday;
-    const res = await getPatient({data: {id, birthday: birth}});
+    const id = props.selected.facPatientId;
+    const res = await getPatient({data: {facPatId: id}});
     if(res.ok){
       const patient = res.data!;
-      if(patient.birthday === birth){
-        props.setSelected("patient", "lastName", patient.lastName);
-        props.setSelected("patient", "firstName", patient.firstName);
-        props.setSelected("patient", "lastKana", patient.lastKana);
-        props.setSelected("patient", "firstKana", patient.firstKana);
-        props.setSelected("patient", "tel", patient.tel);
-        props.setSelected("patient", "tel2", patient.tel2);
-        props.setSelected("patient", "sex", patient.sex);
-        props.setSelected("patient", "address", "postalCode", patient.address.postalCode);
-        props.setSelected("patient", "address", "name", patient.address.name);
-        props.setSelected("patient", "address", "plus", patient.address.plus);
-        setAddress(patient.address);
-        if(complaint){
-          complaint.focus();
-        }
-        return;
+      props.setSelected("patient", "id", patient.id);
+      props.setSelected("patient", "birthday", patient.birthday);
+      props.setSelected("patient", "lastName", patient.lastName);
+      props.setSelected("patient", "firstName", patient.firstName);
+      props.setSelected("patient", "lastKana", patient.lastKana);
+      props.setSelected("patient", "firstKana", patient.firstKana);
+      props.setSelected("patient", "tel", patient.tel);
+      props.setSelected("patient", "tel2", patient.tel2);
+      props.setSelected("patient", "sex", patient.sex);
+      props.setSelected("patient", "address", "postalCode", patient.address.postalCode);
+      props.setSelected("patient", "address", "name", patient.address.name);
+      props.setSelected("patient", "address", "plus", patient.address.plus);
+      setAddress(patient.address);
+      setBirthday(patient.birthday);
+      if(complaint){
+        complaint.focus();
       }
+    }else{
+      setErrors(res.errors!);
     }
-    setErrors(res.errors!);
   }
 
   function handleChangeBirthday(date: string){
     props.setSelected("patient", "birthday", date);
+    setBirthday(date);
   }
 
   function changeAddress(address: Address){
@@ -64,6 +66,7 @@ export function PatientInput(props: Props){
     if(refInput){
       refInput.focus();
     }
+    setBirthday(props.selected.patient.birthday);
     setAddress(unwrap(props.selected.patient.address));
     if(!props.selected.patient.birthday){
       const today = new Date();
@@ -77,18 +80,16 @@ export function PatientInput(props: Props){
       <div class={ css({ width: "100%", marginTop: "1rem" }) }>
       <div class={ css({ marginBottom: "1rem" }) }>
         <ErrorArea />
-        <ContainerWeb title="患者ID">
+        <ContainerWeb title="貴院患者ID">
           <input type="text" class={ input({ size: "tel" }) } ref={refInput}
-            value={props.selected.patient.id} onChange={(e)=>props.setSelected("patient", "id", e.target.value)} />
-          <span class={ css({ color: "red", fontSize: "1rem", marginLeft: "0.5rem" }) }>※患者IDと生年月日を入力すると登録済の患者情報を自動で設定できます</span>
+            value={props.selected.facPatientId} onChange={(e)=>props.setSelected("facPatientId", e.target.value)} />
+          <button type="button" class={ button({ color: "primary", size: "small", space: "small" }) }
+            onClick={handleClick}>患者情報取得</button>
+          <span class={ css({ color: "red", fontSize: "1rem", marginLeft: "0.5rem" }) }>※前回登録した患者情報を自動で設定できます</span>
         </ContainerWeb>
         <ContainerWeb title="生年月日" require="[必須]">
           <div class={ flex({ flexDirection: "row", justifyContent: "flex-start" }) }>
-            <DateInput date={props.selected.patient.birthday} change={handleChangeBirthday} />
-            <Show when={props.selected.patient.id && props.selected.patient.birthday}>
-            <button type="button" class={ button({ color: "primary", size: "small", space: "small" }) }
-              onClick={handleClick}>患者情報取得</button>
-            </Show>
+            <DateInput date={birthday} change={handleChangeBirthday} />
           </div>
         </ContainerWeb>
         <ContainerWeb title="氏名" require="[必須]">
@@ -128,6 +129,10 @@ export function PatientInput(props: Props){
         </ContainerWeb>
         <ContainerWeb title="住所">
           <AddressInput change={changeAddress} address={address()} />
+        </ContainerWeb>
+        <ContainerWeb title="当院患者ID">
+          <div><input type="text" class={ input({ size: "tel" }) }
+            value={props.selected.patient.id} onChange={(e)=>props.setSelected("patient", "id", e.target.value)} /></div>
         </ContainerWeb>
         <ContainerWeb title="紹介目的" require="[必須]">
           <textarea class={ input({ size: "disease" }) } value={props.selected.mainComplaint}

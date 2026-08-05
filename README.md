@@ -18,13 +18,23 @@
 2. PostgreSQL
 
 
+# 環境変数
+1. RECO_SESSION: セッションキー (create.batで設定)
+2. RECO_SECRET: シークレット (create.batで設定)
+3. RECO_PRODUCTION: 本番環境かどうか（production/dev）
+
+### データベースがpostgresqlの場合、以下の環境変数を設定
+1. RECO_DB_TYPE: データベースの種類（postgresql）
+2. RECO_DB_URL: データベースの接続文字列（postgres://user:password@hostname/dbname）
+
+
 # デモ環境
 [デモ環境 リンク](https://chiiki-renkei.korokorosuke.deno.net/login/demo)
 
 
 # データベースの切り替え
 ## PostgreSQL
-  1. src\server\infra\allRepository.ts内のインポート元を、「.\rdb\...Repository.ts」に変更
+  1. src\server\infra\allRepository.ts内のインポート元を、「./rdb/...Repository.ts」に変更
   2. 環境変数「RECO_DB_TYPE」に、「postgresql」を設定
   3. 環境変数「RECO_DB_URL」に、「postgresの接続文字列(postgres://user:password@hostname/dbname)」を設定
   4. 以下コマンドを実行

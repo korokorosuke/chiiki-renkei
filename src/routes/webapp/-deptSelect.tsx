@@ -28,7 +28,7 @@ export function DeptSelect(props: Props){
     <>
       <For each={props.depts}>{dept=>
         <div class={ css({ width: "100%", marginTop: "1rem" }) }>
-          <label class={ css({ cursor: "pointer" }) }>
+          <label class={ inputStyle }>
             <input type="radio" value={dept.id} name="dept"
               checked={unwrap(props.selected.department.id) === dept.id}
               onChange={(e)=>handleClick(e.target.value)} />
@@ -42,3 +42,20 @@ export function DeptSelect(props: Props){
     </>
   );
 }
+
+const inputStyle = css({
+  padding: "0.2rem 0.5rem 0.3rem 0.5rem",
+  border: "2px solid",
+  borderRadius: "4px",
+  borderColor: "#8ac8b0",
+  color: "#00785a",
+  display: "inline-block",
+  width: "100%",
+  cursor: "pointer",
+  //"& > input": { display: "none" },
+  "&:has(input:checked)": {
+    backgroundColor: "web.title",
+    color: "#00785a",
+    borderColor: "#71cead",
+  },
+});

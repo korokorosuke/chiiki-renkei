@@ -18,6 +18,7 @@ function App() {
   const [base, setBase] = createSignal("");
   const [visible, setVisible] = createSignal(true);
   const [notices, setNotices] = createSignal<Notice[]>([]);
+  const [disabled, setDisabled] = createSignal(false);
 
   let input: HTMLInputElement | undefined;
 
@@ -28,9 +29,9 @@ function App() {
     setVisible(false);
   }
 
-  async function handleKeyUp(e: KeyboardEvent){
+  function handleKeyUp(e: KeyboardEvent){
     if(e.key === "Enter" && user() && password()){
-      await handleClick();
+      handleClick();
     }
   }
 
@@ -40,26 +41,29 @@ function App() {
       auth.authReferral === 0 && auth.authStatistics === 0;
   }
 
-  async function handleClick(){
-    const res = await create({data: { user: {
+  function handleClick(){
+    setDisabled(true);
+    create({data: { user: {
       ...initAuthUser(), id: user(), password: password(), base: base()
-    }}});
-    if(res.ok){
-      if(isWebOnly(res.data!)){
-        location.href = "/webapp";
-        return;
-      }
-      const url = new URL(location.href);
-      const params = url.searchParams;
-      const src = params.get("src");
-      if(src && !/[<>"'&; \\]/.test(src)){
-        location.href = src;
+    }}}).then(res=>{
+      if(res.ok){
+        if(isWebOnly(res.data!)){
+          location.href = "/webapp";
+          return;
+        }
+        const url = new URL(location.href);
+        const params = url.searchParams;
+        const src = params.get("src");
+        if(src && !/[<>"'&; \\]/.test(src)){
+          location.href = src;
+        }else{
+          location.href = "/";
+        }
       }else{
-        location.href = "/";
+        setDisabled(false);
+        setMessage(res.errors![0]);
       }
-    }else{
-      setMessage(res.errors![0]);
-    }
+    });
   }
 
   onMount(()=>{
@@ -158,7 +162,9 @@ function App() {
           </div>
           </Show>
           <div>
-            <button type="button" class={ buttonStyle } onClick={handleClick}>ログイン</button>
+            <button type="button" class={ buttonStyle }
+              onClick={handleClick}
+              disabled={disabled()}>ログイン</button>
           </div>
           <div class={ css({ color: "#ff789e", width: "25rem" }) }>{message()}</div>
           <a class={ css({ fontSize: "1rem", cursor: "pointer" }) }
@@ -214,5 +220,9 @@ const buttonStyle = css({
   },
   _focusVisible: {
       outline: "4px auto -webkit-focus-ring-color",
-  }
+  },
+  _disabled: {
+      backgroundColor: "disabled!",
+      cursor: "not-allowed",
+  },
 });
