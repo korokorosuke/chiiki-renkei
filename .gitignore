@@ -36,8 +36,7 @@ __unconfig*
 Thumbs.db
 
 *.exe
-reco.db
-test.db
+*.db
 bun.lockb
 
 ## Panda
