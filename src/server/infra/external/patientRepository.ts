@@ -20,10 +20,12 @@ export class PatientRepository implements IPatientRepository {
       if(!url){
         return Promise.reject(new Error("No env parameter"));
       }
-      if(url.endsWith("/")){
-        url = url.substring(0, url.length - 1);
+      if(url.endsWith("=") || url.endsWith("/")){
+        url = `${url}${id}`;
+      }else{
+        url = `${url}/${id}`;
       }
-      const res = await fetch(`${url}/${id}`);
+      const res = await fetch(url);
       if(res.ok){
         return await res.json() as Patient;
       }
@@ -38,10 +40,12 @@ export class PatientRepository implements IPatientRepository {
       if(!url){
         return Promise.reject(new Error("No env parameter"));
       }
-      if(url.endsWith("/")){
-        url = url.substring(0, url.length - 1);
+      if(url.endsWith("=") || url.endsWith("/")){
+        url = `${url}${encodeURIComponent(cond.name)}`;
+      }else{
+        url = `${url}/${encodeURIComponent(cond.name)}`;
       }
-      const res = await fetch(`${url}/${encodeURIComponent(cond.name)}`);
+      const res = await fetch(url);
       if(res.ok){
         return await res.json() as Patient[];
       }

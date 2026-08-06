@@ -20,10 +20,12 @@ export class AddressRepository implements IAddressRepository {
       if(!url){
         return Promise.reject(new Error("No env parameter"));
       }
-      if(url.endsWith("/")){
-        url = url.substring(0, url.length - 1);
+      if(url.endsWith("=") || url.endsWith("/")){
+        url = `${url}${postalCode}`;
+      }else{
+        url = `${url}/${postalCode}`;
       }
-      const res = await fetch(`${url}/${postalCode}`);
+      const res = await fetch(url);
       if(res.ok){
         return await res.json() as Address;
       }
