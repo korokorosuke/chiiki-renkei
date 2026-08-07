@@ -3,29 +3,71 @@
 </div>
 
 # 機能一覧
-1. 紹介管理
-2. 逆紹介管理
-3. 返事管理
-4. 問合せ管理
-5. 施設管理
-6. 活動記録
-7. Web予約（アルファ）
-8. Web問診（アルファ）
+- 紹介管理
+- 逆紹介管理
+- 返事管理
+- 問合せ管理
+- 施設管理
+- 活動記録
+- Web予約（アルファ）
+- Web問診（アルファ）
 
 
 # 対応データベース
-1. Deno KV
-2. PostgreSQL
+- Deno KV
+- PostgreSQL
+
+
+# Getting Started
+1. [Deno](https://docs.deno.com/runtime/getting_started/installation/)をインストール
+1. ソースのダウンロード(gitがインストールされていない場合は、[こちら](https://git-scm.com/install/windows)よりダウンロード)
+   ```bash
+   git clone https://github.com/korokorosuke/chiiki-renkei.git
+   ```
+1. モジュールのダウンロード
+   ```bash
+   deno install
+   ```
+1. 環境変数を設定
+    - RECO_SESSION: セッションキー (windowsは、createsecret.batで設定)
+    - RECO_SECRET: シークレット (windowsは、createsecret.batで設定)
+    - RECO_PRODUCTION: `production`
+    - postgresqlの場合
+      - RECO_DB_TYPE: `postgresql`
+      - RECO_DB_URL: `postgres://user:password@hostname/dbname`
+    - Deno KVの場合
+      - RECO_DB_URL: `reco.db` (任意のファイルパス)
+1. データベースを初期化
+   ```bash
+   echo -postgresqlの場合---
+   deno run drizzle generate
+   deno run drizzle push
+   echo -------------------
+
+   ./scripts/createdata.bat
+   ```
+1. アプリケーションのビルド、実行
+   ```bash
+   deno run buildall
+   deno run start
+   ```
 
 
 # 環境変数
-1. RECO_SESSION: セッションキー (create.batで設定)
-2. RECO_SECRET: シークレット (create.batで設定)
-3. RECO_PRODUCTION: 本番環境かどうか（production/dev）
+- RECO_SESSION: セッションキー (32byteのランダム値をbase64でエンコードした文字列)
+- RECO_SECRET: シークレット (32byteのランダム値をbase64でエンコードした文字列)
+- RECO_PRODUCTION: 本番環境かどうか (production/dev)
 
-### データベースがpostgresqlの場合、以下の環境変数を設定
-1. RECO_DB_TYPE: データベースの種類（postgresql）
-2. RECO_DB_URL: データベースの接続文字列（postgres://user:password@hostname/dbname）
+### 外部連携をする場合
+- RECO_ADDRESS_URL: 住所取得用URL
+- RECO_PATIENT_URL: 患者情報取得用URL
+
+### データベースがDeno KVの場合
+- RECO_DB_URL: データベースのファイルパス (Deno Deployでは、設定しない。それ以外の環境はファイルパス)
+
+### データベースがpostgresqlの場合
+- RECO_DB_TYPE: データベースの種類 (postgresql)
+- RECO_DB_URL: データベースの接続文字列 (postgres://user:password@hostname/dbname)
 
 
 # デモ環境
@@ -35,9 +77,9 @@
 # データベースの切り替え
 ## PostgreSQL
   1. src\server\infra\allRepository.ts内のインポート元を、「./rdb/...Repository.ts」に変更
-  2. 環境変数「RECO_DB_TYPE」に、「postgresql」を設定
-  3. 環境変数「RECO_DB_URL」に、「postgresの接続文字列(postgres://user:password@hostname/dbname)」を設定
-  4. 以下コマンドを実行
+  1. 環境変数「RECO_DB_TYPE」に、「postgresql」を設定
+  1. 環境変数「RECO_DB_URL」に、「postgresの接続文字列(postgres://user:password@hostname/dbname)」を設定
+  1. 以下コマンドを実行
      ```bash
      deno run drizzle generate
      deno run drizzle push
