@@ -221,7 +221,7 @@ export function ModificationArea(props: ViewProps){
         <input type="date" class={ input({ size: "date" }) }
           value={referral.date} onChange={(e)=>setReferral("date", e.target.value)} />
       </Container>
-      <Container title="紹介受科" require="*">
+      <Container title="紹介科" require="*">
         <select class={ input({ size: "dept" }) } value={referral.department.id}
             onChange={(e)=>handleDept(e.target.value)}>
           <For each={props.depts}>{(dept)=>
@@ -229,7 +229,7 @@ export function ModificationArea(props: ViewProps){
           }</For>
         </select>
       </Container>
-      <Container title="紹介受医師" require="*">
+      <Container title="紹介医師" require="*">
         <select class={ input({ size: "text" }) } value={referral.dr.id}
             onChange={(e)=>handleDr(e.target.value)}>
           <For each={drs()}>{(dr)=>

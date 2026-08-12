@@ -15,7 +15,7 @@ export function ListAreaReferralTo(props: ViewProps) {
       <table class={ table({ size: "full" }) }>
         <thead>
           <tr>
-            <th>患者ID</th><th>患者名</th><th>紹介日</th><th>施設ID</th><th>施設名</th><th>紹介受け科</th><th>紹介受け医師</th>
+            <th>患者ID</th><th>患者名</th><th>紹介日</th><th>施設ID</th><th>施設名</th><th>紹介科</th><th>紹介医師</th>
           </tr>
         </thead>
         <tbody>
