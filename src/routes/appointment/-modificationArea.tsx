@@ -256,7 +256,7 @@ export function ModificationArea(props: ViewProps){
           }</Index>
         </datalist>
       </Container>
-      <Container title="予約日" require="*">
+      <Container title="予約(紹介)日" require="*">
         <input type="date" class={ input({ size: "date" }) }
           value={appointment.date} onChange={(e)=>setAppointment("date", e.target.value)} />
       </Container>
@@ -285,7 +285,7 @@ export function ModificationArea(props: ViewProps){
           }</For>
         </select>
       </Container>
-      <Container title="予約表示" require="*">
+      <Container title="予約票表示" require="*">
         <input type="text" class={ input({ size: "text" }) } list="appname"
           value={appointment.appDisplay}
           onChange={(e)=>setAppointment("appDisplay", e.target.value)} />
