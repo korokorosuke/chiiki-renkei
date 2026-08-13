@@ -87,11 +87,6 @@ export function PatientInput(props: Props){
             onClick={handleClick}>患者情報取得</button>
           <span class={ css({ color: "red", fontSize: "1rem", marginLeft: "0.5rem" }) }>※前回登録した患者情報を自動で設定できます</span>
         </ContainerWeb>
-        <ContainerWeb title="生年月日" require="[必須]">
-          <div class={ flex({ flexDirection: "row", justifyContent: "flex-start" }) }>
-            <DateInput date={birthday} change={handleChangeBirthday} />
-          </div>
-        </ContainerWeb>
         <ContainerWeb title="氏名" require="[必須]">
           <div class={ flex({ flexDirection: "row", justifyContent: "flex-start"}) }>
             <div class={ labelStyle}>姓</div>
@@ -114,6 +109,11 @@ export function PatientInput(props: Props){
             <div><input type="text" class={ input({ size: "name" }) }
               value={props.selected.patient.firstKana} onChange={(e)=>props.setSelected("patient", "firstKana", e.target.value)} />
             </div>
+          </div>
+        </ContainerWeb>
+        <ContainerWeb title="生年月日" require="[必須]">
+          <div class={ flex({ flexDirection: "row", justifyContent: "flex-start" }) }>
+            <DateInput date={birthday} change={handleChangeBirthday} />
           </div>
         </ContainerWeb>
         <ContainerWeb title="性別">
