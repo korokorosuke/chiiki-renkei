@@ -46,9 +46,12 @@
 
    ./scripts/createdata.bat
    ```
-1. アプリケーションのビルド、実行
+1. アプリケーションのビルド
    ```bash
    deno run buildall
+   ```
+1. アプリケーションの実行
+   ```bash
    deno run start
    ```
 
