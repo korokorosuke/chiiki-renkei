@@ -1,5 +1,6 @@
 import { createSignal, For, Show, type Setter, type Accessor } from "solid-js"
 import { AppointmentReport } from "../report/-appointment.tsx"
+import { DoneReport } from "../report/-done.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import type { Appointment } from "../../server/domain/appointment.ts"
 import pdf from "../assets/pdf.svg"
@@ -12,10 +13,13 @@ type Props = {
     setAppointment: Setter<Appointment>
 }
 
+type REPORT_KIND = "appointment" | "done";
+
 
 export function ListArea(props: Props) {
   const [reportId, setReportId] = createSignal("");
   const [reportPrepared, setReportPrepared] = createSignal(false);
+  const [reportKind, setReportKind] = createSignal<REPORT_KIND>("appointment");
 
   function handlerClick(id: string){
     const app = props.appointments().filter((a) => a.id === id);
@@ -32,14 +36,17 @@ export function ListArea(props: Props) {
   function closeReport(e: MouseEvent){
     e.preventDefault();
     e.stopPropagation();
+
+    setReportPrepared(false);
     setReportId("");
     closeDialog();
   }
 
-  function openReport(id: string, e: MouseEvent){
+  function openReport(id: string, kind: REPORT_KIND, e: MouseEvent){
     e.preventDefault();
     e.stopPropagation();
 
+    setReportKind(kind);
     setReportPrepared(false);
     setReportId(id);
     showDialog();
@@ -51,6 +58,9 @@ export function ListArea(props: Props) {
     html2pdf().from(elem).set({
       filename: "report.pdf"
     }).save();
+
+    setReportPrepared(false);
+    setReportId("");
     closeReport(e);
   }
 
@@ -73,10 +83,24 @@ export function ListArea(props: Props) {
               <td>{a.department.name}</td>
               <td>{a.dr.name}</td>
               <td>{a.personInCharge.name}</td>
-              <td><div title="予約票出力">
-                <img src={pdf} alt="pdf" onClick={[openReport, a.id]}
-                  width="25" height="25" />
-              </div></td>
+              <td class={ css({ display: "flex", alignItems: "left", flexDirection: "column" }) }>
+                <div title="予約票出力">
+                  <a class={ style }
+                    onClick={(e)=>openReport(a.id, "appointment", e)}>
+                    <img src={pdf} alt="pdf"
+                      width="25" height="25" />
+                    予約票
+                  </a>
+                </div>
+                <div title="受診報告出力">
+                  <a class={ style }
+                    onClick={(e)=>openReport(a.id, "done", e)}>
+                    <img src={pdf} alt="pdf"
+                      width="25" height="25" />
+                    受診報告
+                  </a>
+                </div>
+              </td>
             </tr>
           }</For>
         </tbody>
@@ -92,12 +116,29 @@ export function ListArea(props: Props) {
             <button type="button" class={ button({ color: "cancel", size: "long" }) }
               onClick={closeReport}>キャンセル</button>
           </div>
-          <div class={ css({ maxHeight: "37rem", height: "37rem", overflow: "auto" }) }>
-            <AppointmentReport id={reportId} prepared={preparedReport} />
-          </div>
+          <Show when={reportKind() === "appointment"}>
+            <div class={ css({ maxHeight: "37rem", height: "37rem", overflow: "auto" }) }>
+              <AppointmentReport id={reportId} prepared={preparedReport} />
+            </div>
+          </Show>
+          <Show when={reportKind() === "done"}>
+            <div class={ css({ maxHeight: "37rem", height: "37rem", overflow: "auto" }) }>
+              <DoneReport id={reportId} prepared={preparedReport} />
+            </div>
+          </Show>
         </div>
       </NormalDialog>
       </Show>
     </div>
   );
 }
+
+const style = css({
+  color: "#1994ff",
+  textDecoration: "underline",
+
+  "& img": {
+    marginRight: "5px",
+    display: "inline"
+  }
+});
