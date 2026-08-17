@@ -83,6 +83,7 @@ const appointment: WebAppointment = {
     facility: toFac(facility),
     department: department,
     dr: dr,
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     createdBy: user,
@@ -98,6 +99,7 @@ const appointment2: WebAppointment = {
     facility: toFac(facility),
     department: department2,
     dr: dr,
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     createdBy: user,
@@ -113,6 +115,7 @@ const appointment3: WebAppointment = {
     facility: toFac(facility),
     department: department,
     dr: dr2,
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     createdBy: user,
@@ -128,6 +131,7 @@ const appointment4: WebAppointment = {
     facility: toFac(facility),
     department: department2,
     dr: dr,
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     createdBy: user,
@@ -143,6 +147,7 @@ const appointment5: WebAppointment = {
     facility: toFac(facility2),
     department: department2,
     dr: dr,
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     createdBy: user,
@@ -158,6 +163,7 @@ const appointment6: WebAppointment = {
     facility: toFac(facility2),
     department: department2,
     dr: dr,
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     createdBy: user,
@@ -173,6 +179,7 @@ const appointment_noid: WebAppointment = {
     facility: toFac(facility),
     department: department,
     dr: dr,
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     createdBy: user,
@@ -188,6 +195,7 @@ const appointment_noid2: WebAppointment = {
     facility: toFac(facility),
     department: department,
     dr: dr,
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     createdBy: user,
@@ -203,6 +211,7 @@ const appointment_noid1: WebAppointment = {
     facility: toFac(facility),
     department: department2,
     dr: dr,
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     createdBy: user,
@@ -218,6 +227,7 @@ const appointment_noid3: WebAppointment = {
     facility: toFac(facility),
     department: department2,
     dr: dr,
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     createdBy: user,
@@ -233,6 +243,7 @@ const appointment_nodate: WebAppointment = {
     facility: toFac(facility),
     department: department,
     dr: dr,
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     consultation: {
@@ -251,6 +262,7 @@ const appointment_nodate2: WebAppointment = {
     facility: toFac(facility),
     department: department,
     dr: initWebDr(),
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     consultation: {
@@ -269,6 +281,7 @@ const appointment_nodate1: WebAppointment = {
     facility: toFac(facility),
     department: department,
     dr: initWebDr(),
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     consultation: {
@@ -287,6 +300,7 @@ const appointment_nodate3: WebAppointment = {
     facility: toFac(facility),
     department: department2,
     dr: dr,
+    facPatientId: "",
     mainComplaint: "風邪",
     cancel: false,
     consultation: {
@@ -305,6 +319,7 @@ const appointment_required: WebAppointment = {
     facility: toFac(facility),
     department: department2,
     dr: dr,
+    facPatientId: "",
     mainComplaint: "",
     cancel: false,
     consultation: {
@@ -376,6 +391,10 @@ function compare(app1: WebAppointment, app2: WebAppointment): boolean {
             console.log(`dr_name: ${p1.name} : ${p2.name}`)
             return false;
         }
+    }
+    if(app1.facPatientId !== app2.facPatientId){
+        console.log(`facPatientId: ${app1.facPatientId} : ${app2.facPatientId}`)
+        return false;
     }
     return true;
 }

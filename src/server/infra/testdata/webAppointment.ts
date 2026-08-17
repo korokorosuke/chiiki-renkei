@@ -69,6 +69,7 @@ const appointment0: WebAppointment = {
   facility: toFac(facility),
   department: department,
   dr: dr,
+  facPatientId: "",
   mainComplaint: "",
   cancel: false,
   createdBy: user,
@@ -84,6 +85,7 @@ const appointment: WebAppointment = {
   facility: toFac(facility),
   department: department,
   dr: dr,
+  facPatientId: "",
   mainComplaint: "",
   cancel: false,
   createdBy: user,
@@ -99,6 +101,7 @@ const appointment2: WebAppointment = {
   facility: toFac(facility),
   department: department2,
   dr: dr,
+  facPatientId: "",
   mainComplaint: "",
   cancel: false,
   createdBy: user,
@@ -114,6 +117,7 @@ const appointment3: WebAppointment = {
   facility: toFac(facility),
   department: department,
   dr: dr2,
+  facPatientId: "",
   mainComplaint: "",
   cancel: false,
   createdBy: user,
@@ -129,6 +133,7 @@ const appointment4: WebAppointment = {
   facility: toFac(facility),
   department: department2,
   dr: dr,
+  facPatientId: "",
   mainComplaint: "",
   cancel: false,
   createdBy: user,
@@ -144,6 +149,7 @@ const appointment5: WebAppointment = {
   facility: toFac(facility),
   department: department2,
   dr: initWebDr(),
+  facPatientId: "",
   mainComplaint: "",
   cancel: false,
   consultation: {first: "2024-06-20", second: "", etc: ""},
@@ -160,6 +166,7 @@ const appointment6: WebAppointment = {
   facility: toFac(facility),
   department: department2,
   dr: dr,
+  facPatientId: "",
   mainComplaint: "",
   cancel: false,
   force: true,
@@ -176,6 +183,7 @@ const appointment7: WebAppointment = {
   facility: toFac(facility),
   department: department2,
   dr: initWebDr(),
+  facPatientId: "",
   mainComplaint: "",
   cancel: false,
   consultation: {first: "2024-06-20", second: "", etc: ""},
@@ -192,6 +200,7 @@ const appointment8: WebAppointment = {
   facility: toFac(facility),
   department: department2,
   dr: dr4,
+  facPatientId: "",
   mainComplaint: "",
   cancel: false,
   force: true,
@@ -261,6 +270,10 @@ function compare(app1: WebAppointment, app2: WebAppointment): boolean {
       console.log(`dr_name: ${p1.name} : ${p2.name}`);
       return false;
     }
+  }
+  if(app1.facPatientId !== app2.facPatientId){
+    console.log(`facPatientId: ${app1.facPatientId} : ${app2.facPatientId}`);
+    return false;
   }
   return true;
 }
