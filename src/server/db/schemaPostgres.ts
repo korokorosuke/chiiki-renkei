@@ -82,6 +82,15 @@ export const appointment = snakeCase.table("appointment", {
   index("idx_appointment_date").on(table.base, table.date),
 ]);
 
+export const classification = snakeCase.table("classification", {
+  base: text().notNull(),
+  id: text().notNull(),
+  name: text().notNull(),
+  done: boolean().notNull(),
+}, (table) => [
+  primaryKey({ columns: [table.base, table.id] }),
+]);
+
 export const department = snakeCase.table("department", {
   base: text().notNull(),
   id: text().notNull(),
@@ -289,7 +298,7 @@ export const reply = snakeCase.table("reply", {
   date: date({ mode: "string" }).notNull(),
   departmentId: text().notNull(),
   drId: text().notNull(),
-  classification: text().notNull(),
+  classificationId: text().notNull(),
   personInChargeId: text().notNull(),
   memo: text().notNull(),
   updatedBy: text().notNull(),
@@ -369,6 +378,7 @@ export const webAppointment = snakeCase.table("web_appointment", {
   facilityId: text().notNull(),
   departmentId: text().notNull(),
   drId: text().notNull(),
+  facPatientId: text().notNull(),
   mainComplaint: text().notNull(),
   cancel: boolean().notNull(),
   force: boolean().notNull(),

@@ -1,6 +1,7 @@
 import { initialize as initActivity } from "../server/domain/activity.ts"
 import { initialize as initAddress } from "../server/domain/address.ts"
 import { initialize as initAppointment } from "../server/domain/appointment.ts"
+import { initialize as initClassification } from "../server/domain/classification.ts"
 import { initialize as initDept } from "../server/domain/department.ts"
 import { type Dr, initialize as initDr } from "../server/domain/dr.ts"
 import { initialize as initDue } from "../server/domain/due.ts"
@@ -20,6 +21,7 @@ export {
     initActivity,
     initAddress,
     initAppointment,
+    initClassification,
     initializeContact as initContact,
     initFacility,
     initializeFac as initFac,

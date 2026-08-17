@@ -10,7 +10,6 @@ export class MasterRepository implements IMasterRepository {
     KEY_POST: string = "post"
     KEY_FACDEPT: string = "facdept"
     KEY_MEANS: string = "means"
-    KEY_CLASSIFICATION: string = "class"
     KEY_PURPOSE: string = "purpose"
 
     constructor(base: string){
@@ -26,7 +25,6 @@ export class MasterRepository implements IMasterRepository {
     async read(key: string): Promise<string[]|undefined> {
         if(key === this.KEY_KIND || key === this.KEY_POST ||
                 key === this.KEY_FACDEPT || key === this.KEY_MEANS ||
-                key === this.KEY_CLASSIFICATION ||
                 key === this.KEY_PURPOSE){
             const kv = await this.database.open();
             const res = await kv.get<string[]>([this.base, key]);

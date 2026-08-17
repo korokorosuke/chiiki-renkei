@@ -20,7 +20,7 @@ export function ListArea(props: Props) {
   }
 
   function isDone(referral: Referral): boolean {
-    return referral.replies.some(reply=>reply.classification==="最終")
+    return referral.replies.some(reply=>reply.classification.done)
   }
 
 
@@ -49,7 +49,7 @@ export function ListArea(props: Props) {
                   <For each={referral.replies}>{rep=>
                     <Show when={rep.id}>
                       <div class={ replyStyles } onClick={()=>{handleClick(rep)}}>
-                        <span>{rep.classification}</span><span>{rep.date}</span>
+                        <span>{rep.classification.name}</span><span>{rep.date}</span>
                         <span>{rep.department.name}：{rep.dr.name}</span>
                       </div>
                     </Show>

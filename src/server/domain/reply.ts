@@ -1,6 +1,7 @@
 import { type User, userBaseSchema, initializeUser } from "./user.ts"
 import { deptBaseSchema, initializeDept } from "./department.ts"
 import { drBaseSchema, initialize as initializeDr } from "./dr.ts"
+import { classSchema, initialize as initializeClass } from "./classification.ts"
 import { validater } from "../lib/validation.ts"
 import { z } from "zod"
 
@@ -11,7 +12,7 @@ export const replySchema = z.object({
         .min(1, "返事日を入力してください。"),
     department: deptBaseSchema.refine((val) => val && val.id && val.name, "診療科を入力してください。"),
     dr: drBaseSchema.refine((val) => val && val.id && val.name, "医師を入力してください。"),
-    classification: z.string(),
+    classification: classSchema.refine((val) => val && val.id && val.name, "区分を入力してください。"),
     personInCharge: userBaseSchema.refine((val: User) => val && val.id && val.name, "担当者を入力してください。"),
     memo: z.string()
         .max(1000, "備考は、１０００文字までです。"),
@@ -38,7 +39,7 @@ export function initialize(): Reply{
         date: "",
         department: initializeDept(),
         dr: initializeDr(),
-        classification: "",
+        classification: initializeClass(),
         personInCharge: initializeUser(),
         memo: "",
         updatedBy: initializeUser(),

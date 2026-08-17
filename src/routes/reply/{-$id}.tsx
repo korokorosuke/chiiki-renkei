@@ -6,6 +6,7 @@ import { getReply as getServerRep, getReplies as getServerReps } from "../../ser
 import { PatientArea } from "../../components/PatientArea.tsx"
 import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { initPatient, initReply, toUser } from "../../helper/types.ts"
+import { getAllClassifications } from "../../server/func/classification.ts"
 import { getDepartments } from "../../server/func/department.ts"
 import { getPatient } from "../../server/func/patient.ts"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
@@ -13,6 +14,8 @@ import type { Reply } from "../../server/domain/reply.ts"
 import type { Referral } from "../../server/domain/referral.ts"
 import type { Patient } from "../../server/domain/patient.ts"
 import type { Department } from "../../server/domain/department.ts"
+import type { Classification } from "../../server/domain/classification.ts"
+
 import { button, input, area } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
@@ -29,6 +32,7 @@ function App() {
   const [message, setMessage] = createSignal<string>("");
   const [patient, setPatient] = createSignal<Patient>(initPatient());
   const [depts, setDepts] = createSignal<Department[]>([]);
+  const [classes, setClasses] = createSignal<Classification[]>([]);
 
   const params = Route.useParams();
   const paramId = params().id;
@@ -109,6 +113,7 @@ function App() {
 
   async function initialize(){
     getDepartments().then(setDepts);
+    getAllClassifications().then(setClasses);
     if(refInput){
       refInput.focus();
     }
@@ -140,6 +145,7 @@ function App() {
         <Match when={modification()}>
           <ModificationArea auth={user}
             reply={selected} setReply={setSelected} newadd={newadd}
+            classes={classes()}
             depts={depts()} terminateModification={terminateModification} />
         </Match>
         <Match when={replies().length > 0}>

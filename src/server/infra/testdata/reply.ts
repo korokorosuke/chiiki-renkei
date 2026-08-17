@@ -7,16 +7,19 @@ import type { IDepartmentRepository } from "../../domain/departmentService.ts"
 import type { IDrRepository } from "../../domain/drService.ts"
 import type { IFacilityRepository } from "../../domain/facilityService.ts"
 import type { IUserRepository } from "../../domain/userService.ts"
+import type { IClassificationRepository } from "../../domain/classificationService.ts"
 import { user } from "./user.ts"
 import { dr } from "./dr.ts"
 import { department, department2 } from "./dept.ts"
 import { appointment, appointment2, appointment3 } from "./appointment.ts"
+import { classification1, classification2 } from "./classification.ts"
 import { toUser } from "../../lib/types.ts"
 import { insert as insertFac, del as delFac } from "./facility.ts"
 import { insert as insertPat, del as delPat } from "./patient.ts"
 import { insert as insertDept, del as delDept } from "./dept.ts"
 import { insert as insertDr, del as delDr } from "./dr.ts"
 import { insert as insertUser, del as delUser } from "./user.ts"
+import { insert as insertCls, del as delCls } from "./classification.ts"
 
 export const referral = appointment;
 export const referral2 = appointment2;
@@ -30,7 +33,7 @@ export const reply: Reply = {
   date: "2024-06-07",
   department: department,
   dr: dr,
-  classification: "1",
+  classification: classification1,
   personInCharge: toUser(user),
   memo: "",
   updatedBy: toUser(user),
@@ -42,7 +45,7 @@ export const reply2: Reply = {
   date: "2024-06-08",
   department: department2,
   dr: dr,
-  classification: "2",
+  classification: classification1,
   personInCharge: toUser(user),
   memo: "",
   updatedBy: toUser(user),
@@ -54,7 +57,7 @@ export const reply3: Reply = {
   date: "2024-06-14",
   department: department,
   dr: dr,
-  classification: "3",
+  classification: classification2,
   personInCharge: toUser(user),
   memo: "",
   updatedBy: toUser(user),
@@ -66,7 +69,7 @@ export const reply4: Reply = {
   date: "2024-06-15",
   department: department,
   dr: dr,
-  classification: "4",
+  classification: classification1,
   personInCharge: toUser(user),
   memo: "メモを目盛った",
   updatedBy: toUser(user),
@@ -127,7 +130,8 @@ function compare(r1: Reply, r2: Reply): boolean {
 
 export async function prepare(repoApp: IAppointmentRepository,
     repoUser?: IUserRepository, repoPat?: IPatientRepository,
-    repoDept?: IDepartmentRepository, repoDr?: IDrRepository, repoFac?: IFacilityRepository) {
+    repoDept?: IDepartmentRepository, repoDr?: IDrRepository,
+    repoFac?: IFacilityRepository, repoCls?: IClassificationRepository) {
   if(repoFac){
     await insertFac(repoFac);
   }
@@ -142,6 +146,9 @@ export async function prepare(repoApp: IAppointmentRepository,
   }
   if(repoUser){
     await insertUser(repoUser);
+  }
+  if(repoCls){
+    await insertCls(repoCls);
   }
   await repoApp.insert(referral);
   await repoApp.insert(referral2);
@@ -160,6 +167,7 @@ export async function update(repo: IReplyRepository){
   assert(res);
 }
 export async function read(repo: IReplyRepository){
+  console.log("read start")
   let res = await repo.read(reply.id);
   if(res){
     assert(compare(reply, res.replies[0]));
@@ -224,10 +232,12 @@ export async function del(repo: IReplyRepository, repoApp: IAppointmentRepositor
   assertFalse(res2);
 }
 export async function cleanUp(repoUser: IUserRepository, repoPat: IPatientRepository,
-    repoDept: IDepartmentRepository, repoDr: IDrRepository, repoFac: IFacilityRepository) {
+    repoDept: IDepartmentRepository, repoDr: IDrRepository, repoFac: IFacilityRepository,
+    repoCls: IClassificationRepository) {
   await delFac(repoFac);
   await delPat(repoPat);
   await delDept(repoDept);
   await delDr(repoDr);
   await delUser(repoUser);
+  await delCls(repoCls);
 }

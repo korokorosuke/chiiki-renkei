@@ -1,14 +1,14 @@
 import { createSignal, onMount, For, Index, Show, type Setter, type Accessor } from "solid-js"
 import { createStore, unwrap } from "solid-js/store"
-import { initReply, initDr, toUser } from "../../helper/types.ts"
+import { initReply, initDr, toUser, initClassification } from "../../helper/types.ts"
 import { getUser } from "../../server/func/user.ts"
 import { getDrsForDept } from "../../server/func/dr.ts"
-import { getClasses } from "../../server/func/master.ts"
 import { insert, update, del } from "../../server/func/reply.ts"
 import { Container } from "../../components/Container.tsx"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import type { Reply } from "../../server/domain/reply.ts"
 import type { AuthUser } from "../../server/domain/user.ts"
+import type { Classification } from "../../server/domain/classification.ts"
 import type { Dr } from "../../server/domain/dr.ts"
 import type { Department, Dept } from "../../server/domain/department.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
@@ -20,6 +20,7 @@ type ViewProps = {
   setReply: Setter<Reply>
   terminateModification: (status: MessageStatus)=>void
   depts: Department[]
+  classes: Classification[]
   newadd: Accessor<boolean>
   auth: Accessor<AuthUser>
 }
@@ -33,7 +34,6 @@ function handleEnter(e: KeyboardEvent, func: ()=>void){
 export function ModificationArea(props: ViewProps){
   const [reply, setReply ] = createStore<Reply>(structuredClone(props.reply()));
   const [drs, setDrs] = createSignal<Dr[]>([]);
-  const [classes, setClasses] = createSignal<string[]>([]);
   let oldPerson = "";
 
   async function handleRegister(){
@@ -108,6 +108,15 @@ export function ModificationArea(props: ViewProps){
     }
   }
 
+  function handleClass(value: string){
+    for(const c of props.classes){
+      if(c.id === value){
+        setReply("classification", c);
+        return;
+      }
+    }
+  }
+
   function getPerson(id: string){
     getUser({data: {id}}).then(
       (res)=>{
@@ -136,18 +145,17 @@ export function ModificationArea(props: ViewProps){
       setReply("department", props.depts[0]);
       getDrs(props.depts[0], props.reply().dr);
     }
-    getClasses().then((res)=>{
-      setClasses(res);
-      if(classes().length !== 0){
-        if(!reply.classification && classes().length > 0){
-          setReply("classification", classes()[0]);
-        }else{
-          const c = reply.classification;
-          setReply("classification", "");
-          setReply("classification", c);
+    if(props.classes.length !== 0){
+      if(reply.classification.id === ""){
+        if(props.classes.length > 0){
+          setReply("classification", props.classes[0]);
         }
+      }else{
+        const c = {...reply.classification};
+        setReply("classification", initClassification());
+        setReply("classification", c);
       }
-    }).catch(()=>alert("区分の取得に失敗しました。"));
+    }
     oldPerson = props.reply().personInCharge.id;
   });
 
@@ -176,10 +184,10 @@ export function ModificationArea(props: ViewProps){
         </select>
       </Container>
       <Container title="区分" require="*">
-        <select class={ input({ size: "id" }) } value={reply.classification}
-            onChange={(e)=>setReply("classification", e.target.value)}>
-          <Index each={classes()}>{val=>
-            <option value={val()}>{val()}</option>
+        <select class={ input({ size: "id" }) } value={reply.classification.id}
+            onChange={(e)=>handleClass(e.target.value)}>
+          <Index each={props.classes}>{val=>
+            <option value={val().id}>{val().name}</option>
           }</Index>
         </select>
       </Container>

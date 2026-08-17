@@ -7,6 +7,8 @@ import { AuthUser } from "../src/server/domain/user.ts"
 import { Patient } from "../src/server/domain/patient.ts"
 import { Due } from "../src/server/domain/due.ts"
 import { DB_TYPE } from "../src/server/settings.ts"
+import { ClassificationRepository } from "../src/server/infra/classificationRepository.ts"
+import { ClassificationRepository as RdbClassificationRepository } from "../src/server/infra/rdb/classificationRepository.ts"
 import { DepartmentRepository } from "../src/server/infra/departmentRepository.ts"
 import { DepartmentRepository as RdbDepartmentRepository } from "../src/server/infra/rdb/departmentRepository.ts"
 import { DrRepository } from "../src/server/infra/drRepository.ts"
@@ -266,7 +268,12 @@ const post = ["院長", "理事長", "副院長", "医師", "看護師", "ＭＳ
 
 const means = ["FAX", "WEB", "TEL", "郵送", "来院", "当日"];
 
-const classes = ["一報", "最終", "経過", "退院"];
+const classes = [
+  {id: "1", name: "一報", done: false},
+  {id: "2", name: "最終", done: true},
+  {id: "3", name: "経過", done: false},
+  {id: "4", name: "退院", done: false},
+];
 
 const facdept = [
   "内科", "消化器内科", "呼吸器内科", "糖尿病内科", "腎臓内科",
@@ -285,6 +292,7 @@ async function main(){
   let userRepository;
   let dueRepository;
   let masterRepository;
+  let classRepository;
 
   const dbType = Deno.env.get(DB_TYPE);
   if(dbType === "postgresql"){
@@ -295,6 +303,7 @@ async function main(){
     staffRepository = new RdbStaffRepository(BASE);
     userRepository = new RdbUserRepository(BASE);
     dueRepository = new RdbDueRepository(BASE);
+    classRepository = new RdbClassificationRepository(BASE);
     masterRepository = new RdbMasterRepository(BASE);
   }else{
     departmentRepository = new DepartmentRepository(BASE);
@@ -304,9 +313,15 @@ async function main(){
     staffRepository = new StaffRepository(BASE);
     userRepository = new UserRepository(BASE);
     dueRepository = new DueRepository(BASE);
+    classRepository = new ClassificationRepository(BASE);
     masterRepository = new MasterRepository(BASE);
   }
 
+  console.log("classification create ...");
+  for await (const d of classes){
+    await classRepository.insert(d);
+  }
+  console.log("classification end");
   console.log("department create ...");
   for await (const d of department){
     await departmentRepository.insert(d);
@@ -354,9 +369,6 @@ async function main(){
   console.log("means create ...");
   await masterRepository.update(masterRepository.KEY_MEANS, means);
   console.log("means end");
-  console.log("class create ...");
-  await masterRepository.update(masterRepository.KEY_CLASSIFICATION, classes);
-  console.log("class end");
   console.log("facdept create ...");
   await masterRepository.update(masterRepository.KEY_FACDEPT, facdept);
   console.log("facdept end");

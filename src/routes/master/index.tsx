@@ -1,6 +1,7 @@
 import { createSignal, Switch, Match } from "solid-js"
 import Header from "../-header.tsx"
 import { Multi } from "./-multi.tsx"
+import { Classification } from "./-classification.tsx"
 import { Dr } from "./-dr.tsx"
 import { Due } from "./-due.tsx"
 import { Department } from "./-department.tsx"
@@ -40,6 +41,7 @@ function App() {
             <option value="post">職員役職</option>
             <option value="facdept">施設診療科</option>
             <option value="means">紹介方法</option>
+            <option value="classification">返事区分</option>
             <option value="dept">診療科</option>
             <option value="dr">医師</option>
             <option value="due">問合せ期限</option>
@@ -59,6 +61,9 @@ function App() {
       <Match when={id() === "kind" || id() === "post" || id() === "facdept" ||
         id() === "means" || id() === "purpose"}>
         <Multi id={id()} setMessage={setMessage} />
+      </Match>
+      <Match when={id() === "classification"}>
+        <Classification setMessage={setMessage} />
       </Match>
       <Match when={id() === "dept"}>
         <Department setMessage={setMessage} />

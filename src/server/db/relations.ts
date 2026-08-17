@@ -63,6 +63,12 @@ export const relations = defineRelations(schema, (r) => ({
     }),
     reply: r.many.reply(),
   },
+  classification: {
+    reply: r.one.reply({
+      from: [r.classification.base, r.classification.id],
+      to: [r.reply.base, r.reply.classificationId],
+    }),
+  },
   department: {
     appointment: r.one.appointment({
       from: [r.department.base, r.department.id],
@@ -232,6 +238,10 @@ export const relations = defineRelations(schema, (r) => ({
     appointment: r.one.appointment({
       from: [r.reply.base, r.reply.refId],
       to: [r.appointment.base, r.appointment.id],
+    }),
+    classification: r.one.classification({
+      from: [r.reply.base, r.reply.classificationId],
+      to: [r.classification.base, r.classification.id],
     }),
     department: r.one.department({
       from: [r.reply.base, r.reply.departmentId],

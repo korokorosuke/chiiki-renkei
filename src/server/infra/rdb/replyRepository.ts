@@ -1,6 +1,7 @@
 import type { Reply, Condition } from "../../domain/reply.ts"
 import type { IReplyRepository } from "../../domain/replyService.ts"
 import type { Referral } from "../../domain/referral.ts"
+import { initialize as initializeClass } from "../../domain/classification.ts"
 import { initializeDept } from "../../domain/department.ts"
 import { initialize as initializeDr } from "../../domain/dr.ts"
 import { Db } from "./db.ts"
@@ -32,7 +33,11 @@ type ReplyDBResult = {
       name: string,
       department: string,
     } | null,
-    classification: string,
+    classification: {
+      id: string,
+      name: string,
+      done: boolean,
+    } | null,
     replyPersonInCharge: UserDBResult | null,
     memo: string,
     replyUpdatedBy: UserDBResult | null,
@@ -58,7 +63,7 @@ export class ReplyRepository implements IReplyRepository {
       departmentId: val.department.id,
       drId: val.dr.id,
       personInChargeId: val.personInCharge.id,
-      classification: val.classification,
+      classificationId: val.classification.id,
       memo: val.memo,
       updatedBy: val.updatedBy.id,
       updatedAt: val.updatedAt,
@@ -76,7 +81,7 @@ export class ReplyRepository implements IReplyRepository {
         replies.push({
           id: rep.id,
           date: rep.date,
-          classification: rep.classification,
+          classification: rep.classification ?? initializeClass(),
           refId: val.id,
           department: rep.department ?? initializeDept(),
           dr: rep.dr ?? initializeDr(),
@@ -164,7 +169,6 @@ export class ReplyRepository implements IReplyRepository {
           columns: {
             id: true,
             date: true,
-            classification: true,
             memo: true,
             updatedAt: true,
           },
@@ -172,6 +176,13 @@ export class ReplyRepository implements IReplyRepository {
             updatedAtString: (record, { sql }) => sql<string>`to_char(${record.updatedAt}, 'YYYY-MM-DD"T"HH24:MI:SS')`,
           },
           with: {
+            classification: {
+              columns: {
+                id: true,
+                name: true,
+                done: true,
+              },
+            },
             department: {
               columns: {
                 id: true,
@@ -242,8 +253,10 @@ export class ReplyRepository implements IReplyRepository {
   }
 
   async read(id: string): Promise<Referral|undefined> {
+    console.log(`read ${id}`)
     const res = await this.select({base: this.base, id: id},
       {base: this.base, reply: {id: id}});
+    console.log(res);
     if(res.length > 0){
       return this.fromData(res[0]);
     }
