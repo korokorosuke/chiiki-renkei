@@ -156,7 +156,7 @@ export function Classification(props: Props){
               onChange={(e)=>handleChange({name: e.target.value})} />
           </div>
           <div>
-            <label>完了<span class={ etc({ type: "require"}) }>*</span></label>
+            <label>完了</label>
           </div>
           <div>
             <input type="checkbox" class={ input({ size: "check2", type: "checkbox" }) }
