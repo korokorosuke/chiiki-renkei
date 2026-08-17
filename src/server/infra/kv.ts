@@ -1,6 +1,6 @@
 /// <reference lib="deno.unstable" />
 import type { Database } from "./database.ts"
-import { PRODUCTION_TYPE, DEV, DB_URL } from "../settings.ts"
+import { PRODUCTION_TYPE, DEV, DB_KV_URL_KEY } from "../settings.ts"
 
 
 export class Kv implements Database{
@@ -13,7 +13,7 @@ export class Kv implements Database{
             return this.openTest();
         }
 
-        const path = Deno.env.get(DB_URL)
+        const path = Deno.env.get(DB_KV_URL_KEY)
         const dev = Deno.env.get(PRODUCTION_TYPE)
         if(dev === DEV){
           return this.openDev(path);
@@ -28,7 +28,7 @@ export class Kv implements Database{
     }
 
     async openDev(path: string|undefined): Promise<Deno.Kv> {
-      if(path){
+      if(path && path !== ""){
         this.kv = await Deno.openKv("zdev_" + path);
       }else{
         this.kv = await Deno.openKv("zdev_reco.db");

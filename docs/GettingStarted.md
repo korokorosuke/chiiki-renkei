@@ -15,9 +15,9 @@
     - RECO_PRODUCTION: `production`
     - postgresqlの場合
       - RECO_DB_TYPE: `postgresql`
-      - RECO_DB_URL: `postgres://user:password@hostname/dbname`
+      - RECO_PG_URL: `postgres://user:password@hostname/dbname`
     - Deno KVの場合
-      - RECO_DB_URL: `reco.db` (任意のファイルパス)
+      - RECO_KV_URL: `reco.db` (任意のファイルパス)
 1. データベースを初期化
    ```bash
    echo -postgresqlの場合---

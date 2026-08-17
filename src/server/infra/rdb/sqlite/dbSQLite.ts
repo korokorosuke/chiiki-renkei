@@ -2,16 +2,19 @@ import type { Database } from "../../database.ts"
 import { drizzle } from "drizzle-orm/libsql"
 import { createClient } from "@libsql/client"
 import { relations } from "../../../db/relationsSQLite.ts"
-import { DB_URL } from "../../../settings.ts"
+import { DB_SQLITE_URL_KEY } from "../../../settings.ts"
 
 
 export class Db implements Database{
   static test = false
 
   async open(options?: object) {
-    let filename = "file:" + DB_URL;
+    let filename = Deno.env.get(DB_SQLITE_URL_KEY);
+    if(!filename){
+      return Promise.reject(new Error("DB_URL is not set"));
+    }
     if(Db.test){
-      filename = "file:test.db";
+      filename = "test.db";
     }
     const sqlite = createClient({ url: filename });
     await sqlite.execute("PRAGMA busy_timeout = 5000;");

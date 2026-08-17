@@ -8,8 +8,8 @@
 - RECO_PATIENT_URL: 患者情報取得用URL
 
 ### データベースがDeno KVの場合
-- RECO_DB_URL: データベースのファイルパス (Deno Deployでは、設定しない。それ以外の環境はファイルパス)
+- RECO_KV_URL: データベースのファイルパス (Deno Deployでは、設定しない。それ以外の環境はファイルパス)
 
 ### データベースがpostgresqlの場合
 - RECO_DB_TYPE: データベースの種類 (postgresql)
-- RECO_DB_URL: データベースの接続文字列 (postgres://user:password@hostname/dbname)
+- RECO_PG_URL: データベースの接続文字列 (postgres://user:password@hostname/dbname)

@@ -34,9 +34,9 @@
     - RECO_PRODUCTION: `production`
     - postgresqlの場合
       - RECO_DB_TYPE: `postgresql`
-      - RECO_DB_URL: `postgres://user:password@hostname/dbname`
+      - RECO_PG_URL: `postgres://user:password@hostname/dbname`
     - Deno KVの場合
-      - RECO_DB_URL: `reco.db` (任意のファイルパス)
+      - RECO_KV_URL: `reco.db` (任意のファイルパス)
 1. データベースを初期化
    ```bash
    echo -postgresqlの場合---
@@ -66,11 +66,11 @@
 - RECO_PATIENT_URL: 患者情報取得用URL
 
 ### データベースがDeno KVの場合
-- RECO_DB_URL: データベースのファイルパス (Deno Deployでは、設定しない。それ以外の環境はファイルパス)
+- RECO_KV_URL: データベースのファイルパス (Deno Deployでは、設定しない。それ以外の環境はファイルパス)
 
 ### データベースがpostgresqlの場合
 - RECO_DB_TYPE: データベースの種類 (postgresql)
-- RECO_DB_URL: データベースの接続文字列 (postgres://user:password@hostname/dbname)
+- RECO_PG_URL: データベースの接続文字列 (postgres://user:password@hostname/dbname)
 
 
 # デモ環境
