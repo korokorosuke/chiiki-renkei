@@ -12,6 +12,7 @@
 1. [紹介検索](skensaku.html)
 1. [逆紹介検索](gskensaku.html)
 1. [返事検索](henjikensaku.html)
+1. [受診報告出力](report.html)
 1. [各種マスター登録](masters.html)
 
 1. [Web予約](webyoyaku.html)
