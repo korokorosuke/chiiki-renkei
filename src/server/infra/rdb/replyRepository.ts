@@ -253,10 +253,8 @@ export class ReplyRepository implements IReplyRepository {
   }
 
   async read(id: string): Promise<Referral|undefined> {
-    console.log(`read ${id}`)
     const res = await this.select({base: this.base, id: id},
       {base: this.base, reply: {id: id}});
-    console.log(res);
     if(res.length > 0){
       return this.fromData(res[0]);
     }

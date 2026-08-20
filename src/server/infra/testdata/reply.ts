@@ -167,7 +167,6 @@ export async function update(repo: IReplyRepository){
   assert(res);
 }
 export async function read(repo: IReplyRepository){
-  console.log("read start")
   let res = await repo.read(reply.id);
   if(res){
     assert(compare(reply, res.replies[0]));
