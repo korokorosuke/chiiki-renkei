@@ -6,7 +6,7 @@ import { Staff } from "../src/server/domain/staff.ts"
 import { AuthUser } from "../src/server/domain/user.ts"
 import { Patient } from "../src/server/domain/patient.ts"
 import { Due } from "../src/server/domain/due.ts"
-import { DB_TYPE } from "../src/server/settings.ts"
+import { DB_TYPE_KEY } from "../src/server/settings.ts"
 import { ClassificationRepository } from "../src/server/infra/classificationRepository.ts"
 import { ClassificationRepository as RdbClassificationRepository } from "../src/server/infra/rdb/classificationRepository.ts"
 import { DepartmentRepository } from "../src/server/infra/departmentRepository.ts"
@@ -294,7 +294,7 @@ async function main(){
   let masterRepository;
   let classRepository;
 
-  const dbType = Deno.env.get(DB_TYPE);
+  const dbType = Deno.env.get(DB_TYPE_KEY);
   if(dbType === "postgresql"){
     departmentRepository = new RdbDepartmentRepository(BASE);
     drRepository = new RdbDrRepository(BASE);

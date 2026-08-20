@@ -1,5 +1,5 @@
 /// <reference lib="deno.unstable" />
-import { DB_TYPE } from "../src/server/settings.ts"
+import { DB_TYPE_KEY } from "../src/server/settings.ts"
 import type { WebDepartment } from "../src/server/domain/webDepartment.ts"
 import type { WebDr } from "../src/server/domain/webDr.ts"
 import type { WebMaster } from "../src/server/domain/webMaster.ts"
@@ -191,7 +191,7 @@ async function main(){
   let drRepository;
   let masterRepository;
 
-  const dbType = Deno.env.get(DB_TYPE);
+  const dbType = Deno.env.get(DB_TYPE_KEY);
   if(dbType === "postgresql"){
     departmentRepository = new RdbWebDepartmentRepository(BASE);
     drRepository = new RdbWebDrRepository(BASE);
