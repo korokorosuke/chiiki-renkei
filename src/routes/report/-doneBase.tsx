@@ -31,6 +31,7 @@ export function DoneBase(props: Props) {
         <div>
           <div>{props.appointment?.facility.name}</div>
           <div>{props.appointment?.facilityDr} 先生侍史</div>
+          <div>FAX: {props.appointment?.facility.fax}</div>
         </div>
       </div>
 

@@ -134,6 +134,8 @@ export const facility = snakeCase.table("facility", {
   addressPlus: text().notNull(),
   memo: text().notNull(),
   closedDate: date({ mode: "string" }),
+  faxSendNo: text().notNull(),
+  notSend: boolean().notNull(),
   createdBy: text().notNull(),
   createdAt: timestamp({ withTimezone: true, mode: "string" }).notNull(),
   updatedBy: text().notNull(),

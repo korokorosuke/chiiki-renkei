@@ -21,6 +21,7 @@ import { Route as PatientIndexRouteImport } from './routes/patient/index'
 import { Route as ProcessChar123PatientChar125RouteImport } from './routes/process/{-$patient}'
 import { Route as ReferraltoChar123IdChar125RouteImport } from './routes/referralto/{-$id}'
 import { Route as ReplyChar123IdChar125RouteImport } from './routes/reply/{-$id}'
+import { Route as ReportIndexRouteImport } from './routes/report/index'
 import { Route as StaffIndexRouteImport } from './routes/staff/index'
 import { Route as StatisticsChar123IdChar125RouteImport } from './routes/statistics/{-$id}'
 import { Route as UserIndexRouteImport } from './routes/user/index'
@@ -92,6 +93,11 @@ const ReplyChar123IdChar125Route = ReplyChar123IdChar125RouteImport.update({
   path: '/reply/{-$id}',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportIndexRoute = ReportIndexRouteImport.update({
+  id: '/report/',
+  path: '/report/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StaffIndexRoute = StaffIndexRouteImport.update({
   id: '/staff/',
   path: '/staff/',
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/inquiry/': typeof InquiryIndexRoute
   '/master/': typeof MasterIndexRoute
   '/patient/': typeof PatientIndexRoute
+  '/report/': typeof ReportIndexRoute
   '/staff/': typeof StaffIndexRoute
   '/user/': typeof UserIndexRoute
   '/webapp/': typeof WebappIndexRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/inquiry': typeof InquiryIndexRoute
   '/master': typeof MasterIndexRoute
   '/patient': typeof PatientIndexRoute
+  '/report': typeof ReportIndexRoute
   '/staff': typeof StaffIndexRoute
   '/user': typeof UserIndexRoute
   '/webapp': typeof WebappIndexRoute
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/inquiry/': typeof InquiryIndexRoute
   '/master/': typeof MasterIndexRoute
   '/patient/': typeof PatientIndexRoute
+  '/report/': typeof ReportIndexRoute
   '/staff/': typeof StaffIndexRoute
   '/user/': typeof UserIndexRoute
   '/webapp/': typeof WebappIndexRoute
@@ -202,6 +211,7 @@ export interface FileRouteTypes {
     | '/inquiry/'
     | '/master/'
     | '/patient/'
+    | '/report/'
     | '/staff/'
     | '/user/'
     | '/webapp/'
@@ -222,6 +232,7 @@ export interface FileRouteTypes {
     | '/inquiry'
     | '/master'
     | '/patient'
+    | '/report'
     | '/staff'
     | '/user'
     | '/webapp'
@@ -242,6 +253,7 @@ export interface FileRouteTypes {
     | '/inquiry/'
     | '/master/'
     | '/patient/'
+    | '/report/'
     | '/staff/'
     | '/user/'
     | '/webapp/'
@@ -263,6 +275,7 @@ export interface RootRouteChildren {
   InquiryIndexRoute: typeof InquiryIndexRoute
   MasterIndexRoute: typeof MasterIndexRoute
   PatientIndexRoute: typeof PatientIndexRoute
+  ReportIndexRoute: typeof ReportIndexRoute
   StaffIndexRoute: typeof StaffIndexRoute
   UserIndexRoute: typeof UserIndexRoute
   WebappIndexRoute: typeof WebappIndexRoute
@@ -356,6 +369,13 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof ReplyChar123IdChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/report/': {
+      id: '/report/'
+      path: '/report'
+      fullPath: '/report/'
+      preLoaderRoute: typeof ReportIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/staff/': {
       id: '/staff/'
       path: '/staff'
@@ -415,6 +435,7 @@ const rootRouteChildren: RootRouteChildren = {
   InquiryIndexRoute: InquiryIndexRoute,
   MasterIndexRoute: MasterIndexRoute,
   PatientIndexRoute: PatientIndexRoute,
+  ReportIndexRoute: ReportIndexRoute,
   StaffIndexRoute: StaffIndexRoute,
   UserIndexRoute: UserIndexRoute,
   WebappIndexRoute: WebappIndexRoute,

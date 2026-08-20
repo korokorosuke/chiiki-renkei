@@ -3,6 +3,7 @@ import { AppointmentReport } from "../report/-appointment.tsx"
 import { DoneReport } from "../report/-done.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import type { Appointment } from "../../server/domain/appointment.ts"
+import { initAppointment } from "../../helper/types.ts"
 import pdf from "../assets/pdf.svg"
 import { button, area, table, list } from "../../styled-system/recipes/"
 import { css } from "../../styled-system/css/"
@@ -18,6 +19,7 @@ type REPORT_KIND = "appointment" | "done";
 
 export function ListArea(props: Props) {
   const [reportId, setReportId] = createSignal("");
+  const [app, setApp] = createSignal<Appointment>(initAppointment());
   const [reportPrepared, setReportPrepared] = createSignal(false);
   const [reportKind, setReportKind] = createSignal<REPORT_KIND>("appointment");
 
@@ -39,28 +41,37 @@ export function ListArea(props: Props) {
 
     setReportPrepared(false);
     setReportId("");
+    setApp(initAppointment());
     closeDialog();
   }
 
-  function openReport(id: string, kind: REPORT_KIND, e: MouseEvent){
+  function openReport(app: Appointment, kind: REPORT_KIND, e: MouseEvent){
     e.preventDefault();
     e.stopPropagation();
 
     setReportKind(kind);
     setReportPrepared(false);
-    setReportId(id);
+    setReportId(app.id);
+    setApp(app);
     showDialog();
   }
 
   function createPDF(e: MouseEvent){
+    let filename = "report.pdf";
+    if(reportKind()==="done"){
+      filename = `houkoku_${app().date}_${app().patient.id}_${app().facility.id}.pdf`;
+    }else if(reportKind()==="appointment"){
+      filename = `appointment_${app().date}_${app().patient.id}_${app().facility.id}.pdf`;
+    }
     const elem = document.querySelector("#report-body");
     {/* @ts-ignore */}
     html2pdf().from(elem).set({
-      filename: "report.pdf"
+      filename: filename
     }).save();
 
     setReportPrepared(false);
     setReportId("");
+    setApp(initAppointment());
     closeReport(e);
   }
 
@@ -86,7 +97,7 @@ export function ListArea(props: Props) {
               <td class={ css({ display: "flex", alignItems: "left", flexDirection: "column" }) }>
                 <div title="予約票出力">
                   <a class={ style }
-                    onClick={(e)=>openReport(a.id, "appointment", e)}>
+                    onClick={(e)=>openReport(a, "appointment", e)}>
                     <img src={pdf} alt="pdf"
                       width="25" height="25" />
                     予約票
@@ -94,7 +105,7 @@ export function ListArea(props: Props) {
                 </div>
                 <div title="受診報告出力">
                   <a class={ style }
-                    onClick={(e)=>openReport(a.id, "done", e)}>
+                    onClick={(e)=>openReport(a, "done", e)}>
                     <img src={pdf} alt="pdf"
                       width="25" height="25" />
                     受診報告

@@ -88,6 +88,12 @@ export function ViewArea(props: ViewProps){
       <Container title="閉院日">
         <div class={ prewrap }>{props.facility.closedDate}</div>
       </Container>
+      <Container title="送信用ＦＡＸ">
+        <div class={ prewrap }>{props.facility.faxSendNo}</div>
+      </Container>
+      <Container title="受診報告不要">
+        <div class={ prewrap }>{props.facility.notSend? "送らない" : "送る"}</div>
+      </Container>
     </div>
   );
 }

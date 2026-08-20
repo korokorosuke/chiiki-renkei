@@ -13,6 +13,7 @@ import patient from "./assets/patient.svg"
 import file from "./assets/file.svg"
 import activity from "./assets/activity.svg"
 import questionnaire from "./assets/questionnaire.svg"
+import printer from "./assets/printer.svg"
 import Header from "./-header.tsx"
 import { Authenticator, authenticatedUser as user } from "../components/Authenticator.tsx"
 import { flex } from "../styled-system/patterns/"
@@ -120,6 +121,9 @@ function Home() {
           <MenuBlock title="紹介統計" href="/statistics" img={list} />
           <MenuBlock title="逆紹介統計" href="/statistics/referralto" img={list} />
           <MenuBlock title="返事統計" href="/statistics/reply" img={list} />
+          <Show when={user().authReferral >= 1}>
+            <MenuBlock title="受診報告出力" href="/report/" img={printer} />
+          </Show>
         </div>
       </div>
       </Show>

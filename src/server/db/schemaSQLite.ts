@@ -133,6 +133,8 @@ export const facility = snakeCase.table("facility", {
   addressPlus: text().notNull(),
   memo: text().notNull(),
   closedDate: text().notNull(),
+  faxSendNo: text().notNull(),
+  notSend: integer().notNull(),
   createdBy: text().notNull(),
   createdAt: text().notNull(),
   updatedBy: text().notNull(),

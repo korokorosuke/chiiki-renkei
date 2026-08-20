@@ -194,6 +194,15 @@ export function ModificationArea(props: ViewProps){
         <input type="date" class={ input({ size: "date" }) } value={facility.closedDate}
           onChange={(e)=>setFacility("closedDate", e.target.value)} />
       </Container>
+      <Container title="送信用ＦＡＸ">
+        <input type="text" placeholder="03-1234-5678" class={ input({ size: "tel" }) }
+          value={facility.faxSendNo} onChange={(e)=>setFacility("faxSendNo", e.target.value)} />
+      </Container>
+      <Container title="受診報告不要">
+        <input type="checkbox" class={ input({ size: "check2", type: "checkbox" }) }
+          checked={facility.notSend}
+          onChange={(e)=>setFacility("notSend", e.target.checked)} />
+      </Container>
       <div class={ area({ type: "button" }) }>
         <button type="button" class={ button({ color: "primary", size: "long" }) } onClick={handleRegister}>登録</button>
         <button type="button" class={ button({ color: "cancel", size: "long" }) } onClick={()=>props.terminateModification("cancel")}>キャンセル</button>
