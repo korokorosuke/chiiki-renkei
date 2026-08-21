@@ -1,8 +1,10 @@
 import type { Reply, Condition } from "../../../domain/reply.ts"
 import type { IReplyRepository } from "../../../domain/replyService.ts"
 import type { Referral } from "../../../domain/referral.ts"
+import type { Classification } from "../../../domain/classification.ts"
 import { initializeDept } from "../../../domain/department.ts"
 import { initialize as initializeDr } from "../../../domain/dr.ts"
+import { initialize as initializeClass } from "../../../domain/classification.ts"
 import { Db } from "./dbSQLite.ts"
 import { reply } from "../../../db/schemaSQLite.ts"
 import { type PatientDBResult, type FacilityDBResult, type UserDBResult, type DepartmentDBResult,
@@ -32,7 +34,11 @@ type ReplyDBResult = {
       name: string,
       department: string,
     } | null,
-    classification: string,
+    classification: {
+      id: string,
+      name: string,
+      done: number,
+    } | null,
     replyPersonInCharge: UserDBResult | null,
     memo: string,
     replyUpdatedBy: UserDBResult | null,
@@ -57,7 +63,7 @@ export class ReplyRepository implements IReplyRepository {
       departmentId: val.department.id,
       drId: val.dr.id,
       personInChargeId: val.personInCharge.id,
-      classification: val.classification,
+      classificationId: val.classification.id,
       memo: val.memo,
       updatedBy: val.updatedBy.id,
       updatedAt: val.updatedAt,
@@ -67,10 +73,18 @@ export class ReplyRepository implements IReplyRepository {
     const replies = [];
     if(val.reply){
       for(const rep of val.reply){
+        let classification: Classification|undefined;
+        if(rep.classification){
+          classification = {
+            id: rep.classification.id,
+            name: rep.classification.name,
+            done: rep.classification.done ? true : false
+          };
+        }
         replies.push({
           id: rep.id,
           date: rep.date,
-          classification: rep.classification,
+          classification: classification ?? initializeClass(),
           refId: val.id,
           department: rep.department ?? initializeDept(),
           dr: rep.dr ?? initializeDr(),
@@ -158,11 +172,17 @@ export class ReplyRepository implements IReplyRepository {
           columns: {
             id: true,
             date: true,
-            classification: true,
             memo: true,
             updatedAt: true,
           },
           with: {
+            classification: {
+              columns: {
+                id: true,
+                name: true,
+                done: true,
+              },
+            },
             department: {
               columns: {
                 id: true,
