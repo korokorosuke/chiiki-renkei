@@ -1,5 +1,5 @@
 import { AppointmentRepository } from "./appointmentRepository.ts"
-import { insert, update, read, list, patientList, del } from "./testdata/appointment.ts"
+import { insert, update, read, list, patientList, reportList, del } from "./testdata/appointment.ts"
 
 import { BASE } from "./testdata/settings.ts"
 import { Kv } from "./kv.ts"
@@ -13,5 +13,6 @@ Deno.test("appointment repository", async (t) => {
   await t.step("read", async () => {await read(repo);});
   await t.step("list", async () => {await list(repo);});
   await t.step("patient", async () => {await patientList(repo);});
+  await t.step("reportList", async () => {await reportList(repo);});
   await t.step("del", async () => {await del(repo);});
 });

@@ -24,6 +24,8 @@ export type FacilityDBResult = {
   fax: string,
   addressName: string,
   addressPlus: string,
+  notSend?: boolean,
+  faxSendNo?: string,
 };
 
 export function toFacility(fac: FacilityDBResult|null): Fac {

@@ -6,7 +6,7 @@ import type { IDepartmentRepository } from "../../domain/departmentService.ts"
 import type { IDrRepository } from "../../domain/drService.ts"
 import type { IFacilityRepository } from "../../domain/facilityService.ts"
 import type { IUserRepository } from "../../domain/userService.ts"
-import { facility, toFac, insert as insertFac, del as delFac } from "./facility.ts"
+import { facility, facility2, toFac, insert as insertFac, del as delFac } from "./facility.ts"
 import { patient, patient2, insert as insertPat, del as delPat } from "./patient.ts"
 import { department, department2, insert as insertDept, del as delDept } from "./dept.ts"
 import { dr, dr2, insert as insertDr, del as delDr } from "./dr.ts"
@@ -34,7 +34,7 @@ export const appointment2: Appointment = {
   patient: patient2,
   date: "2024-06-08",
   time: "14:30",
-  facility: toFac(facility),
+  facility: toFac(facility2),
   facilityDr: "医者２",
   facilityDept: "内科",
   department: department2,
@@ -68,7 +68,7 @@ export const appointment4: Appointment = {
   patient: patient2,
   date: "2024-06-09",
   time: "14:30",
-  facility: toFac(facility),
+  facility: toFac(facility2),
   facilityDr: "医者２",
   facilityDept: "内科",
   department: department2,
@@ -289,6 +289,44 @@ export async function patientList(repo: IAppointmentRepository){
     assert(compare(appointment3, res[0]));
   }else{
     console.log(`list1: ${res.length}`)
+    fail();
+  }
+}
+export async function reportList(repo: IAppointmentRepository){
+  let res = await repo.listForReport(appointment3.date);
+  if(res.length === 1){
+    assert(compare(appointment3, res[0]));
+    assert(facility.faxSendNo, res[0].facility.fax);
+  }else{
+    console.log(`list1: ${res.length}`)
+    fail();
+  }
+  res = await repo.listForReport(appointment3.date, facility.id, department.id);
+  if(res.length === 1){
+    assert(compare(appointment3, res[0]));
+  }else{
+    console.log(`list2: ${res.length}`)
+    fail();
+  }
+  res = await repo.listForReport(appointment3.date, facility.id);
+  if(res.length === 1){
+    assert(compare(appointment3, res[0]));
+  }else{
+    console.log(`list3: ${res.length}`)
+    fail();
+  }
+  res = await repo.listForReport(appointment3.date, undefined, department.id);
+  if(res.length === 1){
+    assert(compare(appointment3, res[0]));
+  }else{
+    console.log(`list4: ${res.length}`)
+    fail();
+  }
+  res = await repo.listForReport(appointment2.date);
+  if(res.length === 0){
+    assert(true);
+  }else{
+    console.log(`list5: ${res.length}`)
     fail();
   }
 }

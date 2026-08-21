@@ -182,6 +182,7 @@ export class AppointmentRepository implements IAppointmentRepository {
             fax: true,
             addressName: true,
             addressPlus: true,
+            faxSendNo: true,
           },
         },
         appointmentPersonInCharge: {
@@ -245,6 +246,26 @@ export class AppointmentRepository implements IAppointmentRepository {
     const res = await this.select(this.buildCondition(cond));
     const list: Appointment[] = [];
     for await (const r of res){
+      list.push(this.fromData(r));
+    }
+    return list;
+  }
+
+  async listForReport(date: string, facilityId?: string, deptId?: string): Promise<Appointment[]> {
+    const cond: {base: string; date: string; facilityId?: string; departmentId?: string;
+      facility: {notSend: boolean}} = {base: this.base, date: date, facility: {notSend: false}};
+    if(facilityId){
+      cond.facilityId = facilityId;
+    }
+    if(deptId){
+      cond.departmentId = deptId;
+    }
+    const res = await this.select(cond);
+    const list: Appointment[] = [];
+    for await (const r of res){
+      if(r.facility && r.facility.faxSendNo){
+        r.facility.fax = r.facility.faxSendNo;
+      }
       list.push(this.fromData(r));
     }
     return list;

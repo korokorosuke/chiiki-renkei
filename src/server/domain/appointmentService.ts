@@ -4,6 +4,7 @@ import { BaseService, type IRepository, setId } from "./baseService.ts"
 
 export interface IReferralRepository extends IRepository<Appointment>{
     list(cond: Condition): Promise<Appointment[]>
+    listForReport(date: string, facilityId?: string, deptId?: string): Promise<Appointment[]>
 }
 
 export interface IAppointmentRepository extends IReferralRepository{}
@@ -23,6 +24,10 @@ export class AppointmentService extends BaseService<Appointment, IAppointmentRep
 
     async getListByDate(fromDate: string, toDate: string): Promise<Appointment[]>{
         return await this.getRepository().list({fromDate: fromDate, toDate: toDate});
+    }
+
+    async getListForReport(date: string, facilityId?: string, deptId?: string): Promise<Appointment[]>{
+        return await this.getRepository().listForReport(date, facilityId, deptId);
     }
 
     override async insert(val: Appointment): Promise<FetchResult<Appointment>>{

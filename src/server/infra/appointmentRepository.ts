@@ -123,4 +123,34 @@ export class AppointmentRepository implements IAppointmentRepository {
         this.database.close();
         return list;
     }
+
+    async listForReport(date: string, facilityId: string, deptId: string): Promise<Appointment[]> {
+        const kv = await this.database.open();
+        const list: Appointment[] = [];
+        const key = {prefix: [this.base, this.KEY2, date]};
+        const res = kv.list<Appointment>(key);
+        if(res){
+            const fservice = new FacilityService(new FacilityRepository(this.base));
+            for await (const r of res){
+                if(facilityId && r.value.facility.id !== facilityId){
+                    continue;
+                }
+                if(deptId && r.value.department.id !== deptId){
+                    continue;
+                }
+                const f = await fservice.get(r.value.facility.id);
+                if(f){
+                    if(f.notSend){
+                      continue;
+                    }
+                    if(f.faxSendNo){
+                      r.value.facility.fax = f.faxSendNo;
+                    }
+                }
+                list.push(r.value);
+            }
+        }
+        this.database.close();
+        return list;
+    }
 }

@@ -2,7 +2,7 @@ import { type Condition, validate } from "./report.ts"
 import type { Appointment } from "./appointment.ts"
 
 export interface IService<T>{
-  getListByDate: (fromDate: string, toDate: string) => Promise<T[]>
+  getListForReport: (date: string, facilityId?: string, deptId?: string) => Promise<T[]>
 }
 
 export class ReportService{
@@ -12,19 +12,6 @@ export class ReportService{
       return [];
     }
 
-    let ffac: (r:Appointment)=>boolean;
-    let fdept: (r:Appointment)=>boolean;
-    const result = await i.getListByDate(cond.date, cond.date);
-    if(cond.facilityId){
-      ffac = r=>r.facility!.id === cond.facilityId;
-    }else{
-      ffac = _=>true;
-    }
-    if(cond.deptId){
-      fdept = r=>r.department!.id === cond.deptId;
-    }else{
-      fdept = _=>true;
-    }
-    return result.filter(r=>ffac(r)&&fdept(r));
+    return await i.getListForReport(cond.date, cond.facilityId, cond.deptId);
   }
 }
