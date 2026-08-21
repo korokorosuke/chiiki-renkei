@@ -124,6 +124,9 @@ export class StaffRepository implements IStaffRepository {
         },
       },
       where: cond,
+      orderBy: {
+        order: "asc",
+      }
     });
   }
 

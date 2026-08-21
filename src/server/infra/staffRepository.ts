@@ -67,6 +67,18 @@ export class StaffRepository implements IStaffRepository {
         return undefined;
     }
 
+    sort(ss: Staff[]){
+        return ss.sort((s1, s2)=>{
+            if(s1.sort > s2.sort){
+                return 1;
+            }else if(s1.sort < s2.sort){
+                return -1;
+            }else{
+                return 0;
+            }
+        });
+    }
+
     async list(cond: Condition): Promise<Staff[]> {
         const kv = await this.database.open();
         const list: Staff[] = [];
@@ -87,6 +99,6 @@ export class StaffRepository implements IStaffRepository {
             list.push(s.value);
         }
         this.database.close();
-        return list;
+        return this.sort(list);
     }
 }
