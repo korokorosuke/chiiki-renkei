@@ -63,11 +63,6 @@ export class ReplyRepository implements IReplyRepository {
       updatedAt: val.updatedAt,
     };
   }
-  toDataWithoutKey(val: Reply): Partial<ReplyData> {
-    // deno-lint-ignore no-unused-vars
-    const {base, id, ...etc} = this.toData(val);
-    return etc;
-  }
   fromData(val: ReplyDBResult): Referral {
     const replies = [];
     if(val.reply){
@@ -113,7 +108,7 @@ export class ReplyRepository implements IReplyRepository {
   async update(val: Reply): Promise<boolean> {
     try{
       const db = await this.database.open();
-      await db.update(reply).set(this.toDataWithoutKey(val))
+      await db.update(reply).set(this.toData(val))
         .where(
           and(
             eq(reply.base, this.base),

@@ -48,11 +48,6 @@ export class ActivityRepository implements IActivityRepository {
       updatedAt: val.updatedAt,
     };
   }
-  toDataWithoutKey(val: Activity): Partial<ActivityData> {
-    // deno-lint-ignore no-unused-vars
-    const {base, id, ...etc} = this.toData(val);
-    return etc;
-  }
   fromData(val: ActivityDBResult): Activity {
     return {
       ...val,
@@ -89,7 +84,7 @@ export class ActivityRepository implements IActivityRepository {
     const db = await this.database.open();
     const res = await db.transaction(async (tx) => {
       try{
-        await tx.update(activity).set(this.toDataWithoutKey(val))
+        await tx.update(activity).set(this.toData(val))
           .where(
             and(
               eq(activity.base, this.base),

@@ -75,11 +75,6 @@ export class AppointmentRepository implements IAppointmentRepository {
       updatedAt: val.updatedAt,
     };
   }
-  toDataWithoutKey(val: Appointment): Partial<AppointmentData> {
-    // deno-lint-ignore no-unused-vars
-    const {base, id, ...etc} = this.toData(val);
-    return etc;
-  }
   fromData(val: AppointmentDBResult): Appointment {
     return toAppointment(val);
   }
@@ -107,7 +102,7 @@ export class AppointmentRepository implements IAppointmentRepository {
     }
     try{
       const db = await this.database.open();
-      await db.update(appointment).set(this.toDataWithoutKey(val))
+      await db.update(appointment).set(this.toData(val))
         .where(
           and(
             eq(appointment.base, this.base),

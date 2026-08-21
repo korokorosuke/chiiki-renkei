@@ -79,11 +79,6 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
       order: i,
     };
   }
-  toDataWithoutKey(val: Questionnaire): Partial<QuestionnaireData>{
-    // deno-lint-ignore no-unused-vars
-    const {base, id, ...etc} = this.toData(val);
-    return etc;
-  }
   fromData(val: QuestionnaireDBResult): Questionnaire{
     return toQuestionnaire(val);
   }
@@ -150,7 +145,7 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
     const db = await this.database.open();
     const res = await db.transaction(async (tx) => {
       try{
-        await tx.update(questionnaire).set(this.toDataWithoutKey(val))
+        await tx.update(questionnaire).set(this.toData(val))
           .where(and(
             eq(questionnaire.base, this.base),
             eq(questionnaire.id, val.id)

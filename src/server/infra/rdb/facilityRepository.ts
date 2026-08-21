@@ -59,11 +59,6 @@ export class FacilityRepository implements IFacilityRepository {
       updatedAt: val.updatedAt,
     };
   }
-  toDataWithoutKey(val: Facility): Partial<FacilityData> {
-    // deno-lint-ignore no-unused-vars
-    const {base, id, ...etc} = this.toData(val);
-    return etc;
-  }
   fromData(val: FacilityDBResult): Facility {
     return {
       id: val.id,
@@ -122,7 +117,7 @@ export class FacilityRepository implements IFacilityRepository {
     const db = await this.database.open();
     const res = await db.transaction(async (tx) => {
       try{
-        await tx.update(facility).set(this.toDataWithoutKey(val))
+        await tx.update(facility).set(this.toData(val))
           .where(eq(facility.id, val.id));
         await tx.delete(facilityContact).where(
           and(

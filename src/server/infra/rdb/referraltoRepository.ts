@@ -56,11 +56,6 @@ export class ReferralToRepository implements IReferralToRepository {
       updatedAt: val.updatedAt,
     };
   }
-  toDataWithoutKey(val: ReferralTo): Partial<ReferralToData> {
-    // deno-lint-ignore no-unused-vars
-    const {base, id, ...etc} = this.toData(val);
-    return etc;
-  }
   fromData(val: ReferralToDBResult): ReferralTo {
     return {
       id: val.id,
@@ -94,7 +89,7 @@ export class ReferralToRepository implements IReferralToRepository {
   async update(val: ReferralTo): Promise<boolean> {
     try{
       const db = await this.database.open();
-      await db.update(referralTo).set(this.toDataWithoutKey(val))
+      await db.update(referralTo).set(this.toData(val))
         .where(
           and(
             eq(referralTo.base, this.base),

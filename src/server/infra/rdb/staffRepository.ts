@@ -41,11 +41,6 @@ export class StaffRepository implements IStaffRepository {
       updatedAt: val.updatedAt
     }
   }
-  toDataWithoutKey(val: Staff): Partial<StaffData> {
-    // deno-lint-ignore no-unused-vars
-    const {base, id, ...etc} = this.toData(val);
-    return etc;
-  }
   fromData(val: StaffDBResult): Staff {
     return {
       ...val,
@@ -73,7 +68,7 @@ export class StaffRepository implements IStaffRepository {
   async update(val: Staff): Promise<boolean> {
     try{
       const db = await this.database.open();
-      await db.update(staff).set(this.toDataWithoutKey(val))
+      await db.update(staff).set(this.toData(val))
         .where(
           and(
             eq(staff.base, this.base),

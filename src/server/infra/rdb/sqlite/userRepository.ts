@@ -32,11 +32,6 @@ export class UserRepository implements IUserRepository {
       failCount: val.failCount ?? 0,
     };
   }
-  toDataWithoutKey(val: AuthUser): Partial<UserData> {
-    // deno-lint-ignore no-unused-vars
-    const {base, id, ...etc} = this.toData(val);
-    return etc;
-  }
   fromData(val: UserData): AuthUser {
     return {
       base: this.base,
@@ -72,7 +67,7 @@ export class UserRepository implements IUserRepository {
   async update(val: AuthUser): Promise<boolean> {
     try{
       const db = await this.database.open();
-      await db.update(user).set(this.toDataWithoutKey(val))
+      await db.update(user).set(this.toData(val))
         .where(
           and(
             eq(user.base, this.base),

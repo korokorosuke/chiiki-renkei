@@ -40,11 +40,6 @@ export class PatientRepository implements IPatientRepository {
       addressPlus: val.address.plus,
     };
   }
-  toDataWithoutKey(val: Patient): Partial<PatientData> {
-    // deno-lint-ignore no-unused-vars
-    const {base, id, ...etc} = this.toData(val);
-    return etc;
-  }
   fromData(val: PatientDBResult): Patient {
     return {
       id: val.id,
@@ -81,7 +76,7 @@ export class PatientRepository implements IPatientRepository {
   async update(val: Patient): Promise<boolean> {
     try{
       const db = await this.database.open();
-      await db.update(patient).set(this.toDataWithoutKey(val))
+      await db.update(patient).set(this.toData(val))
         .where(
           and(
             eq(patient.base, this.base),

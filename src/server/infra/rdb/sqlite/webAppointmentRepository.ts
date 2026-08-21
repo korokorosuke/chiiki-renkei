@@ -103,11 +103,6 @@ export class WebAppRepository implements IWebAppRepository {
       addressPlus: val.patient.address.plus,
     }
   }
-  toDataWithoutKey(val: WebAppointment): Partial<WebAppointmentData> {
-    // deno-lint-ignore no-unused-vars
-    const {base, id, ...etc} = this.toData(val);
-    return etc;
-  }
   fromData(val: WebAppointmentDBResult): WebAppointment {
     return {
       id: val.id,
@@ -217,7 +212,7 @@ export class WebAppRepository implements IWebAppRepository {
     const db = await this.database.open();
     const res = await db.transaction(async (tx) => {
       try{
-        await tx.update(webAppointment).set(this.toDataWithoutKey(val))
+        await tx.update(webAppointment).set(this.toData(val))
           .where(eq(webAppointment.id, val.id));
         await tx.update(webPatient).set(this.toPatientData(val))
           .where(eq(webPatient.appointmentId, val.id));

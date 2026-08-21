@@ -59,11 +59,6 @@ export class InquiryRepository implements IInquiryRepository {
       personInChargeId: val.personInCharge.id,
     };
   }
-  toDataWithoutKey(val: Inquiry): Partial<InquiryData> {
-    // deno-lint-ignore no-unused-vars
-    const {base, id, ...etc} = this.toData(val);
-    return etc;
-  }
   fromData(val: InquiryDBResult): Inquiry {
     return {
       id: val.id,
@@ -114,7 +109,7 @@ export class InquiryRepository implements IInquiryRepository {
     const db = await this.database.open();
     const res = await db.transaction(async (tx) => {
       try{
-        await tx.update(inquiry).set(this.toDataWithoutKey(val))
+        await tx.update(inquiry).set(this.toData(val))
           .where(
             and(
               eq(inquiry.base, this.base),
