@@ -1,7 +1,9 @@
 import { type WebAppointment, type Condition, validate } from "./webAppointment.ts"
 import { toNumberCode } from "./address.ts"
 import { type Result, type FetchResult, ok, ng } from "../lib/response.ts"
-import { getNow, generateId } from "./baseService.ts"
+import { generateId } from "./baseService.ts"
+import { getNow } from "../lib/datetime.ts"
+
 
 export interface IWebAppRepository{
     insert(r: WebAppointment): Promise<boolean>

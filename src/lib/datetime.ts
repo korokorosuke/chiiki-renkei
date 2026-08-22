@@ -103,10 +103,6 @@ export function toHHMM(time: string): string{
     return "";
 }
 
-export function getNowString(): string {
-    return toDateTimeString(new Date());
-}
-
 export function getToday(): Date{
     const d = new Date();
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());

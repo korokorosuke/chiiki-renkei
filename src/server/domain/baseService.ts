@@ -1,6 +1,8 @@
 import { v7 } from "@std/uuid"
 import { ok, ng, type Result } from "../lib/response.ts"
 import type { ValidationResult } from "../lib/validation.ts"
+import { getNow } from "../lib/datetime.ts"
+
 
 export interface IReadRepository<T>{
     read(id: string): Promise<T|undefined>
@@ -32,10 +34,6 @@ export function generateId(): string{
 
 export function setId(val: IIdentifiable): void{
     val.id = generateId();
-}
-
-export function getNow(): string{
-    return new Date().toISOString();
 }
 
 export class BaseWriteService<T, R extends IWriteRepository<T>>{

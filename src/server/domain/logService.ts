@@ -1,4 +1,5 @@
 import type { Log, LogLevel } from "./log.ts"
+import { getNow } from "../lib/datetime.ts"
 
 export interface ILogRepository {
   write(log: Log): Promise<boolean>
@@ -14,17 +15,13 @@ export class LogService {
     this.repos.push(i);
   }
 
-  getNow(): string{
-    return Temporal.Now.plainDateTimeISO().toString({smallestUnit:"second"});
-  }
-
   async write(level: LogLevel, title: string, details: string): Promise<boolean>{
     let result = true;
     const log = {
       level,
       title,
       details,
-      datetime: this.getNow(),
+      datetime: getNow(),
     }
     for await(const i of this.repos){
       result = result && await i.write(log);

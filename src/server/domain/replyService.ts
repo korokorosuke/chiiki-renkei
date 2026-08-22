@@ -1,7 +1,9 @@
 import { type Reply, type Condition, validate } from "./reply.ts"
 import type { Referral } from "./referral.ts"
 import { type Result, type FetchResult, ok, ng } from "../lib/response.ts"
-import { getNow, generateId } from "./baseService.ts"
+import { generateId } from "./baseService.ts"
+import { getNow } from "../lib/datetime.ts"
+
 
 export interface IReplyRepository{
     insert(r: Reply): Promise<boolean>

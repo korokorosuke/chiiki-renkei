@@ -32,6 +32,13 @@ export function getMonthLast(date: string): string{
 }
 
 /**
+ * return date in yyyy-MM-ddTHH:mm:ss format
+ */
+export function getNow(): string{
+  return Temporal.Now.plainDateTimeISO().toString({smallestUnit:"second"});
+}
+
+/**
  * return yyyy-MM-dd format date string of the date
  *
  * @param date - Date object
