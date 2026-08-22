@@ -2,6 +2,8 @@ import type { IMasterRepository } from "../../domain/masterService.ts"
 import { Db } from "./db.ts"
 import { master } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type MasterData = typeof master.$inferInsert;
 
@@ -49,7 +51,7 @@ export class MasterRepository implements IMasterRepository {
         return true;
       }catch(e){
         tx.rollback();
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
         return false;
       }
     });

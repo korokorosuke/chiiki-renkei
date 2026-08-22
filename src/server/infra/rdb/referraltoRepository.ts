@@ -8,6 +8,8 @@ import { type PatientDBResult, type FacilityDBResult, type UserDBResult, type De
   toFacility, toUser, toPatient } from "./types.ts"
 import { and, eq } from "drizzle-orm"
 import { addDay } from "../../lib/datetime.ts"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type ReferralToData = typeof referralTo.$inferInsert;
 
@@ -79,7 +81,7 @@ export class ReferralToRepository implements IReferralToRepository {
       await db.insert(referralTo).values(this.toData(val));
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
       return false;
     }finally{
       this.database.close();
@@ -97,7 +99,7 @@ export class ReferralToRepository implements IReferralToRepository {
           ));
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
       return false;
     }finally{
       this.database.close();
@@ -114,7 +116,7 @@ export class ReferralToRepository implements IReferralToRepository {
             eq(referralTo.id, val.id),
           ));
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
     }finally{
       this.database.close();
     }

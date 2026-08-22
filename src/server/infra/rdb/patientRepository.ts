@@ -3,6 +3,8 @@ import type { IPatientRepository } from "../../domain/patientService.ts"
 import { Db } from "./db.ts"
 import { patient } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type PatientData = typeof patient.$inferInsert;
 
@@ -66,7 +68,7 @@ export class PatientRepository implements IPatientRepository {
       await db.insert(patient).values(this.toData(val));
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
       return false;
     }finally{
       this.database.close();
@@ -84,7 +86,7 @@ export class PatientRepository implements IPatientRepository {
           ));
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
       return false;
     }finally{
       this.database.close();
@@ -101,7 +103,7 @@ export class PatientRepository implements IPatientRepository {
             eq(patient.id, val.id),
           ));
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
     }finally{
       this.database.close();
     }

@@ -3,6 +3,8 @@ import type { IAnswerPasswordRepository } from "../../domain/answerService.ts"
 import { Db } from "./db.ts"
 import { answerPassword } from "../../db/schema.ts"
 import { eq } from "drizzle-orm"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 export class AnswerPasswordRepository implements IAnswerPasswordRepository {
   database: Db
@@ -18,7 +20,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
       await db.insert(answerPassword).values(val);
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
       return false;
     }finally{
       this.database.close();
@@ -32,7 +34,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
         .where(eq(answerPassword.appointmentId, val.appointmentId));
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
       return false;
     }finally{
       this.database.close();
@@ -45,7 +47,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
       await db.delete(answerPassword)
         .where(eq(answerPassword.appointmentId, val.appointmentId));
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
     }finally{
       this.database.close();
     }
@@ -70,7 +72,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
           .where(eq(answerPassword.appointmentId, appId));
         return true;
       }catch(e){
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} countUp`, e);
         return false;
       }finally{
         this.database.close();

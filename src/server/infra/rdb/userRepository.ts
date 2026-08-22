@@ -3,6 +3,8 @@ import type { IUserRepository } from "../../domain/userService.ts"
 import { Db } from "./db.ts"
 import { user } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type UserData = typeof user.$inferInsert;
 
@@ -57,7 +59,7 @@ export class UserRepository implements IUserRepository {
       await db.insert(user).values(this.toData(val));
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
       return false;
     }finally{
       this.database.close();
@@ -75,7 +77,7 @@ export class UserRepository implements IUserRepository {
           ));
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
       return false;
     }finally{
       this.database.close();
@@ -92,7 +94,7 @@ export class UserRepository implements IUserRepository {
             eq(user.id, val.id),
           ));
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
     }finally{
       this.database.close();
     }

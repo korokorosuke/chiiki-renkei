@@ -4,6 +4,8 @@ import { Db } from "./db.ts"
 import { facility, facilityContact } from "../../db/schema.ts"
 import { type UserDBResult, toUser } from "./types.ts"
 import { and, eq } from "drizzle-orm"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type FacilityData = typeof facility.$inferInsert;
 
@@ -105,7 +107,7 @@ export class FacilityRepository implements IFacilityRepository {
         return true;
       }catch(e){
         tx.rollback();
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
         return false;
       }
     });
@@ -138,7 +140,7 @@ export class FacilityRepository implements IFacilityRepository {
         return true;
       }catch(e){
         tx.rollback();
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} upadte`, e);
         return false;
       }
     });
@@ -163,7 +165,7 @@ export class FacilityRepository implements IFacilityRepository {
             ))
       }catch(e){
         tx.rollback();
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
       }
     });
     this.database.close();

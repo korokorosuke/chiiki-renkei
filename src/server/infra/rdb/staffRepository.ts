@@ -4,6 +4,8 @@ import { type UserDBResult, toUser } from "./types.ts"
 import { Db } from "./db.ts"
 import { staff } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type StaffData = typeof staff.$inferInsert;
 
@@ -58,7 +60,7 @@ export class StaffRepository implements IStaffRepository {
       await db.insert(staff).values(this.toData(val));
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
       return false;
     }finally{
       this.database.close();
@@ -76,7 +78,7 @@ export class StaffRepository implements IStaffRepository {
           ));
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
       return false;
     }finally{
       this.database.close();
@@ -93,7 +95,7 @@ export class StaffRepository implements IStaffRepository {
             eq(staff.id, val.id),
           ));
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
     }finally{
       this.database.close();
     }

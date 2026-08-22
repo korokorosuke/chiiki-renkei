@@ -3,5 +3,5 @@ export { address, activity, activityPurpose, answer, answerItem, answerPassword,
   master, notice, patient, questionCondition, questionChoice, question,
   questionnaire, questionnaireDept, referralTo, reply, staff, user,
   webConsultation, webPatient, webAppointment, webDepartment, webDr, webReserv,
-  webMaster, webNotice, webReservation, classification
+  webMaster, webNotice, webReservation, classification, log
 } from "./schemaPostgres.ts"

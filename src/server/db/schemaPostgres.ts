@@ -456,3 +456,13 @@ export const webReservation = snakeCase.table("web_reservation", {
 }, (table) => [
   primaryKey({ columns: [table.base, table.departmentId, table.drId, table.date, table.time] }),
 ]);
+
+export const log = snakeCase.table("log", {
+  base: text().notNull(),
+  datetime: text().notNull(),
+  level: text().notNull(),
+  title: text().notNull(),
+  details: text().notNull(),
+}, (table) => [
+  index("idx_log_datetime").on(table.base, table.datetime),
+]);

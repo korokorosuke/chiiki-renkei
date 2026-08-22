@@ -5,6 +5,8 @@ import { activity, activityPurpose } from "../../db/schema.ts"
 import { UserDBResult, FacilityDBResult, toFacility, toUser } from "./types.ts"
 import { and, eq } from "drizzle-orm"
 import { addDay } from "../../lib/datetime.ts"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type ActivityData = typeof activity.$inferInsert;
 
@@ -72,7 +74,7 @@ export class ActivityRepository implements IActivityRepository {
         return true;
       }catch(e){
         tx.rollback()
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
         return false;
       }
     });
@@ -98,7 +100,7 @@ export class ActivityRepository implements IActivityRepository {
         return true;
       }catch(e){
         tx.rollback()
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
         return false;
       }
     });
@@ -118,7 +120,7 @@ export class ActivityRepository implements IActivityRepository {
             ));
       }catch(e){
         tx.rollback()
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
       }
     });
   }

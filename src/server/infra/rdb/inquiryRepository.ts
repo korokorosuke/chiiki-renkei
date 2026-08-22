@@ -8,6 +8,8 @@ import { type PatientDBResult, type FacilityDBResult, type UserDBResult,
   toFacility, toUser, toPatient } from "./types.ts"
 import { and, eq } from "drizzle-orm"
 import { addDay } from "../../lib/datetime.ts"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type InquiryData = typeof inquiry.$inferInsert;
 
@@ -97,7 +99,7 @@ export class InquiryRepository implements IInquiryRepository {
         return true;
       }catch(e){
         tx.rollback();
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
         return false;
       }
     });
@@ -129,7 +131,7 @@ export class InquiryRepository implements IInquiryRepository {
         return true;
       }catch(e){
         tx.rollback();
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
         return false;
       }
     });
@@ -151,7 +153,7 @@ export class InquiryRepository implements IInquiryRepository {
               eq(inquiry.id, val.id),
             ));
       }catch(e){
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
       }
     });
     this.database.close();

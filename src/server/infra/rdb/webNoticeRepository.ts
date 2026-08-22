@@ -3,6 +3,8 @@ import type { IWebNoticeRepository } from "../../domain/webNoticeService.ts"
 import { Db } from "./db.ts"
 import { webNotice } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type WebNoticeData = typeof webNotice.$inferInsert;
 
@@ -27,7 +29,7 @@ export class WebNoticeRepository implements IWebNoticeRepository {
       await db.insert(webNotice).values(this.toData(val));
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
       return false;
     }finally{
       this.database.close();
@@ -45,7 +47,7 @@ export class WebNoticeRepository implements IWebNoticeRepository {
           ))
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
       return false;
     }finally{
       this.database.close();
@@ -62,7 +64,7 @@ export class WebNoticeRepository implements IWebNoticeRepository {
             eq(webNotice.id, val.id),
           ));
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
     }finally{
       this.database.close();
     }

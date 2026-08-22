@@ -6,6 +6,8 @@ import { type QuestionnaireDBResult, toQuestionnaire } from "./questionnaireRepo
 import { Db } from "./db.ts"
 import { answer, answerItem } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type AnswerData = typeof answer.$inferInsert;
 
@@ -77,7 +79,7 @@ export class AnswerRepository implements IAnswerRepository {
         return true;
       }catch(e){
         tx.rollback();
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
         return false;
       }
     });
@@ -108,7 +110,7 @@ export class AnswerRepository implements IAnswerRepository {
         return true;
       }catch(e){
         tx.rollback();
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
         return false;
       }
     });
@@ -129,7 +131,7 @@ export class AnswerRepository implements IAnswerRepository {
           .where(eq(answerItem.answerId, val.id));
       }catch(e){
         tx.rollback();
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
       }
     });
     this.database.close();

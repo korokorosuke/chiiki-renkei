@@ -4,6 +4,8 @@ import { Db } from "./db.ts"
 import { webReservation } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
 import { getNextMonth } from "../../lib/datetime.ts"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type WebReservationData = typeof webReservation.$inferInsert;
 
@@ -60,7 +62,7 @@ export class WebReservationRepository implements IWebReservationRepository {
             ));
         return true;
       }catch(e){
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} countUp`, e);
         return false;
       }finally{
         this.database.close();
@@ -87,7 +89,7 @@ export class WebReservationRepository implements IWebReservationRepository {
             ));
         return true;
       }catch(e){
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} countDown`, e);
         return false;
       }finally{
         this.database.close();
@@ -104,7 +106,7 @@ export class WebReservationRepository implements IWebReservationRepository {
         .values(this.toData(val));
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
       return false;
     }finally{
       this.database.close();
@@ -125,7 +127,7 @@ export class WebReservationRepository implements IWebReservationRepository {
           ));
       return true;
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
       return false;
     }finally{
       this.database.close();
@@ -145,7 +147,7 @@ export class WebReservationRepository implements IWebReservationRepository {
             eq(webReservation.time, val.time),
           ));
     }catch(e){
-      console.log(e);
+      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
     }finally{
       this.database.close();
     }

@@ -3,6 +3,8 @@ import type { IWebMasterRepository } from "../../domain/webMasterService.ts"
 import { Db } from "./db.ts"
 import { webMaster, webReserv } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type WebMasterData = typeof webMaster.$inferInsert;
 type WebReservData = typeof webReserv.$inferInsert;
@@ -66,7 +68,7 @@ export class WebMasterRepository implements IWebMasterRepository {
         }
         return true;
       }catch(e){
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
         return false;
       }
     });
@@ -91,7 +93,7 @@ export class WebMasterRepository implements IWebMasterRepository {
         }
         return true;
       }catch(e){
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
         return false;
       }
     });
@@ -118,7 +120,7 @@ export class WebMasterRepository implements IWebMasterRepository {
               eq(webMaster.week, val.week),
             ));
       }catch(e){
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
       }
     });
   }

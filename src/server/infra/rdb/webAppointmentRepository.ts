@@ -10,6 +10,8 @@ import { webAppointment, webConsultation, webPatient } from "../../db/schema.ts"
 import { type FacilityDBResult, type UserDBResult, toFacility, toUser } from "./types.ts"
 import { and, eq } from "drizzle-orm"
 import { addDay } from "../../lib/datetime.ts"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type WebAppointmentData = typeof webAppointment.$inferInsert;
 type WebPatientData = typeof webPatient.$inferInsert;
@@ -170,7 +172,7 @@ export class WebAppRepository implements IWebAppRepository {
           }
           return true;
         }catch(e){
-          console.log(e);
+          new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
           return false;
         }
       });
@@ -242,7 +244,7 @@ export class WebAppRepository implements IWebAppRepository {
         }
         return true;
       }catch(e){
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
         return false;
       }
     });
@@ -275,7 +277,7 @@ export class WebAppRepository implements IWebAppRepository {
               eq(webAppointment.id, val.id),
             ));
         }catch(e){
-          console.log(e);
+          new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
         }
       });
       this.database.close();

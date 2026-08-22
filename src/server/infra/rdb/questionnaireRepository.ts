@@ -3,6 +3,8 @@ import type { IQuestionnaireRepository } from "../../domain/questionnaireService
 import { Db } from "./db.ts"
 import { questionnaire, question, questionChoice, questionCondition, questionnaireDept } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
+import { LogService } from "../../domain/logService.ts"
+import { LogRepository } from "./logRepository.ts"
 
 type QuestionnaireData = typeof questionnaire.$inferInsert;
 type QuestionData = typeof question.$inferInsert;
@@ -132,7 +134,7 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
         }
         return true;
       }catch(e){
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
         tx.rollback();
         return false;
       }
@@ -197,7 +199,7 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
         }
         return true;
       }catch(e){
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
         tx.rollback();
         return false;
       }
@@ -226,7 +228,7 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
           .where(
             eq(questionChoice.questionnaireId, val.id));
       }catch(e){
-        console.log(e);
+        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
         tx.rollback();
       }
     });
