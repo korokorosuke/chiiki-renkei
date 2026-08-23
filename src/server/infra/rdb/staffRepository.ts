@@ -4,8 +4,7 @@ import { type UserDBResult, toUser } from "./types.ts"
 import { Db } from "./db.ts"
 import { staff } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type StaffData = typeof staff.$inferInsert;
 
@@ -60,7 +59,7 @@ export class StaffRepository implements IStaffRepository {
       await db.insert(staff).values(this.toData(val));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+      await fatal(`${this.constructor.name} insert`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -78,14 +77,14 @@ export class StaffRepository implements IStaffRepository {
           ));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+      await fatal(`${this.constructor.name} update`, e, this.base);
       return false;
     }finally{
       this.database.close();
     }
   }
 
-  async delete(val: Staff): Promise<void> {
+  async delete(val: Staff): Promise<boolean> {
     try{
       const db = await this.database.open();
       await db.delete(staff)
@@ -94,8 +93,10 @@ export class StaffRepository implements IStaffRepository {
             eq(staff.base, this.base),
             eq(staff.id, val.id),
           ));
+      return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+      await fatal(`${this.constructor.name} delete`, e, this.base);
+      return false;
     }finally{
       this.database.close();
     }

@@ -3,6 +3,7 @@ import type { Answer } from "../domain/answer.ts"
 import type { IAnswerRepository } from "../domain/answerService.ts"
 import { Kv } from "./kv.ts"
 import { AppointmentRepository } from "./appointmentRepository.ts"
+import { fatal } from "../lib/log.ts"
 
 export class AnswerRepository implements IAnswerRepository {
     database: Kv
@@ -25,6 +26,7 @@ export class AnswerRepository implements IAnswerRepository {
     async insert(a: Answer): Promise<boolean> {
         const patId = await this.getPatientId(a);
         if(!patId){
+            await fatal(`${this.constructor.name} insert`, "患者IDを取得できませんでした", this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -35,11 +37,15 @@ export class AnswerRepository implements IAnswerRepository {
             .set([this.base, this.KEY_PAT, patId, a.id], a)
             .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(a: Answer): Promise<boolean> {
         const patId = await this.getPatientId(a);
         if(!patId){
+            await fatal(`${this.constructor.name} update`, "患者IDを取得できませんでした", this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -49,24 +55,32 @@ export class AnswerRepository implements IAnswerRepository {
             .set([this.base, this.KEY_PAT, patId, a.id], a)
             .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(a: Answer): Promise<void> {
+    async delete(a: Answer): Promise<boolean> {
         const patId = await this.getPatientId(a);
         const kv = await this.database.open();
+        let res;
         if(patId){
-            await kv.atomic()
+            res = await kv.atomic()
                 .delete([this.base, this.KEY, a.id])
                 .delete([this.base, this.KEY_APP, a.appointmentId, a.id])
                 .delete([this.base, this.KEY_PAT, patId, a.id])
                 .commit();
         }else{
-            await kv.atomic()
+            res = await kv.atomic()
                 .delete([this.base, this.KEY, a.id])
                 .delete([this.base, this.KEY_APP, a.appointmentId, a.id])
                 .commit();
         }
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} delete`, "失敗しました", this.base);
+        }
+        return res.ok;
     }
     async read(id: string): Promise<Answer|undefined> {
         const kv = await this.database.open();

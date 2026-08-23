@@ -3,7 +3,7 @@ import { StaffService } from "../domain/staffService.ts"
 import { StaffRepository } from "../infra/allRepository.ts"
 import type { Staff } from "../domain/staff.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
-import { type Result, ok, ng } from "../lib/response.ts"
+import { type Result, ng } from "../lib/response.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -65,14 +65,8 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      if(data.staff){
-        const service = new StaffService(new StaffRepository(auth.user!.base));
-        await service.delete(data.staff);
-        return ok();
-      }else{
-        return ng(["データが不正です。"]);
-      }
-    }else{
-      return auth;
+      const service = new StaffService(new StaffRepository(auth.user!.base));
+      return await service.delete(data.staff);
     }
+    return ng(auth.errors!);
 });

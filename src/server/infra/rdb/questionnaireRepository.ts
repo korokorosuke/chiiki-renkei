@@ -3,8 +3,7 @@ import type { IQuestionnaireRepository } from "../../domain/questionnaireService
 import { Db } from "./db.ts"
 import { questionnaire, question, questionChoice, questionCondition, questionnaireDept } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type QuestionnaireData = typeof questionnaire.$inferInsert;
 type QuestionData = typeof question.$inferInsert;
@@ -134,7 +133,7 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
         }
         return true;
       }catch(e){
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+        await fatal(`${this.constructor.name} insert`, e, this.base);
         tx.rollback();
         return false;
       }
@@ -199,7 +198,7 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
         }
         return true;
       }catch(e){
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+        await fatal(`${this.constructor.name} update`, e, this.base);
         tx.rollback();
         return false;
       }
@@ -208,9 +207,9 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
     return res;
   }
 
-  async delete(val: Questionnaire): Promise<void> {
+  async delete(val: Questionnaire): Promise<boolean> {
     const db = await this.database.open();
-    await db.transaction(async (tx) => {
+    const res = await db.transaction(async (tx) => {
       try{
         await tx.delete(questionnaire)
           .where(
@@ -227,12 +226,15 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
         await tx.delete(questionChoice)
           .where(
             eq(questionChoice.questionnaireId, val.id));
+        return true;
       }catch(e){
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+        await fatal(`${this.constructor.name} delete`, e, this.base);
         tx.rollback();
+        return false;
       }
     });
     this.database.close();
+    return res;
   }
 
   async select(cond: object): Promise<QuestionnaireDBResult[]> {

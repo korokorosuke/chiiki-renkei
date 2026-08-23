@@ -4,8 +4,7 @@ import { Db } from "./db.ts"
 import { facility, facilityContact } from "../../db/schema.ts"
 import { type UserDBResult, toUser } from "./types.ts"
 import { and, eq } from "drizzle-orm"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type FacilityData = typeof facility.$inferInsert;
 
@@ -107,7 +106,7 @@ export class FacilityRepository implements IFacilityRepository {
         return true;
       }catch(e){
         tx.rollback();
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+        await fatal(`${this.constructor.name} insert`, e, this.base);
         return false;
       }
     });
@@ -140,7 +139,7 @@ export class FacilityRepository implements IFacilityRepository {
         return true;
       }catch(e){
         tx.rollback();
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} upadte`, e);
+        await fatal(`${this.constructor.name} upadte`, e, this.base);
         return false;
       }
     });
@@ -148,9 +147,9 @@ export class FacilityRepository implements IFacilityRepository {
     return res;
   }
 
-  async delete(val: Facility): Promise<void> {
+  async delete(val: Facility): Promise<boolean> {
     const db = await this.database.open();
-    await db.transaction(async (tx) => {
+    const res = await db.transaction(async (tx) => {
       try{
         await tx.delete(facilityContact).where(
           and(
@@ -163,12 +162,15 @@ export class FacilityRepository implements IFacilityRepository {
               eq(facility.base, this.base),
               eq(facility.id, val.id),
             ))
+        return true;
       }catch(e){
         tx.rollback();
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+        await fatal(`${this.constructor.name} delete`, e, this.base);
+        return false;
       }
     });
     this.database.close();
+    return res;
   }
 
   private async select(cond: object): Promise<FacilityDBResult[]> {

@@ -3,7 +3,7 @@ import { QuestionnaireService } from "../domain/questionnaireService.ts"
 import { QuestionnaireRepository } from "../infra/allRepository.ts"
 import type { Questionnaire } from "../domain/questionnaire.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
-import { type Result, ok, ng } from "../lib/response.ts"
+import { type Result, ng } from "../lib/response.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -63,14 +63,8 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      if(data.q){
-        const service = new QuestionnaireService(new QuestionnaireRepository(auth.user!.base));
-        await service.delete(data.q);
-        return ok();
-      }else{
-        return ng(["データが不正です。"]);
-      }
-    }else{
-      return auth;
+      const service = new QuestionnaireService(new QuestionnaireRepository(auth.user!.base));
+      return await service.delete(data.q);
     }
+    return ng(auth.errors!);
 });

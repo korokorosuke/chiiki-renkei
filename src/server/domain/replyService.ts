@@ -8,7 +8,7 @@ import { getNow } from "../lib/datetime.ts"
 export interface IReplyRepository{
     insert(r: Reply): Promise<boolean>
     update(r: Reply): Promise<boolean>
-    delete(r: Reply): Promise<void>
+    delete(r: Reply): Promise<boolean>
     read(id: string): Promise<Referral|undefined>
     list(cond: Condition): Promise<Referral[]>
 }
@@ -67,7 +67,12 @@ export class ReplyService{
         }
     }
 
-    async delete(val: Reply): Promise<void>{
-        await this.i.delete(val);
+    async delete(val: Reply): Promise<Result>{
+        const res = await this.i.delete(val);
+        if(res){
+            return ok();
+        }else{
+            return ng(["削除に失敗しました。"]);
+        }
     }
 }

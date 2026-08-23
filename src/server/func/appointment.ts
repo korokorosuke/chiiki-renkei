@@ -9,7 +9,7 @@ import { AppointmentRegistration } from "../usecase/appointmentRegistration.ts"
 import { AnswerRegistration } from "../usecase/answerRegistration.ts"
 import type { Appointment } from "../domain/appointment.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
-import { type Result, ok, ng } from "../lib/response.ts"
+import { type Result, ng } from "../lib/response.ts"
 
 const AUTH_READ = {auth: Auth.APPOINT, role: Role.READ};
 const AUTH_DATE_READ = {auth: Auth.STATISTICS, role: Role.READ};
@@ -101,22 +101,16 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      if(data.appointment){
-        const usecase = new AppointmentRegistration(
-          new AppointmentService(
-            new AppointmentRepository(auth.user!.base)),
-          new AnswerRegistration(
-            new AnswerService(
-              new AnswerRepository(auth.user!.base),
-              new AnswerPasswordRepository(auth.user!.base)),
-            new QuestionnaireService(
-              new QuestionnaireRepository(auth.user!.base))));
-        await usecase.delete(data.appointment);
-        return ok();
-      }else{
-        return ng(["データが不正です。"]);
-      }
-    }else{
-      return auth;
+      const usecase = new AppointmentRegistration(
+        new AppointmentService(
+          new AppointmentRepository(auth.user!.base)),
+        new AnswerRegistration(
+          new AnswerService(
+            new AnswerRepository(auth.user!.base),
+            new AnswerPasswordRepository(auth.user!.base)),
+          new QuestionnaireService(
+            new QuestionnaireRepository(auth.user!.base))));
+      return await usecase.delete(data.appointment);
     }
+    return ng(auth.errors!);
 });

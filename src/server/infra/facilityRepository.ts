@@ -2,6 +2,7 @@
 import type { Facility } from "../domain/facility.ts"
 import type { IFacilityRepository } from "../domain/facilityService.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class FacilityRepository implements IFacilityRepository {
     database: Kv
@@ -17,18 +18,25 @@ export class FacilityRepository implements IFacilityRepository {
         const res = await kv.atomic().check({key, versionstamp: null})
             .set(key, f).commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(f: Facility): Promise<boolean> {
         const kv = await this.database.open();
         const res = await kv.set([this.base, this.KEY, f.id], f);
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(f: Facility): Promise<void> {
+    async delete(f: Facility): Promise<boolean> {
         const kv = await this.database.open();
         await kv.delete([this.base, this.KEY, f.id]);
         this.database.close();
+        return true;
     }
     async read(id: string): Promise<Facility|undefined> {
         const kv = await this.database.open();

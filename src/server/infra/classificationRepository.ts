@@ -2,6 +2,7 @@
 import type { Classification } from "../domain/classification.ts"
 import type { IClassificationRepository } from "../domain/classificationService.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class ClassificationRepository implements IClassificationRepository {
     database: Kv
@@ -17,18 +18,25 @@ export class ClassificationRepository implements IClassificationRepository {
         const res = await kv.atomic().check({key, versionstamp: null})
             .set(key, d).commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(d: Classification): Promise<boolean> {
         const kv = await this.database.open();
         const res = await kv.set([this.base, this.KEY, d.id], d);
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(d: Classification): Promise<void> {
+    async delete(d: Classification): Promise<boolean> {
         const kv = await this.database.open();
         await kv.delete([this.base, this.KEY, d.id]);
         this.database.close();
+        return true;
     }
     async read(id: string): Promise<Classification|undefined> {
         const kv = await this.database.open();

@@ -1,13 +1,13 @@
 import { ID_EMPTY, DATE_EMPTY } from "../domain/webAppointmentService.ts"
 import type { WebAppointment } from "../domain/webAppointment.ts"
 import type { AppointmentRegistration } from "./appointmentRegistration.ts"
-import { type FetchResult, ng, ok } from "../lib/response.ts"
+import { type FetchResult, type Result, ng, ok } from "../lib/response.ts"
 import { toAppointment } from "../lib/types.ts"
 
 export interface IWebAppointmentService{
     insert(val: WebAppointment): Promise<FetchResult<WebAppointment>>
     update(val: WebAppointment): Promise<FetchResult<WebAppointment>>
-    delete(val: WebAppointment): Promise<void>
+    delete(val: WebAppointment): Promise<Result>
     getRaw(id: string): Promise<WebAppointment|undefined>
 }
 
@@ -81,12 +81,18 @@ export class WebAppointmentRegistration{
         }
     }
 
-    async delete(val: WebAppointment): Promise<void>{
+    async delete(val: WebAppointment): Promise<Result>{
         const data = await this.service.getRaw(val.id);
-        await this.service.delete(val);
-        if(data && data.patient.id !== ID_EMPTY && data.date !== DATE_EMPTY){
-            await this.appusecase.delete(toAppointment(data));
+        if(!data){
+            return ng(["予約が見つかりませんでした。"]);
         }
+        const result = await this.service.delete(val);
+        if(result.ok){
+            if(data && data.patient.id !== ID_EMPTY && data.date !== DATE_EMPTY){
+                return await this.appusecase.delete(toAppointment(data));
+            }
+        }
+        return result;
     }
 
     async cancel(val: WebAppointment): Promise<FetchResult<WebAppointment>>{

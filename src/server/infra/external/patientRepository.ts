@@ -11,7 +11,7 @@ export class PatientRepository implements IPatientRepository {
   update(_: Patient): Promise<boolean> {
     return Promise.reject(new Error("Not implemented"));
   }
-  delete(_: Patient): Promise<void> {
+  delete(_: Patient): Promise<boolean> {
     return Promise.reject(new Error("Not implemented"));
   }
   async read(id: string): Promise<Patient|undefined> {

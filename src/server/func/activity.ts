@@ -3,7 +3,7 @@ import { ActivityService } from "../domain/activityService.ts"
 import { ActivityRepository } from "../infra/allRepository.ts"
 import type { Activity } from "../domain/activity.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
-import { type Result, ok, ng } from "../lib/response.ts"
+import { type Result, ng } from "../lib/response.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -50,14 +50,8 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      if(data){
-        const service = new ActivityService(new ActivityRepository(auth.user!.base));
-        await service.delete(data);
-        return ok();
-      }else{
-        return ng(["データが不正です。"]);
-      }
-    }else{
-      return auth;
+      const service = new ActivityService(new ActivityRepository(auth.user!.base));
+      return await service.delete(data);
     }
+    return ng(auth.errors!);
 });

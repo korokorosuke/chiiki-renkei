@@ -3,8 +3,7 @@ import type { IDueRepository } from "../../domain/dueService.ts"
 import { Db } from "./db.ts"
 import { due } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type DueData = typeof due.$inferInsert;
 
@@ -31,7 +30,7 @@ export class DueRepository implements IDueRepository {
       await db.insert(due).values(this.toData(val));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+      await fatal(`${this.constructor.name} insert`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -49,14 +48,14 @@ export class DueRepository implements IDueRepository {
           ));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+      await fatal(`${this.constructor.name} update`, e, this.base);
       return false;
     }finally{
       this.database.close();
     }
   }
 
-  async delete(val: Due): Promise<void> {
+  async delete(val: Due): Promise<boolean> {
     try{
       const db = await this.database.open();
       await db.delete(due)
@@ -65,8 +64,10 @@ export class DueRepository implements IDueRepository {
             eq(due.base, this.base),
             eq(due.id, val.id),
           ));
+      return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+      await fatal(`${this.constructor.name} delete`, e, this.base);
+      return false;
     }finally{
       this.database.close();
     }

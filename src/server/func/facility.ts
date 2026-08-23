@@ -3,7 +3,7 @@ import { FacilityService } from "../domain/facilityService.ts"
 import { FacilityRepository } from "../infra/allRepository.ts"
 import type { Facility, Fac } from "../domain/facility.ts"
 import { authenticate, Auth, Role, verify } from "../lib/auth.ts"
-import { type Result, ok, ng } from "../lib/response.ts"
+import { type Result, ng } from "../lib/response.ts"
 import { toFac } from "../lib/types.ts"
 
 const AUTH_READ = {auth: Auth.FACILITY, role: Role.READ};
@@ -92,14 +92,8 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      if(data.facility){
-        const service = new FacilityService(new FacilityRepository(auth.user!.base));
-        await service.delete(data.facility);
-        return ok();
-      }else{
-        return ng(["データが不正です。"]);
-      }
-    }else{
-      return auth;
+      const service = new FacilityService(new FacilityRepository(auth.user!.base));
+      return await service.delete(data.facility);
     }
+    return ng(auth.errors!);
 });

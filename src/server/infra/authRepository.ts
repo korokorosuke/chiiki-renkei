@@ -1,6 +1,7 @@
 /// <reference lib="deno.unstable" />
 import type { IAuthRepository } from "../domain/authService.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class AuthRepository implements IAuthRepository {
     database: Kv
@@ -14,12 +15,16 @@ export class AuthRepository implements IAuthRepository {
         const kv = await this.database.open();
         const res = await kv.set([this.base, this.KEY, user], token);
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(user: string): Promise<void> {
+    async delete(user: string): Promise<boolean> {
         const kv = await this.database.open();
         await kv.delete([this.base, this.KEY, user]);
         this.database.close();
+        return true;
     }
     async read(id: string): Promise<string> {
         const kv = await this.database.open();

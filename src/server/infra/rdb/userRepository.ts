@@ -3,8 +3,7 @@ import type { IUserRepository } from "../../domain/userService.ts"
 import { Db } from "./db.ts"
 import { user } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type UserData = typeof user.$inferInsert;
 
@@ -59,7 +58,7 @@ export class UserRepository implements IUserRepository {
       await db.insert(user).values(this.toData(val));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+      await fatal(`${this.constructor.name} insert`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -77,14 +76,14 @@ export class UserRepository implements IUserRepository {
           ));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+      await fatal(`${this.constructor.name} update`, e, this.base);
       return false;
     }finally{
       this.database.close();
     }
   }
 
-  async delete(val: AuthUser): Promise<void> {
+  async delete(val: AuthUser): Promise<boolean> {
     try{
       const db = await this.database.open();
       await db.delete(user)
@@ -93,8 +92,10 @@ export class UserRepository implements IUserRepository {
             eq(user.base, this.base),
             eq(user.id, val.id),
           ));
+      return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+      await fatal(`${this.constructor.name} delete`, e, this.base);
+      return false;
     }finally{
       this.database.close();
     }

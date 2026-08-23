@@ -5,6 +5,7 @@ import { Kv } from "./kv.ts"
 import { WebReservationRepository } from "./webReservationRepository.ts"
 import { DATE_EMPTY } from "../domain/webAppointmentService.ts"
 import { addDay } from "../lib/datetime.ts"
+import { fatal } from "../lib/log.ts"
 
 export class WebAppRepository implements IWebAppRepository {
     database: Kv
@@ -19,6 +20,7 @@ export class WebAppRepository implements IWebAppRepository {
     }
     async insert(app: WebAppointment): Promise<boolean> {
         if(!app.facility.id){
+            await fatal(`${this.constructor.name} insert`, "施設が存在しません", this.base);
             return false;
         }
         const repo = new WebReservationRepository(this.base);
@@ -34,15 +36,18 @@ export class WebAppRepository implements IWebAppRepository {
             this.database.close();
             if(!res.ok){
                 await repo.countDown(app.department.id, app.date, app.dr.id, app.time);
+                await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
             }
             return res.ok;
         }else{
+            await fatal(`${this.constructor.name} insert`, "枠数の更新に失敗しました", this.base);
             return false;
         }
     }
     async update(app: WebAppointment): Promise<boolean> {
         const data = await this.read(app.id);
         if(!data || !data.facility.id || !app.facility.id){
+            await fatal(`${this.constructor.name} update`, "データまたは施設が存在しません", this.base);
             return false;
         }
 
@@ -53,19 +58,23 @@ export class WebAppRepository implements IWebAppRepository {
             //continue
         }else if(app.date === DATE_EMPTY && data.date !== DATE_EMPTY){
             if(!await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
+                await fatal(`${this.constructor.name} update`, "枠数の更新に失敗しました", this.base);
                 return false;
             }
         }else if(data.date === DATE_EMPTY && app.date !== DATE_EMPTY){
             if(!await repo.countUp(app.department.id, app.date, app.dr.id, app.time, app.force)){
+                await fatal(`${this.constructor.name} update`, "枠数の更新に失敗しました", this.base);
                 return false;
             }
         }else if(data.department.id != app.department.id || data.date != app.date ||
             data.dr.id != app.dr.id || data.time != app.time){
             if(!await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
+                await fatal(`${this.constructor.name} update`, "枠数の更新に失敗しました", this.base);
                 return false;
             }
             if(!await repo.countUp(app.department.id, app.date, app.dr.id, app.time, app.force)){
                 await repo.countUp(data.department.id, data.date, data.dr.id, data.time, data.force);
+                await fatal(`${this.constructor.name} update`, "枠数の更新に失敗しました", this.base);
                 return false;
             }
         }
@@ -90,26 +99,37 @@ export class WebAppRepository implements IWebAppRepository {
                 .commit();
         }
         this.database.close();
+        if(!res.ok){
+            await repo.countDown(app.department.id, app.date, app.dr.id, app.time);
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(app: WebAppointment): Promise<void> {
+    async delete(app: WebAppointment): Promise<boolean> {
         const data = await this.read(app.id);
-        if(data){
-            if(!data.cancel && data.date !== DATE_EMPTY && data.dr.id){
-                const repo = new WebReservationRepository(this.base);
-                if(!await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
-                    return;
-                }
-            }
-            const kv = await this.database.open();
-            await kv.atomic()
-                .delete([this.base, this.KEY, app.id])
-                .delete([this.base, this.KEY2, data.date, app.id])
-                .delete([this.base, this.KEY3, data.facility.id, app.id])
-                .delete([this.base, this.KEY4, data.patient.id, data.id])
-                .commit();
-            this.database.close();
+        if(!data){
+            await fatal(`${this.constructor.name} delete`, "データが存在しません", this.base);
+            return false;
         }
+        if(!data.cancel && data.date !== DATE_EMPTY && data.dr.id){
+            const repo = new WebReservationRepository(this.base);
+            if(!await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
+                await fatal(`${this.constructor.name} delete`, "枠数の更新に失敗しました", this.base);
+                return false;
+            }
+        }
+        const kv = await this.database.open();
+        const res = await kv.atomic()
+            .delete([this.base, this.KEY, app.id])
+            .delete([this.base, this.KEY2, data.date, app.id])
+            .delete([this.base, this.KEY3, data.facility.id, app.id])
+            .delete([this.base, this.KEY4, data.patient.id, data.id])
+            .commit();
+        this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} delete`, "失敗しました", this.base);
+        }
+        return res.ok;
     }
     async read(id: string): Promise<WebAppointment|undefined> {
         const kv = await this.database.open();

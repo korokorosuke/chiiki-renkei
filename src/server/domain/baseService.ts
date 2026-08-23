@@ -11,7 +11,7 @@ export interface IReadRepository<T>{
 export interface IWriteRepository<T>{
     insert(d: T): Promise<boolean>
     update(d: T): Promise<boolean>
-    delete(d: T): Promise<void>
+    delete(d: T): Promise<boolean>
 }
 
 export interface IRepository<T> extends IReadRepository<T>, IWriteRepository<T>{}
@@ -37,7 +37,7 @@ export function setId(val: IIdentifiable): void{
 }
 
 export class BaseWriteService<T, R extends IWriteRepository<T>>{
-    private i: R
+    protected i: R
     private validate: (val: T)=>ValidationResult
     private createId: (val: IIdentifiable)=>void
 
@@ -108,38 +108,23 @@ export class BaseWriteService<T, R extends IWriteRepository<T>>{
         }
     }
 
-    async delete(val: T): Promise<void>{
-        await this.i.delete(val);
+    async delete(val: T): Promise<Result>{
+        const res = await this.i.delete(val);
+        if(res){
+            return ok();
+        }else{
+            return ng(["削除に失敗しました。"]);
+        }
     }
 }
 
-export class BaseService<T, R extends IRepository<T>>{
-    private i: R
-    private service: BaseWriteService<T, R>
-
+export class BaseService<T, R extends IRepository<T>> extends BaseWriteService<T, R>{
     constructor(i: R, validate: (val: T)=>ValidationResult,
-            createId: (val: IIdentifiable)=>void = (_)=>{}){
-        this.i = i;
-        this.service = new BaseWriteService(i, validate, createId);
-    }
-
-    protected getRepository(): R{
-        return this.i;
+        createId: (val: IIdentifiable)=>void = (_)=>{}){
+      super(i, validate, createId);
     }
 
     async get(id: string): Promise<T|undefined>{
         return await this.i.read(id);
-    }
-
-    async insert(val: T): Promise<Result>{
-        return await this.service.insert(val);
-    }
-
-    async update(val: T): Promise<Result>{
-        return await this.service.update(val);
-    }
-
-    async delete(val: T): Promise<void>{
-        await this.service.delete(val);
     }
 }

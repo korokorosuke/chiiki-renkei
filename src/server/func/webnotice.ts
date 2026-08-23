@@ -3,7 +3,7 @@ import { WebNoticeService } from "../domain/webNoticeService.ts"
 import { WebNoticeRepository } from "../infra/allRepository.ts"
 import type { WebNotice } from "../domain/webNotice.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
-import { type Result, ok, ng } from "../lib/response.ts"
+import { type Result, ng } from "../lib/response.ts"
 
 const AUTH_READ = {auth: Auth.WEB, role: Role.READ};
 const AUTH_READ_ALL = {auth: Auth.MASTER, role: Role.READ};
@@ -79,8 +79,7 @@ export const del = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new WebNoticeService(new WebNoticeRepository(auth.user!.base));
-      await service.delete(data.notice);
-      return ok();
+      return await service.delete(data.notice);
     }
     return ng(auth.errors!);
 });

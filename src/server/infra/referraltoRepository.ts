@@ -7,6 +7,7 @@ import { PatientRepository } from "./patientRepository.ts"
 import { FacilityService } from "../domain/facilityService.ts"
 import { toFac } from "../lib/types.ts"
 import { addDay } from "../lib/datetime.ts"
+import { fatal } from "../lib/log.ts"
 
 export class ReferralToRepository implements IReferralToRepository {
     database: Kv
@@ -21,6 +22,7 @@ export class ReferralToRepository implements IReferralToRepository {
     async insert(r: ReferralTo): Promise<boolean> {
         const key = [this.base, this.KEY, r.id];
         if(!r.patient){
+            await fatal(`${this.constructor.name} insert`, "患者データが存在しません", this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -30,11 +32,15 @@ export class ReferralToRepository implements IReferralToRepository {
             .set([this.base, this.KEY3, r.patient.id, r.id], r)
             .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(r: ReferralTo): Promise<boolean> {
         const data = await this.read(r.id);
         if(!data || !data.patient || !r.patient){
+            await fatal(`${this.constructor.name} update`, "データまたは患者データが存在しません", this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -54,22 +60,33 @@ export class ReferralToRepository implements IReferralToRepository {
                 .commit();
         }
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(r: ReferralTo): Promise<void> {
+    async delete(r: ReferralTo): Promise<boolean> {
         const data = await this.read(r.id);
-        if(data){
-            const kv = await this.database.open();
-            if(!data.patient){
-                return;
-            }
-            await kv.atomic()
-                .delete([this.base, this.KEY, r.id])
-                .delete([this.base, this.KEY2, data.date, r.id])
-                .delete([this.base, this.KEY3, data.patient.id, r.id])
-                .commit();
-            this.database.close();
+        if(!data){
+            await fatal(`${this.constructor.name} delete`, "データが存在しません", this.base);
+            return false;
         }
+        if(!data.patient){
+            await fatal(`${this.constructor.name} delete`, "患者データが存在しません", this.base);
+            return false;
+        }
+
+        const kv = await this.database.open();
+        const res = await kv.atomic()
+            .delete([this.base, this.KEY, r.id])
+            .delete([this.base, this.KEY2, data.date, r.id])
+            .delete([this.base, this.KEY3, data.patient.id, r.id])
+            .commit();
+        this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} delete`, "失敗しました", this.base);
+        }
+        return res.ok;
     }
     async read(id: string): Promise<ReferralTo|undefined> {
         const kv = await this.database.open();

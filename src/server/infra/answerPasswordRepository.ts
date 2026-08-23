@@ -2,6 +2,7 @@
 import type { AnswerPassword } from "../domain/answer.ts"
 import type { IAnswerPasswordRepository } from "../domain/answerService.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class AnswerPasswordRepository implements IAnswerPasswordRepository {
     database: Kv
@@ -18,18 +19,25 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
             .set(key, a)
             .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(a: AnswerPassword): Promise<boolean> {
         const kv = await this.database.open();
         const res = await kv.set([this.base, this.KEY, a.appointmentId], a);
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(a: AnswerPassword): Promise<void> {
+    async delete(a: AnswerPassword): Promise<boolean> {
         const kv = await this.database.open();
         await kv.delete([this.base, this.KEY, a.appointmentId]);
         this.database.close();
+        return true;
     }
     async read(appId: string): Promise<AnswerPassword|undefined> {
         const kv = await this.database.open();

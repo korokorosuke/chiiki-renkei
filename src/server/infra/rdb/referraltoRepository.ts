@@ -8,8 +8,7 @@ import { type PatientDBResult, type FacilityDBResult, type UserDBResult, type De
   toFacility, toUser, toPatient } from "./types.ts"
 import { and, eq } from "drizzle-orm"
 import { addDay } from "../../lib/datetime.ts"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type ReferralToData = typeof referralTo.$inferInsert;
 
@@ -81,7 +80,7 @@ export class ReferralToRepository implements IReferralToRepository {
       await db.insert(referralTo).values(this.toData(val));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+      await fatal(`${this.constructor.name} insert`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -99,14 +98,14 @@ export class ReferralToRepository implements IReferralToRepository {
           ));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+      await fatal(`${this.constructor.name} update`, e, this.base);
       return false;
     }finally{
       this.database.close();
     }
   }
 
-  async delete(val: ReferralTo): Promise<void> {
+  async delete(val: ReferralTo): Promise<boolean> {
     try{
       const db = await this.database.open();
       await db.delete(referralTo)
@@ -115,8 +114,10 @@ export class ReferralToRepository implements IReferralToRepository {
             eq(referralTo.base, this.base),
             eq(referralTo.id, val.id),
           ));
+      return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+      await fatal(`${this.constructor.name} delete`, e, this.base);
+      return false;
     }finally{
       this.database.close();
     }

@@ -6,7 +6,7 @@ import { APP_ID, SECRET_KEY } from "../settings.ts"
 
 export interface IAuthRepository{
     update(user: string, token: string ): Promise<boolean>
-    delete(user: string): Promise<void>
+    delete(user: string): Promise<boolean>
     read(user: string): Promise<string>
 }
 

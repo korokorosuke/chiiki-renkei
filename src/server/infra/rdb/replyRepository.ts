@@ -10,8 +10,7 @@ import { type PatientDBResult, type FacilityDBResult, type UserDBResult, type De
   toUser, toPatient, toFacility } from "./types.ts"
 import { and, eq } from "drizzle-orm"
 import { addDay } from "../../lib/datetime.ts"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type ReplyData = typeof reply.$inferInsert;
 
@@ -106,7 +105,7 @@ export class ReplyRepository implements IReplyRepository {
       await db.insert(reply).values(this.toData(val));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+      await fatal(`${this.constructor.name} insert`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -124,14 +123,14 @@ export class ReplyRepository implements IReplyRepository {
           ));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+      await fatal(`${this.constructor.name} update`, e, this.base);
       return false;
     }finally{
       this.database.close();
     }
   }
 
-  async delete(val: Reply): Promise<void> {
+  async delete(val: Reply): Promise<boolean> {
     try{
       const db = await this.database.open();
       await db.delete(reply)
@@ -140,8 +139,10 @@ export class ReplyRepository implements IReplyRepository {
             eq(reply.base, this.base),
             eq(reply.id, val.id),
           ));
+      return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+      await fatal(`${this.constructor.name} delete`, e, this.base);
+      return false;
     }finally{
       this.database.close();
     }

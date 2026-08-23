@@ -3,7 +3,7 @@ import { WebReservationService } from "../domain/webReservationService.ts"
 import { WebReservationRepository } from "../infra/allRepository.ts"
 import type { WebReservation } from "../domain/webReservation.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
-import { type Result, ok, ng } from "../lib/response.ts"
+import { type Result, ng } from "../lib/response.ts"
 
 const AUTH_READ = [
   {auth: Auth.WEB, role: Role.READ},
@@ -53,13 +53,8 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      if(data.reservation){
-        const service = new WebReservationService(new WebReservationRepository(auth.user!.base));
-        await service.delete(data.reservation);
-        return ok();
-      }else{
-        return ng(["データが不正です。"]);
-      }
+      const service = new WebReservationService(new WebReservationRepository(auth.user!.base));
+      return await service.delete(data.reservation);
     }
     return ng(auth.errors!);
 });

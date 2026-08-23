@@ -2,6 +2,7 @@
 import type { Activity, Condition } from "../domain/activity.ts"
 import type { IActivityRepository } from "../domain/activityService.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class ActivityRepository implements IActivityRepository {
     database: Kv
@@ -22,11 +23,15 @@ export class ActivityRepository implements IActivityRepository {
             .set([this.base, this.KEY3, act.facility.id, act.id], act)
             .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(act: Activity): Promise<boolean> {
         const data = await this.read(act.id);
         if(!data){
+            await fatal(`${this.constructor.name} update`, "データが存在しません", this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -48,19 +53,28 @@ export class ActivityRepository implements IActivityRepository {
                 .commit();
         }
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(act: Activity): Promise<void> {
+    async delete(act: Activity): Promise<boolean> {
         const data = await this.read(act.id);
-        if(data){
-            const kv = await this.database.open();
-            await kv.atomic()
-                .delete([this.base, this.KEY, act.id])
-                .delete([this.base, this.KEY2, this.toYMD(data.date), act.id])
-                .delete([this.base, this.KEY3, data.facility.id, data.id])
-                .commit();
-            this.database.close();
+        if(!data){
+            await fatal(`${this.constructor.name} delete`, "データが存在しません", this.base);
+            return false;
         }
+        const kv = await this.database.open();
+        const res = await kv.atomic()
+            .delete([this.base, this.KEY, act.id])
+            .delete([this.base, this.KEY2, this.toYMD(data.date), act.id])
+            .delete([this.base, this.KEY3, data.facility.id, data.id])
+            .commit();
+        this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} delete`, "失敗しました", this.base);
+        }
+        return res.ok;
     }
     async read(id: string): Promise<Activity|undefined> {
         const kv = await this.database.open();

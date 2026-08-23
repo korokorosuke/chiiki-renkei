@@ -37,13 +37,15 @@ export class AddressRepository implements IAddressRepository {
     }
   }
 
-  async delete(val: Address): Promise<void> {
+  async delete(val: Address): Promise<boolean> {
     try{
       const db = await this.database.open();
       await db.delete(address)
         .where(eq(address.postalCode, val.postalCode));
+      return true;
     }catch(e){
       console.log(e);
+      return false;
     }finally{
       this.database.close();
     }

@@ -2,6 +2,7 @@
 import type { AuthUser, Condition } from "../domain/user.ts"
 import type { IUserRepository } from "../domain/userService.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class UserRepository implements IUserRepository {
     database: Kv
@@ -18,18 +19,25 @@ export class UserRepository implements IUserRepository {
             .set(key, u)
             .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(u: AuthUser): Promise<boolean> {
         const kv = await this.database.open();
         const res = await kv.set([this.base, this.KEY, u.id], u);
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(u: AuthUser): Promise<void> {
+    async delete(u: AuthUser): Promise<boolean> {
         const kv = await this.database.open();
         await kv.delete([this.base, this.KEY, u.id]);
         this.database.close();
+        return true;
     }
     async read(id: string): Promise<AuthUser|undefined> {
         const kv = await this.database.open();

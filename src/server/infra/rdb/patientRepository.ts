@@ -3,8 +3,7 @@ import type { IPatientRepository } from "../../domain/patientService.ts"
 import { Db } from "./db.ts"
 import { patient } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type PatientData = typeof patient.$inferInsert;
 
@@ -68,7 +67,7 @@ export class PatientRepository implements IPatientRepository {
       await db.insert(patient).values(this.toData(val));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+      await fatal(`${this.constructor.name} insert`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -86,14 +85,14 @@ export class PatientRepository implements IPatientRepository {
           ));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+      await fatal(`${this.constructor.name} update`, e, this.base);
       return false;
     }finally{
       this.database.close();
     }
   }
 
-  async delete(val: Patient): Promise<void> {
+  async delete(val: Patient): Promise<boolean> {
     try{
       const db = await this.database.open();
       await db.delete(patient)
@@ -102,8 +101,10 @@ export class PatientRepository implements IPatientRepository {
             eq(patient.base, this.base),
             eq(patient.id, val.id),
           ));
+      return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+      await fatal(`${this.constructor.name} delete`, e, this.base);
+      return false;
     }finally{
       this.database.close();
     }

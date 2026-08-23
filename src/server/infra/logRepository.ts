@@ -6,7 +6,7 @@ import { Kv } from "./kv.ts"
 export class LogRepository implements ILogRepository {
   database: Kv
   base: string
-  KEY: string = "Log"
+  KEY: string = "log"
   constructor(base: string){
     this.database = new Kv();
     this.base = base;

@@ -3,8 +3,7 @@ import type { IAnswerPasswordRepository } from "../../domain/answerService.ts"
 import { Db } from "./db.ts"
 import { answerPassword } from "../../db/schema.ts"
 import { eq } from "drizzle-orm"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 export class AnswerPasswordRepository implements IAnswerPasswordRepository {
   database: Db
@@ -20,7 +19,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
       await db.insert(answerPassword).values(val);
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+      await fatal(`${this.constructor.name} insert`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -34,20 +33,22 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
         .where(eq(answerPassword.appointmentId, val.appointmentId));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+      await fatal(`${this.constructor.name} update`, e, this.base);
       return false;
     }finally{
       this.database.close();
     }
   }
 
-  async delete(val: AnswerPassword): Promise<void> {
+  async delete(val: AnswerPassword): Promise<boolean> {
     try{
       const db = await this.database.open();
       await db.delete(answerPassword)
         .where(eq(answerPassword.appointmentId, val.appointmentId));
+      return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+      await fatal(`${this.constructor.name} delete`, e, this.base);
+      return false;
     }finally{
       this.database.close();
     }
@@ -72,7 +73,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
           .where(eq(answerPassword.appointmentId, appId));
         return true;
       }catch(e){
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} countUp`, e);
+        await fatal(`${this.constructor.name} countUp`, e, this.base);
         return false;
       }finally{
         this.database.close();

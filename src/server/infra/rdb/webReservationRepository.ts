@@ -4,8 +4,7 @@ import { Db } from "./db.ts"
 import { webReservation } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
 import { getNextMonth } from "../../lib/datetime.ts"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type WebReservationData = typeof webReservation.$inferInsert;
 
@@ -62,7 +61,7 @@ export class WebReservationRepository implements IWebReservationRepository {
             ));
         return true;
       }catch(e){
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} countUp`, e);
+        await fatal(`${this.constructor.name} countUp`, e, this.base);
         return false;
       }finally{
         this.database.close();
@@ -89,7 +88,7 @@ export class WebReservationRepository implements IWebReservationRepository {
             ));
         return true;
       }catch(e){
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} countDown`, e);
+        await fatal(`${this.constructor.name} countDown`, e, this.base);
         return false;
       }finally{
         this.database.close();
@@ -106,7 +105,7 @@ export class WebReservationRepository implements IWebReservationRepository {
         .values(this.toData(val));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+      await fatal(`${this.constructor.name} insert`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -127,14 +126,14 @@ export class WebReservationRepository implements IWebReservationRepository {
           ));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+      await fatal(`${this.constructor.name} update`, e, this.base);
       return false;
     }finally{
       this.database.close();
     }
   }
 
-  async delete(val: WebReservation): Promise<void> {
+  async delete(val: WebReservation): Promise<boolean> {
     try{
       const db = await this.database.open();
       await db.delete(webReservation)
@@ -146,8 +145,10 @@ export class WebReservationRepository implements IWebReservationRepository {
             eq(webReservation.date, val.date),
             eq(webReservation.time, val.time),
           ));
+      return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+      await fatal(`${this.constructor.name} delete`, e, this.base);
+      return false;
     }finally{
       this.database.close();
     }

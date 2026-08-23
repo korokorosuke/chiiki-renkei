@@ -8,7 +8,7 @@ import { getNow } from "../lib/datetime.ts"
 export interface IWebAppRepository{
     insert(r: WebAppointment): Promise<boolean>
     update(r: WebAppointment): Promise<boolean>
-    delete(r: WebAppointment): Promise<void>
+    delete(r: WebAppointment): Promise<boolean>
     read(id: string): Promise<WebAppointment|undefined>
     list(cond: Condition): Promise<WebAppointment[]>
 }
@@ -140,8 +140,13 @@ export class WebAppService{
         }
     }
 
-    async delete(val: WebAppointment): Promise<void>{
-        await this.i.delete(val);
+    async delete(val: WebAppointment): Promise<Result>{
+        const res = await this.i.delete(val);
+        if(res){
+            return ok();
+        }else{
+            return ng(["削除に失敗しました。"]);
+        }
     }
 
     async cancel(val: WebAppointment): Promise<Result>{

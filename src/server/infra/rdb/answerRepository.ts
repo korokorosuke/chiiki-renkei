@@ -6,8 +6,7 @@ import { type QuestionnaireDBResult, toQuestionnaire } from "./questionnaireRepo
 import { Db } from "./db.ts"
 import { answer, answerItem } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type AnswerData = typeof answer.$inferInsert;
 
@@ -79,7 +78,7 @@ export class AnswerRepository implements IAnswerRepository {
         return true;
       }catch(e){
         tx.rollback();
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+        await fatal(`${this.constructor.name} insert`, e, this.base);
         return false;
       }
     });
@@ -110,7 +109,7 @@ export class AnswerRepository implements IAnswerRepository {
         return true;
       }catch(e){
         tx.rollback();
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+        await fatal(`${this.constructor.name} update`, e, this.base);
         return false;
       }
     });
@@ -118,9 +117,9 @@ export class AnswerRepository implements IAnswerRepository {
     return res;
   }
 
-  async delete(val: Answer): Promise<void> {
+  async delete(val: Answer): Promise<boolean> {
     const db = await this.database.open();
-    await db.transaction(async (tx) => {
+    const res = await db.transaction(async (tx) => {
       try{
         await tx.delete(answer)
           .where(
@@ -129,12 +128,15 @@ export class AnswerRepository implements IAnswerRepository {
               eq(answer.id, val.id)));
         await tx.delete(answerItem)
           .where(eq(answerItem.answerId, val.id));
+        return true;
       }catch(e){
         tx.rollback();
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+        await fatal(`${this.constructor.name} delete`, e, this.base);
+        return false;
       }
     });
     this.database.close();
+    return res;
   }
 
   async select(cond: object): Promise<AnswerDBResult[]>{

@@ -5,6 +5,7 @@ import type { IReplyRepository } from "../domain/replyService.ts"
 import { toReferral } from "../lib/types.ts"
 import { AppointmentRepository } from "./appointmentRepository.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class ReplyRepository implements IReplyRepository {
     database: Kv
@@ -17,7 +18,8 @@ export class ReplyRepository implements IReplyRepository {
     }
     async insert(r: Reply): Promise<boolean> {
         if(!r.refId){
-          return false;
+            await fatal(`${this.constructor.name} insert`, "refIdが指定されていません", this.base);
+            return false;
         }
         const key = [this.base, this.KEY, r.id];
         const kv = await this.database.open();
@@ -26,11 +28,15 @@ export class ReplyRepository implements IReplyRepository {
             .set([this.base, this.KEY2, r.refId, r.id], r)
             .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(r: Reply): Promise<boolean> {
         if(!r.refId){
-          return false;
+            await fatal(`${this.constructor.name} update`, "refIdが指定されていません", this.base);
+            return false;
         }
         const kv = await this.database.open();
         const res = await kv.atomic()
@@ -38,18 +44,26 @@ export class ReplyRepository implements IReplyRepository {
                 .set([this.base, this.KEY2, r.refId, r.id], r)
                 .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(r: Reply): Promise<void> {
+    async delete(r: Reply): Promise<boolean> {
         if(!r.refId){
-          return;
+            await fatal(`${this.constructor.name} delete`, "refIdが指定されていません", this.base);
+            return false;
         }
         const kv = await this.database.open();
-        await kv.atomic()
+        const res = await kv.atomic()
             .delete([this.base, this.KEY, r.id])
             .delete([this.base, this.KEY2, r.refId, r.id])
             .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} delete`, "失敗しました", this.base);
+        }
+        return res.ok;
     }
     async read(id: string): Promise<Referral|undefined> {
         const kv = await this.database.open();

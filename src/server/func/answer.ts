@@ -158,15 +158,9 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      if(data.answer){
-        const service = new AnswerService(new AnswerRepository(auth.user!.base),
-          new AnswerPasswordRepository(auth.user!.base));
-        await service.delete(data.answer);
-        return ok();
-      }else{
-        return ng(["データが不正です。"]);
-      }
-    }else{
-      return auth;
+      const service = new AnswerService(new AnswerRepository(auth.user!.base),
+        new AnswerPasswordRepository(auth.user!.base));
+      return await service.delete(data.answer);
     }
+    return ng(auth.errors!);
 });

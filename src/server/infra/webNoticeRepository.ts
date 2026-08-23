@@ -2,6 +2,7 @@
 import type { WebNotice } from "../domain/webNotice.ts"
 import type { IWebNoticeRepository } from "../domain/webNoticeService.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class WebNoticeRepository implements IWebNoticeRepository {
     database: Kv
@@ -18,22 +19,25 @@ export class WebNoticeRepository implements IWebNoticeRepository {
             .set(key, val)
             .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(val: WebNotice): Promise<boolean> {
         const kv = await this.database.open();
-        const res = await kv.atomic()
-            .set([this.base, this.KEY, val.id], val)
-            .commit();
+        const res = await kv.set([this.base, this.KEY, val.id], val);
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(val: WebNotice): Promise<void> {
+    async delete(val: WebNotice): Promise<boolean> {
         const kv = await this.database.open();
-        await kv.atomic()
-            .delete([this.base, this.KEY, val.id])
-            .commit();
+        await kv.delete([this.base, this.KEY, val.id]);
         this.database.close();
+        return true;
     }
     async read(id: string): Promise<WebNotice|undefined> {
         const kv = await this.database.open();

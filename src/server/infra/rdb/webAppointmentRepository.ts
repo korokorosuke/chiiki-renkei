@@ -10,8 +10,7 @@ import { webAppointment, webConsultation, webPatient } from "../../db/schema.ts"
 import { type FacilityDBResult, type UserDBResult, toFacility, toUser } from "./types.ts"
 import { and, eq } from "drizzle-orm"
 import { addDay } from "../../lib/datetime.ts"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type WebAppointmentData = typeof webAppointment.$inferInsert;
 type WebPatientData = typeof webPatient.$inferInsert;
@@ -172,7 +171,7 @@ export class WebAppRepository implements IWebAppRepository {
           }
           return true;
         }catch(e){
-          new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+          await fatal(`${this.constructor.name} insert`, e, this.base);
           return false;
         }
       });
@@ -244,7 +243,7 @@ export class WebAppRepository implements IWebAppRepository {
         }
         return true;
       }catch(e){
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+        await fatal(`${this.constructor.name} update`, e, this.base);
         return false;
       }
     });
@@ -252,18 +251,18 @@ export class WebAppRepository implements IWebAppRepository {
     return res;
   }
 
-  async delete(val: WebAppointment): Promise<void> {
+  async delete(val: WebAppointment): Promise<boolean> {
     const data = await this.read(val.id);
     if(data){
       if(!data.cancel && data.date !== DATE_EMPTY && data.dr.id){
         const repo = new WebReservationRepository(this.base);
         if(!await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
-          return;
+          return false;
         }
       }
 
       const db = await this.database.open();
-      await db.transaction(async (tx) => {
+      const res = await db.transaction(async (tx) => {
         try{
           await tx.delete(webPatient)
             .where(
@@ -276,12 +275,16 @@ export class WebAppRepository implements IWebAppRepository {
               eq(webAppointment.base, this.base),
               eq(webAppointment.id, val.id),
             ));
+          return true;
         }catch(e){
-          new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+          await fatal(`${this.constructor.name} delete`, e, this.base);
+          return false;
         }
       });
       this.database.close();
+      return res;
     }
+    return false;
   }
 
   private async select(cond: object): Promise<WebAppointmentDBResult[]> {

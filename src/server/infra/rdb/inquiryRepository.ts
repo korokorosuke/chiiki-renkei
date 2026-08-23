@@ -8,8 +8,7 @@ import { type PatientDBResult, type FacilityDBResult, type UserDBResult,
   toFacility, toUser, toPatient } from "./types.ts"
 import { and, eq } from "drizzle-orm"
 import { addDay } from "../../lib/datetime.ts"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type InquiryData = typeof inquiry.$inferInsert;
 
@@ -99,7 +98,7 @@ export class InquiryRepository implements IInquiryRepository {
         return true;
       }catch(e){
         tx.rollback();
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+        await fatal(`${this.constructor.name} insert`, e, this.base);
         return false;
       }
     });
@@ -131,7 +130,7 @@ export class InquiryRepository implements IInquiryRepository {
         return true;
       }catch(e){
         tx.rollback();
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+        await fatal(`${this.constructor.name} update`, e, this.base);
         return false;
       }
     });
@@ -139,9 +138,9 @@ export class InquiryRepository implements IInquiryRepository {
     return res;
   }
 
-  async delete(val: Inquiry): Promise<void> {
+  async delete(val: Inquiry): Promise<boolean> {
     const db = await this.database.open();
-    await db.transaction(async (tx) => {
+    const res = await db.transaction(async (tx) => {
       try{
         await tx.delete(response).where(
             eq(response.inquiryId, val.id),
@@ -152,11 +151,14 @@ export class InquiryRepository implements IInquiryRepository {
               eq(inquiry.base, this.base),
               eq(inquiry.id, val.id),
             ));
+        return true;
       }catch(e){
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+        await fatal(`${this.constructor.name} delete`, e, this.base);
+        return false;
       }
     });
     this.database.close();
+    return res;
   }
 
   async select(cond: object): Promise<InquiryDBResult[]> {

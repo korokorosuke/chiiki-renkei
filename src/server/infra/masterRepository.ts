@@ -1,6 +1,7 @@
 /// <reference lib="deno.unstable" />
 import type { IMasterRepository } from "../domain/masterService.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class MasterRepository implements IMasterRepository {
     database: Kv
@@ -20,6 +21,9 @@ export class MasterRepository implements IMasterRepository {
         const kv = await this.database.open();
         const res = await kv.set([this.base, key], value);
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async read(key: string): Promise<string[]|undefined> {

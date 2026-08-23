@@ -2,6 +2,7 @@
 import type { Patient, Condition } from "../domain/patient.ts"
 import type { IPatientRepository } from "../domain/patientService.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class PatientRepository implements IPatientRepository {
     database: Kv
@@ -17,18 +18,25 @@ export class PatientRepository implements IPatientRepository {
         const res = await kv.atomic().check({key, versionstamp: null})
             .set(key, p).commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(p: Patient): Promise<boolean> {
         const kv = await this.database.open();
         const res = await kv.set([this.base, this.KEY, p.id], p);
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(p: Patient): Promise<void> {
+    async delete(p: Patient): Promise<boolean> {
         const kv = await this.database.open();
         await kv.delete([this.base, this.KEY, p.id]);
         this.database.close();
+        return true;
     }
     async read(id: string): Promise<Patient|undefined> {
         const kv = await this.database.open();

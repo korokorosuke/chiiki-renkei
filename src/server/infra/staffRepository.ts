@@ -2,6 +2,7 @@
 import type { Staff, Condition } from "../domain/staff.ts"
 import type { IStaffRepository } from "../domain/staffService.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class StaffRepository implements IStaffRepository {
     database: Kv
@@ -20,11 +21,15 @@ export class StaffRepository implements IStaffRepository {
             .set([this.base, this.KEY2, s.facilityId, s.id], s)
             .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(s: Staff): Promise<boolean> {
         const data = await this.read(s.id);
         if(!data){
+            await fatal(`${this.constructor.name} update`, "データが存在しません", this.base);
             return false;
         }
         let res;
@@ -42,19 +47,27 @@ export class StaffRepository implements IStaffRepository {
                 .commit();
         }
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(s: Staff): Promise<void> {
+    async delete(s: Staff): Promise<boolean> {
         const data = await this.read(s.id);
         if(!data){
-            return;
+            await fatal(`${this.constructor.name} delete`, "データが存在しません", this.base);
+            return false;
         }
         const kv = await this.database.open();
-        await kv.atomic()
+        const res = await kv.atomic()
             .delete([this.base, this.KEY, s.id])
             .delete([this.base, this.KEY2, data.facilityId, s.id])
             .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} delete`, "失敗しました", this.base);
+        }
+        return res.ok;
     }
 
     async read(id: string): Promise<Staff|undefined> {

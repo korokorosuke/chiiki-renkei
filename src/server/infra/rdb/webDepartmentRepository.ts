@@ -3,8 +3,7 @@ import type { IWebDepartmentRepository } from "../../domain/webDepartmentService
 import { Db } from "./db.ts"
 import { webDepartment } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type WebDepartmentData = typeof webDepartment.$inferInsert;
 
@@ -31,7 +30,7 @@ export class WebDepartmentRepository implements IWebDepartmentRepository {
       await db.insert(webDepartment).values(this.toData(val));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+      await fatal(`${this.constructor.name} insert`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -49,14 +48,14 @@ export class WebDepartmentRepository implements IWebDepartmentRepository {
           ));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+      await fatal(`${this.constructor.name} update`, e, this.base);
       return false;
     }finally{
       this.database.close();
     }
   }
 
-  async delete(val: WebDepartment): Promise<void> {
+  async delete(val: WebDepartment): Promise<boolean> {
     try{
       const db = await this.database.open();
       await db.delete(webDepartment)
@@ -65,8 +64,10 @@ export class WebDepartmentRepository implements IWebDepartmentRepository {
             eq(webDepartment.base, this.base),
             eq(webDepartment.id, val.id),
           ));
+      return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+      await fatal(`${this.constructor.name} delete`, e, this.base);
+      return false;
     }finally{
       this.database.close();
     }

@@ -11,7 +11,7 @@ export class AddressRepository implements IAddressRepository {
   update(_: Address): Promise<boolean> {
     return Promise.reject(new Error("Not implemented"));
   }
-  delete(_: Address): Promise<void> {
+  delete(_: Address): Promise<boolean> {
     return Promise.reject(new Error("Not implemented"));
   }
   async read(postalCode: string): Promise<Address|undefined> {

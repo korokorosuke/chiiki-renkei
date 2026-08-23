@@ -23,10 +23,11 @@ export class AddressRepository implements IAddressRepository {
         this.database.close();
         return res.ok;
     }
-    async delete(d: Address): Promise<void> {
+    async delete(d: Address): Promise<boolean> {
         const kv = await this.database.open();
         await kv.delete([this.KEY, d.postalCode]);
         this.database.close();
+        return true;
     }
     async read(postalCode: string): Promise<Address|undefined> {
         const kv = await this.database.open();

@@ -5,8 +5,7 @@ import { activity, activityPurpose } from "../../db/schema.ts"
 import { UserDBResult, FacilityDBResult, toFacility, toUser } from "./types.ts"
 import { and, eq } from "drizzle-orm"
 import { addDay } from "../../lib/datetime.ts"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type ActivityData = typeof activity.$inferInsert;
 
@@ -74,7 +73,7 @@ export class ActivityRepository implements IActivityRepository {
         return true;
       }catch(e){
         tx.rollback()
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+        await fatal(`${this.constructor.name} insert`, e, this.base);
         return false;
       }
     });
@@ -100,16 +99,17 @@ export class ActivityRepository implements IActivityRepository {
         return true;
       }catch(e){
         tx.rollback()
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+        await fatal(`${this.constructor.name} update`, e, this.base);
         return false;
       }
     });
+    this.database.close();
     return res;
   }
 
-  async delete(val: Activity): Promise<void> {
+  async delete(val: Activity): Promise<boolean> {
     const db = await this.database.open();
-    await db.transaction(async (tx) => {
+    const res = await db.transaction(async (tx) => {
       try{
         await tx.delete(activityPurpose).where(eq(activityPurpose.activityId, val.id));
         await tx.delete(activity)
@@ -118,11 +118,15 @@ export class ActivityRepository implements IActivityRepository {
               eq(activity.base, this.base),
               eq(activity.id, val.id),
             ));
+        return true;
       }catch(e){
         tx.rollback()
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+        await fatal(`${this.constructor.name} delete`, e, this.base);
+        return false;
       }
     });
+    this.database.close();
+    return res;
   }
 
   private async select(cond: object): Promise<ActivityDBResult[]> {

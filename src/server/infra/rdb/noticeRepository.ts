@@ -3,8 +3,7 @@ import type { INoticeRepository } from "../../domain/noticeService.ts"
 import { Db } from "./db.ts"
 import { notice } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type NoticeData = typeof notice.$inferInsert;
 
@@ -29,7 +28,7 @@ export class NoticeRepository implements INoticeRepository {
       await db.insert(notice).values(this.toData(val));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+      await fatal(`${this.constructor.name} insert`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -47,14 +46,14 @@ export class NoticeRepository implements INoticeRepository {
           ));
       return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+      await fatal(`${this.constructor.name} update`, e, this.base);
       return false;
     }finally{
       this.database.close();
     }
   }
 
-  async delete(val: Notice): Promise<void> {
+  async delete(val: Notice): Promise<boolean> {
     try{
       const db = await this.database.open();
       await db.delete(notice)
@@ -63,8 +62,10 @@ export class NoticeRepository implements INoticeRepository {
             eq(notice.base, this.base),
             eq(notice.id, val.id),
           ));
+      return true;
     }catch(e){
-      new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+      await fatal(`${this.constructor.name} delete`, e, this.base);
+      return false;
     }finally{
       this.database.close();
     }

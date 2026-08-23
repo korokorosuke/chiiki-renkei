@@ -3,7 +3,7 @@ import { WebDepartmentService } from "../domain/webDepartmentService.ts"
 import { WebDepartmentRepository } from "../infra/allRepository.ts"
 import type { WebDepartment } from "../domain/webDepartment.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
-import { type Result, ok, ng } from "../lib/response.ts"
+import { type Result, ng } from "../lib/response.ts"
 
 const AUTH_READ = [
   {auth: Auth.WEB, role: Role.READ},
@@ -66,14 +66,8 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      if(data.department){
-        const service = new WebDepartmentService(new WebDepartmentRepository(auth.user!.base));
-        await service.delete(data.department);
-        return ok();
-      }else{
-        return ng(["データが不正です。"]);
-      }
-    }else{
-      return auth;
+      const service = new WebDepartmentService(new WebDepartmentRepository(auth.user!.base));
+      return await service.delete(data.department);
     }
+    return ng(auth.errors!);
 });

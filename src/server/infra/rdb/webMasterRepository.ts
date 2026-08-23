@@ -3,8 +3,7 @@ import type { IWebMasterRepository } from "../../domain/webMasterService.ts"
 import { Db } from "./db.ts"
 import { webMaster, webReserv } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { LogService } from "../../domain/logService.ts"
-import { LogRepository } from "./logRepository.ts"
+import { fatal } from "../../lib/log.ts"
 
 type WebMasterData = typeof webMaster.$inferInsert;
 type WebReservData = typeof webReserv.$inferInsert;
@@ -68,7 +67,7 @@ export class WebMasterRepository implements IWebMasterRepository {
         }
         return true;
       }catch(e){
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} insert`, e);
+        await fatal(`${this.constructor.name} insert`, e, this.base);
         return false;
       }
     });
@@ -93,16 +92,17 @@ export class WebMasterRepository implements IWebMasterRepository {
         }
         return true;
       }catch(e){
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} update`, e);
+        await fatal(`${this.constructor.name} update`, e, this.base);
         return false;
       }
     });
+    this.database.close();
     return res;
   }
 
-  async delete(val: WebMaster): Promise<void> {
+  async delete(val: WebMaster): Promise<boolean> {
     const db = await this.database.open();
-    await db.transaction(async (tx) => {
+    const res = await db.transaction(async (tx) => {
       try{
         await tx.delete(webReserv).where(
           and(
@@ -119,10 +119,14 @@ export class WebMasterRepository implements IWebMasterRepository {
               eq(webMaster.drId, val.dr),
               eq(webMaster.week, val.week),
             ));
+        return true;
       }catch(e){
-        new LogService(new LogRepository(this.base)).fatal(`${this.constructor.name} delete`, e);
+        await fatal(`${this.constructor.name} delete`, e, this.base);
+        return false;
       }
     });
+    this.database.close();
+    return res;
   }
 
   async read(dept: string, dr: string, week: number): Promise<WebMaster|undefined> {

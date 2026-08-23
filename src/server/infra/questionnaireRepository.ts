@@ -2,6 +2,7 @@
 import type { Questionnaire } from "../domain/questionnaire.ts"
 import type { IQuestionnaireRepository } from "../domain/questionnaireService.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class QuestionnaireRepository implements IQuestionnaireRepository {
     database: Kv
@@ -17,18 +18,25 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
         const res = await kv.atomic().check({key, versionstamp: null})
             .set(key, q).commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(q: Questionnaire): Promise<boolean> {
         const kv = await this.database.open();
         const res = await kv.set([this.base, this.KEY, q.id], q);
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(q: Questionnaire): Promise<void> {
+    async delete(q: Questionnaire): Promise<boolean> {
         const kv = await this.database.open();
         await kv.delete([this.base, this.KEY, q.id]);
         this.database.close();
+        return true;
     }
     async read(id: string): Promise<Questionnaire|undefined> {
         const kv = await this.database.open();

@@ -8,6 +8,7 @@ import { PatientRepository } from "./patientRepository.ts"
 import { FacilityService } from "../domain/facilityService.ts"
 import { toFac } from "../lib/types.ts"
 import { addDay } from "../lib/datetime.ts"
+import { fatal } from "../lib/log.ts"
 
 export class InquiryRepository implements IInquiryRepository {
     database: Kv
@@ -39,15 +40,19 @@ export class InquiryRepository implements IInquiryRepository {
                 .commit();
         }
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(val: Inquiry): Promise<boolean> {
         const data = await this.read(val.id);
-        const kv = await this.database.open();
-        let res;
         if(!data){
+            await fatal(`${this.constructor.name} update`, "データが存在しません", this.base);
             return false;
         }
+        const kv = await this.database.open();
+        let res;
         if(val.patient.id){
             if(data.patient.id){
                 res = await kv.atomic()
@@ -90,28 +95,38 @@ export class InquiryRepository implements IInquiryRepository {
             }
         }
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(val: Inquiry): Promise<void> {
+    async delete(val: Inquiry): Promise<boolean> {
         const data = await this.read(val.id);
-        if(data){
-            const kv = await this.database.open();
-            if(data.patient.id){
-                await kv.atomic()
-                    .delete([this.base, this.KEY, val.id])
-                    .delete([this.base, this.KEY2, data.datetime, val.id])
-                    .delete([this.base, this.KEY3, data.patient.id, val.id])
-                    .delete([this.base, this.KEY4, data.facility.id, val.id])
-                    .commit();
-            }else{
-                await kv.atomic()
-                    .delete([this.base, this.KEY, val.id])
-                    .delete([this.base, this.KEY2, data.datetime, val.id])
-                    .delete([this.base, this.KEY4, data.facility.id, val.id])
-                    .commit();
-            }
-            this.database.close();
+        if(!data){
+          await fatal(`${this.constructor.name} delete`, "データが存在しません", this.base);
+          return false;
         }
+        let res;
+        const kv = await this.database.open();
+        if(data.patient.id){
+            res = await kv.atomic()
+                .delete([this.base, this.KEY, val.id])
+                .delete([this.base, this.KEY2, data.datetime, val.id])
+                .delete([this.base, this.KEY3, data.patient.id, val.id])
+                .delete([this.base, this.KEY4, data.facility.id, val.id])
+                .commit();
+        }else{
+            res = await kv.atomic()
+                .delete([this.base, this.KEY, val.id])
+                .delete([this.base, this.KEY2, data.datetime, val.id])
+                .delete([this.base, this.KEY4, data.facility.id, val.id])
+                .commit();
+        }
+        this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} delete`, "失敗しました", this.base);
+        }
+        return res.ok;
     }
     async read(id: string): Promise<Inquiry|undefined> {
         const kv = await this.database.open();

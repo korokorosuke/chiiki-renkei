@@ -2,6 +2,7 @@
 import type { Notice } from "../domain/notice.ts"
 import type { INoticeRepository } from "../domain/noticeService.ts"
 import { Kv } from "./kv.ts"
+import { fatal } from "../lib/log.ts"
 
 export class NoticeRepository implements INoticeRepository {
     database: Kv
@@ -18,22 +19,25 @@ export class NoticeRepository implements INoticeRepository {
             .set(key, val)
             .commit();
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+        }
         return res.ok;
     }
     async update(val: Notice): Promise<boolean> {
         const kv = await this.database.open();
-        const res = await kv.atomic()
-            .set([this.base, this.KEY, val.id], val)
-            .commit();
+        const res = await kv.set([this.base, this.KEY, val.id], val);
         this.database.close();
+        if(!res.ok){
+            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+        }
         return res.ok;
     }
-    async delete(val: Notice): Promise<void> {
+    async delete(val: Notice): Promise<boolean> {
         const kv = await this.database.open();
-        await kv.atomic()
-            .delete([this.base, this.KEY, val.id])
-            .commit();
+        await kv.delete([this.base, this.KEY, val.id]);
         this.database.close();
+        return true;
     }
     async read(id: string): Promise<Notice|undefined> {
         const kv = await this.database.open();

@@ -7,7 +7,7 @@ import { type Result, ok } from "../lib/response.ts"
 export interface IAnswerService{
     insert(val: Answer): Promise<Result>
     update(val: Answer): Promise<Result>
-    delete(val: Answer): Promise<void>
+    delete(val: Answer): Promise<Result>
     getList(appId: string): Promise<Answer[]>
     getPasswordService(): AnswerPasswordService
 }
@@ -83,16 +83,34 @@ export class AnswerRegistration{
         return ok();
     }
 
-    async delete(app: Appointment): Promise<void>{
+    async delete(app: Appointment): Promise<Result>{
+        const result = ok();
         for await(const ans of (await this.service.getList(app.id))){
             if(!ans.inputDate){
-                await this.service.delete(ans);
+                const res = await this.service.delete(ans);
+                if(!res.ok){
+                    if(result.ok){
+                        result.ok = false;
+                        result.errors = res.errors;
+                    }else{
+                        result.errors = [...result.errors!, ...res.errors!];
+                    }
+                }
             }
         }
         const service = this.service.getPasswordService();
         const ap = await service.get(app.id);
         if(ap){
-            await service.delete(ap);
+            const res = await service.delete(ap);
+            if(!res.ok){
+                if(result.ok){
+                    result.ok = false;
+                    result.errors = res.errors;
+                }else{
+                    result.errors = [...result.errors!, ...res.errors!];
+                }
+            }
         }
+        return result;
     }
 }

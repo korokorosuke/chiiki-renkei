@@ -3,7 +3,7 @@ import { DueService } from "../domain/dueService.ts"
 import { DueRepository } from "../infra/allRepository.ts"
 import type { Due } from "../domain/due.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
-import { type Result, ok, ng } from "../lib/response.ts"
+import { type Result, ng } from "../lib/response.ts"
 
 const AUTH_READ_ALL = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -48,14 +48,8 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      if(data.due){
-        const service = new DueService(new DueRepository(auth.user!.base));
-        await service.delete(data.due);
-        return ok();
-      }else{
-        return ng(["データが不正です。"]);
-      }
-    }else{
-      return auth;
+      const service = new DueService(new DueRepository(auth.user!.base));
+      return await service.delete(data.due);
     }
+    return ng(auth.errors!);
 });

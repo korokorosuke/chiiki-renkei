@@ -12,7 +12,7 @@ import { AppointmentRegistration } from "../usecase/appointmentRegistration.ts"
 import { AnswerRegistration } from "../usecase/answerRegistration.ts"
 import type { WebAppointment } from "../domain/webAppointment.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
-import { type Result, type FetchResult, ok, ng } from "../lib/response.ts"
+import { type Result, type FetchResult, ng } from "../lib/response.ts"
 
 const AUTH_READ = {auth: Auth.WEB, role: Role.READ};
 const AUTH_WRITE = {auth: Auth.WEB, role: Role.READ};
@@ -130,25 +130,19 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      if(data.appointment){
-        const usecase = new WebAppointmentRegistration(
-          new WebAppService(
-            new WebAppRepository(auth.user!.base)),
-          new AppointmentRegistration(
-            new AppointmentService(
-              new AppointmentRepository(auth.user!.base)),
-          new AnswerRegistration(
-            new AnswerService(
-              new AnswerRepository(auth.user!.base),
-              new AnswerPasswordRepository(auth.user!.base)),
-            new QuestionnaireService(
-              new QuestionnaireRepository(auth.user!.base)))));
-        await usecase.delete(data.appointment);
-        return ok();
-      }else{
-        return ng(["データが不正です。"]);
-      }
-    }else{
-      return auth;
+      const usecase = new WebAppointmentRegistration(
+        new WebAppService(
+          new WebAppRepository(auth.user!.base)),
+        new AppointmentRegistration(
+          new AppointmentService(
+            new AppointmentRepository(auth.user!.base)),
+        new AnswerRegistration(
+          new AnswerService(
+            new AnswerRepository(auth.user!.base),
+            new AnswerPasswordRepository(auth.user!.base)),
+          new QuestionnaireService(
+            new QuestionnaireRepository(auth.user!.base)))));
+      return await usecase.delete(data.appointment);
     }
+    return ng(auth.errors!);
 });
