@@ -5,13 +5,13 @@
     "@std/crypto": "jsr:@std/crypto@1.1.0",
     "@std/assert": "jsr:@std/assert@^1.0.19",
     "@std/fs": "jsr:@std/fs@1.0.24",
-    "@std/streams": "jsr:@std/streams@1.1.1",
+    "@std/streams": "jsr:@std/streams@1.1.2",
     "@std/uuid": "jsr:@std/uuid@1.1.1",
-    "@pandacss/dev": "npm:@pandacss/dev@1.11.4",
+    "@pandacss/dev": "npm:@pandacss/dev@1.12.0",
     "zod": "npm:zod@4.4.3",
     "drizzle-kit": "npm:drizzle-kit@1.0.0-rc.4",
     "drizzle-orm": "npm:drizzle-orm@1.0.0-rc.4",
     "@libsql/client": "npm:@libsql/client@0.17.4",
-    "pg": "npm:pg@8.22.0"
+    "pg": "npm:pg@8.23.0"
   }
 }

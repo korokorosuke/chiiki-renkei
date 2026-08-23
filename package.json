@@ -15,24 +15,24 @@
     "@tanstack/solid-query": "^5.101.4",
     "@tanstack/solid-query-devtools": "^5.101.4",
     "@tanstack/solid-router": "^1.170.18",
-    "@tanstack/solid-router-devtools": "^1.167.0",
+    "@tanstack/solid-router-devtools": "^1.167.1",
     "@tanstack/solid-router-ssr-query": "^1.167.1",
     "@tanstack/solid-start": "^1.168.32",
     "@std/crypto": "npm:@jsr/std__crypto@1.1.0",
     "@std/encoding": "npm:@jsr/std__encoding@1.0.11",
     "@std/uuid": "npm:@jsr/std__uuid@1.1.1",
     "nitro": "npm:nitro-nightly@^3.0.1-20260707-232134-a13bd4ee",
-    "solid-js": "^1.9.14"
+    "solid-js": "^1.9.15"
   },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.10",
-    "@tanstack/devtools-vite": "^0.8.3",
+    "@tanstack/devtools-vite": "^0.8.5",
     "@tanstack/router-cli": "^1.167.21",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.0.1",
     "typescript": "^7.0.2",
-    "vite": "^8.1.5",
+    "vite": "^8.2.2",
     "vite-plugin-solid": "^2.11.14",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
