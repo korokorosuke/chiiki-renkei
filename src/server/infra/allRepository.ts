@@ -1,5 +1,5 @@
 export { ActivityRepository } from "./activityRepository.ts"
-export { AddressRepository } from "./external/addressRepository.ts"
+export { AddressRepository } from "./addressRepository.ts"
 export { AnswerPasswordRepository } from "./answerPasswordRepository.ts"
 export { AnswerRepository } from "./answerRepository.ts"
 export { AppointmentRepository } from "./appointmentRepository.ts"
