@@ -3,7 +3,7 @@ import { getTodayString } from "../../lib/datetime.ts"
 import { ErrorArea } from "../../components/ErrorArea.tsx"
 import { getAllNotices, insert, update, del } from "../../server/func/notice.ts"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
-import { type Notice, NOTICE_TYPES } from "../../server/domain/notice.ts"
+import { type Notice, NOTICE_PAGES } from "../../server/domain/notice.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
 import del_icon from "../assets/del.svg"
 import { modificationAreaStyle, selectedStyle } from "./-css.ts"
@@ -27,10 +27,11 @@ export function Notice(props: Props){
   function initNotice(): Notice{
       return {
           id: "",
-          type: "通常",
+          page: NOTICE_PAGES[0],
           message: "",
           fromDate: getTodayString(),
-          toDate: getTodayString()
+          toDate: getTodayString(),
+          importance: false
       }
   }
 
@@ -118,6 +119,7 @@ export function Notice(props: Props){
               <th>メッセージ</th>
               <th>開始日</th>
               <th>終了日</th>
+              <th>重要</th>
               <th></th>
             </tr>
           </thead>
@@ -125,10 +127,11 @@ export function Notice(props: Props){
             <For each={notices()}>{(data, i)=>
               <tr onClick={()=>handleSelect(i())}
                   class={ css(i()===selectedIndex()? selectedStyle: {}) }>
-                <td class={ css({ minWidth: "4rem" }) }>{data.type}</td>
+                <td class={ css({ minWidth: "4rem" }) }>{data.page}</td>
                 <td class={ css({ minWidth: "8rem" }) }>{data.message.length>10?data.message.substring(0,10):data.message}</td>
                 <td class={ css({ fontFamily: "number" }) }>{data.fromDate}</td>
                 <td class={ css({ fontFamily: "number" }) }>{data.toDate}</td>
+                <td>{data.importance ? "重要" : "一般" }</td>
                 <td class={ css({ paddingTop: "px.8", paddingBottom: "0" }) }
                     onClick={(e)=>{deleteData(e, i())}}>
                   <img src={del_icon} alt="削除" width="23px" height="23px" />
@@ -152,10 +155,10 @@ export function Notice(props: Props){
             <label>区分<span class={ etc({ type: "require" }) }>*</span></label>
           </div>
           <div>
-            <select value={selected().type} class={ input({ size: "id" }) }
-                onChange={(e)=>handleChange({type: e.target.value})}>
-              <For each={NOTICE_TYPES}>{(type)=>
-                <option value={type}>{type}</option>
+            <select value={selected().page} class={ input({ size: "id" }) }
+                onChange={(e)=>handleChange({page: e.target.value})}>
+              <For each={NOTICE_PAGES}>{(page)=>
+                <option value={page}>{page}</option>
               }</For>
             </select>
           </div>
@@ -181,6 +184,14 @@ export function Notice(props: Props){
             <input type="date" class={ input({ size: "date" }) }
               value={selected().toDate}
               onChange={(e)=>handleChange({toDate: e.target.value})} />
+          </div>
+          <div>
+            <label>重要</label>
+          </div>
+          <div>
+            <input type="checkbox" class={ input({ size: "check2", type: "checkbox" }) }
+              checked={selected().importance}
+              onChange={(e)=>handleChange({importance: e.target.checked})} />
           </div>
           <Show when={selectedIndex() >= 0}>
             <button type="button" class={ button({ color: "primary", size: "full", space: "top1_2" }) }

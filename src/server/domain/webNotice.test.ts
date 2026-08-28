@@ -1,7 +1,7 @@
 import { assert, assertFalse, fail } from "@std/assert"
 import { WebNoticeRepository } from "../infra/webNoticeRepository.ts"
 import { WebNoticeService } from "./webNoticeService.ts"
-import type { WebNotice } from "./webNotice.ts"
+import { type WebNotice, NOTICE_PAGES } from "./webNotice.ts"
 import { notice, notice2, notice3, notice4 } from "../infra/testdata/webNotice.ts"
 import { BASE } from "../infra/testdata/settings.ts"
 import { Kv } from "../infra/kv.ts"
@@ -10,7 +10,7 @@ function compare(u1: WebNotice, u2: WebNotice): boolean {
     if(u1.id !== u2.id){
         return false;
     }
-    if(u1.type !== u2.type){
+    if(u1.page !== u2.page){
         return false;
     }
     if(u1.message !== u2.message){
@@ -20,6 +20,9 @@ function compare(u1: WebNotice, u2: WebNotice): boolean {
         return false;
     }
     if(u1.toDate !== u2.toDate){
+        return false;
+    }
+    if(u1.importance !== u2.importance){
         return false;
     }
     return true;
@@ -86,7 +89,7 @@ Deno.test("webnotice service", async (t) => {
     await t.step("list", async () => {
         const repo = new WebNoticeRepository(BASE);
         const service = new WebNoticeService(repo);
-        const res = await service.getList();
+        const res = await service.getList(NOTICE_PAGES[1]);
         if(res.length === 1){
             assert(compare(notice3, res[0]));
         }else{
@@ -100,8 +103,8 @@ Deno.test("webnotice service", async (t) => {
         const service = new WebNoticeService(repo);
         const res = await service.getAll();
         if(res.length === 2){
-            assert(compare(notice3, res[0]));
-            assert(compare(notice2, res[1]));
+            assert(compare(notice2, res[0]));
+            assert(compare(notice3, res[1]));
         }else{
             console.log(`all: ${res.length}`)
             fail();

@@ -1,5 +1,5 @@
 import { createSignal, createEffect, For, Show, onMount } from "solid-js"
-import { toLocalDateString } from "../../lib/datetime.ts"
+import { toLocalDateString, getWeekName } from "../../lib/datetime.ts"
 import { getNotices } from "../../server/func/webnotice.ts"
 import type { WebNotice } from "../../server/domain/webNotice.ts"
 import { css } from "../../styled-system/css/"
@@ -9,18 +9,12 @@ export function Notice(){
   const [normals, setNormals] = createSignal<WebNotice[]>([]);
   const [notices, setNotices] = createSignal<WebNotice[]>([]);
 
-  const WEEKS = ["日","月","火","水","木","金","土"];
-
-  function getWeekName(date: string): string{
-    return WEEKS[new Date(date).getDay()];
-  }
-
   createEffect(()=>{
     if(notices() && notices().length > 0){
       const imp = [];
       const normal = [];
       for(const a of notices()){
-        if(a.type === "重要"){
+        if(a.importance){
           imp.push(a);
         }else{
           normal.push(a);

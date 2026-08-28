@@ -46,7 +46,7 @@ function App() {
             <option value="dr">医師</option>
             <option value="due">問合せ期限</option>
             <option value="purpose">活動目的</option>
-            <option value="notice">ログインお知らせ</option>
+            <option value="notice">お知らせ</option>
             <option value="webdept">Web予約診療科</option>
             <option value="webdr">Web予約医師</option>
             <option value="webmaster">Web予約枠テンプレート</option>

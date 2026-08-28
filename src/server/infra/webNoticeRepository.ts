@@ -1,5 +1,5 @@
 /// <reference lib="deno.unstable" />
-import type { WebNotice } from "../domain/webNotice.ts"
+import type { WebNotice, NOTICE_PAGE } from "../domain/webNotice.ts"
 import type { IWebNoticeRepository } from "../domain/webNoticeService.ts"
 import { Kv } from "./kv.ts"
 import { fatal } from "../lib/log.ts"
@@ -48,20 +48,29 @@ export class WebNoticeRepository implements IWebNoticeRepository {
         }
         return undefined;
     }
-    async list(date?: string): Promise<WebNotice[]> {
+    async all(): Promise<WebNotice[]> {
         const kv = await this.database.open();
         const res = kv.list<WebNotice>({prefix: [this.base, this.KEY]});
         const list: WebNotice[] = [];
         for await (const val of res){
-            if(date){
-                if(val.value.fromDate <= date && date <= val.value.toDate){
-                    list.push(val.value);
-                }
-            }else{
+            list.push(val.value);
+        }
+        this.database.close();
+        list.sort((a, b) => b.fromDate.localeCompare(a.fromDate));
+        return list;
+    }
+    async list(page: NOTICE_PAGE, date: string): Promise<WebNotice[]> {
+        const kv = await this.database.open();
+        const res = kv.list<WebNotice>({prefix: [this.base, this.KEY]});
+        const list: WebNotice[] = [];
+        for await (const val of res){
+            if(page === val.value.page &&
+                    val.value.fromDate <= date && date <= val.value.toDate){
                 list.push(val.value);
             }
         }
         this.database.close();
+        list.sort((a, b) => b.fromDate.localeCompare(a.fromDate));
         return list;
     }
 }

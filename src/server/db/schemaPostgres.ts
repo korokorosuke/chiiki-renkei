@@ -197,10 +197,11 @@ export const master = snakeCase.table("master", {
 export const notice = snakeCase.table("notice", {
   base: text().notNull(),
   id: text().notNull(),
-  type: text().notNull(),
+  page: text().notNull(),
   message: text().notNull(),
   fromDate: date({ mode: "string" }).notNull(),
   toDate: date({ mode: "string" }).notNull(),
+  importance: boolean().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
   index("idx_notice_date").on(table.base, table.fromDate),
@@ -436,10 +437,11 @@ export const webMaster = snakeCase.table("web_master", {
 export const webNotice = snakeCase.table("web_notice", {
   base: text().notNull(),
   id: text().notNull(),
-  type: text().notNull(),
+  page: text().notNull(),
   message: text().notNull(),
   fromDate: date({ mode: "string" }).notNull(),
   toDate: date({ mode: "string" }).notNull(),
+  importance: boolean().notNull(),
 }, (table) => [
   primaryKey({ columns: [table.base, table.id] }),
   index("idx_web_notice_date").on(table.base, table.fromDate),

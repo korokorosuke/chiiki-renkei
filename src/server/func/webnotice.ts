@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/solid-start"
 import { WebNoticeService } from "../domain/webNoticeService.ts"
 import { WebNoticeRepository } from "../infra/allRepository.ts"
-import type { WebNotice } from "../domain/webNotice.ts"
+import type { WebNotice, NOTICE_PAGE } from "../domain/webNotice.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
 
@@ -13,43 +13,31 @@ export const getAllNotices = createServerFn({ method: "GET" })
   .handler(async (): Promise<WebNotice[]> => {
     const auth = await authenticate(AUTH_READ_ALL);
     if(auth.ok){
-      return await get(auth.user!.base, true);
+      const service = new WebNoticeService(new WebNoticeRepository(auth.user!.base));
+      return await service.getAll();
     }else{
       return [];
     }
 });
+
+async function getList(base: string, page: NOTICE_PAGE): Promise<WebNotice[]> {
+  const service = new WebNoticeService(new WebNoticeRepository(base));
+  if(base){
+    return await service.getList(page);
+  }else{
+    return [];
+  }
+}
 
 export const getNotices = createServerFn({ method: "GET" })
   .handler(async (): Promise<WebNotice[]> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
-      return await get(auth.user!.base, false);
+      return await getList(auth.user!.base, "メニュー");
     }else{
       return [];
     }
 });
-
-async function get(base: string, all: boolean): Promise<WebNotice[]> {
-  const service = new WebNoticeService(new WebNoticeRepository(base));
-  let res: WebNotice[];
-  if(all){
-    res = await service.getAll();
-  }else{
-    res = await service.getList();
-  }
-  if(res.length > 1){
-    res.sort((v1,v2)=>{
-      if(v1.fromDate > v2.fromDate){
-        return -1;
-      }else if(v1.fromDate < v2.fromDate){
-        return 1;
-      }else{
-        return 0;
-      }
-    });
-  }
-  return res;
-}
 
 export const insert = createServerFn({ method: "POST" })
   .validator((data : {notice: WebNotice}) => data)

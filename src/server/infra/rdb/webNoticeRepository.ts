@@ -1,4 +1,4 @@
-import type { WebNotice } from "../../domain/webNotice.ts"
+import type { WebNotice, NOTICE_PAGE } from "../../domain/webNotice.ts"
 import type { IWebNoticeRepository } from "../../domain/webNoticeService.ts"
 import { Db } from "./db.ts"
 import { webNotice } from "../../db/schema.ts"
@@ -85,19 +85,37 @@ export class WebNoticeRepository implements IWebNoticeRepository {
     return res;
   }
 
-  async list(date?: string): Promise<WebNotice[]> {
+  async all(): Promise<WebNotice[]> {
     const db = await this.database.open();
     const res = await db.query.webNotice.findMany({
       columns: {
         base: false,
       },
-      where: (date ? {
+      where: {
         base: this.base,
+      },
+      orderBy: {
+        fromDate: "desc",
+      }
+    });
+    return res;
+  }
+
+  async list(page: NOTICE_PAGE, date: string): Promise<WebNotice[]> {
+    const db = await this.database.open();
+    const res = await db.query.webNotice.findMany({
+      columns: {
+        base: false,
+      },
+      where: {
+        base: this.base,
+        page: page,
         fromDate: { lte: date },
         toDate: { gte: date },
-      } : {
-        base: this.base,
-      }),
+      },
+      orderBy: {
+        fromDate: "desc",
+      }
     });
     return res;
   }

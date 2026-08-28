@@ -1,6 +1,6 @@
 import { createSignal, onMount, Show, For, Suspense, type JSXElement, type Accessor } from "solid-js"
 import { initAuthUser } from "../../helper/types.ts"
-import { getNotices } from "../../server/func/notice.ts"
+import { getLoginNotices } from "../../server/func/notice.ts"
 import { create } from "../../server/func/auth.ts"
 import { NormalDialog, showDialog } from "../../components/NormalDialog.tsx"
 import { About } from "../-about.tsx"
@@ -67,7 +67,7 @@ function App() {
   }
 
   onMount(()=>{
-    getNotices({data: {base: base() }}).then((res)=>{
+    getLoginNotices({data: {base: base() }}).then((res)=>{
       setNotices(res);
     });
     if(input){
@@ -112,14 +112,14 @@ function App() {
           <div class={ css(messageStyle, { color: "red", }) }>
             <Suspense fallback={<div>loading</div>}>
               <For each={notices()}>{(notice, i)=>
-                notice.type === "重要" ? <NoticeMessage notice={notice} i={i} /> : null
+                notice.importance ? <NoticeMessage notice={notice} i={i} /> : null
               }</For>
             </Suspense>
           </div>
           <div class={ css(messageStyle) }>
             <Suspense fallback={<div>loading</div>}>
               <For each={notices()}>{(notice, i)=>
-                notice.type !== "重要" ? <NoticeMessage notice={notice} i={i} /> : null
+                !notice.importance ? <NoticeMessage notice={notice} i={i} /> : null
               }</For>
             </Suspense>
           </div>

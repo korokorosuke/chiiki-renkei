@@ -2,11 +2,12 @@ import { validater } from "../lib/validation.ts"
 import { toDateString } from "../lib/datetime.ts"
 import { z } from "zod"
 
-export const NOTICE_TYPES = ["通常", "重要"];
+export const NOTICE_PAGES = ["ログイン", "メニュー"];
+export type NOTICE_PAGE = typeof NOTICE_PAGES[number];
 
 export const webNoticeSchema = z.object({
     id: z.string(),
-    type: z.enum(["", ...NOTICE_TYPES]),
+    page: z.enum(["", ...NOTICE_PAGES]),
     message: z.string()
         .min(1, {message: "メッセージを入力してください。"})
         .max(1000, {message: "メッセージは１０００文字までです。"}),
@@ -14,14 +15,15 @@ export const webNoticeSchema = z.object({
         .min(1, {message: "開始日を入力してください。"}),
     toDate: z.iso.date("終了日が不正です。")
         .min(1, {message: "終了日を入力してください。"}),
+    importance: z.boolean(),
 }).required({
-    id: true, type: true, message: true, fromDate: true, toDate: true,
+    id: true, page: true, message: true, fromDate: true, toDate: true,
 })
 .refine((val) => {
     return val.fromDate && val.toDate && new Date(val.fromDate) <= new Date(val.toDate);
 }, "終了日は開始日以降にしてください。")
 .refine((val) => {
-    return val.type && NOTICE_TYPES.includes(val.type);
+    return val.page && NOTICE_PAGES.includes(val.page);
 }, "お知らせの種類が不正です。");
 
 export type WebNotice = z.infer<typeof webNoticeSchema>;
@@ -31,9 +33,10 @@ export const validate = validater<WebNotice>(webNoticeSchema);
 export function initialize(): WebNotice {
     return {
         id: "",
-        type: NOTICE_TYPES[0],
+        page: NOTICE_PAGES[0],
         message: "",
         fromDate: toDateString(new Date()),
-        toDate: toDateString(new Date())
+        toDate: toDateString(new Date()),
+        importance: false
     }
 }

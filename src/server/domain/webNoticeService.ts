@@ -1,9 +1,10 @@
-import { type WebNotice, validate } from "./webNotice.ts"
+import { type WebNotice, type NOTICE_PAGE, validate } from "./webNotice.ts"
 import { getTodayString } from "../../lib/datetime.ts"
 import { BaseService, type IRepository, setId } from "./baseService.ts"
 
 export interface IWebNoticeRepository extends IRepository<WebNotice>{
-    list(date?: string): Promise<WebNotice[]>
+    list(type: NOTICE_PAGE, date: string): Promise<WebNotice[]>
+    all(): Promise<WebNotice[]>
 }
 
 export class WebNoticeService extends BaseService<WebNotice, IWebNoticeRepository>{
@@ -11,11 +12,11 @@ export class WebNoticeService extends BaseService<WebNotice, IWebNoticeRepositor
         super(i, validate, setId);
     }
 
-    async getList(): Promise<WebNotice[]>{
-        return await this.getRepository().list(getTodayString());
+    async getList(page: NOTICE_PAGE): Promise<WebNotice[]>{
+        return await this.getRepository().list(page, getTodayString());
     }
 
     async getAll(): Promise<WebNotice[]>{
-        return await this.getRepository().list();
+        return await this.getRepository().all();
     }
 }

@@ -147,7 +147,7 @@ export function addDays(date: Date, d: number):Date{
 
 
 const weeks = ["日","月","火","水","木","金","土"];
-export function getWeekName(date: string){
+export function getWeekName(date: string): string{
     const d = toDate(date);
     return weeks[d.getDay()]
 }

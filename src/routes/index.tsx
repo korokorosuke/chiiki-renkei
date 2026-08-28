@@ -16,6 +16,7 @@ import questionnaire from "./assets/questionnaire.svg"
 import printer from "./assets/printer.svg"
 import Header from "./-header.tsx"
 import { Authenticator, authenticatedUser as user } from "../components/Authenticator.tsx"
+import { Notice } from "./-notice.tsx"
 import { flex } from "../styled-system/patterns/"
 import { css } from "../styled-system/css/"
 
@@ -63,6 +64,7 @@ function Home() {
     <Authenticator />
     <Header title="地域連携システム" visible={false} handler={()=>{}} auth={user} />
     <main class={ flex({ direction: "column" }) }>
+      <Notice />
       <Show when={user().authActivity >= 2 || user().authWeb >= 1}>
       <div>
         <Show when={user().authActivity >= 2}>
