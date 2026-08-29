@@ -39,7 +39,7 @@ export function ListAreaReply(props: Props) {
                 <span class={ css({ fontFamily: "number" }) }>{rep.date}</span>
                 <span>[{rep.department.name}]</span>
                 <span>{rep.dr.name}</span>
-                <span>({rep.classification})</span>
+                <span>({rep.classification.name})</span>
               </div>
             </Show>
           }</For>
