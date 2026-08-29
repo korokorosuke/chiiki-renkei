@@ -236,6 +236,15 @@ function App() {
       <Switch>
         <Match when={status()===Status.READY}>
           <Notice />
+          <Show when={isUser(user())}>
+            <div class={ css({ marginTop: "1rem" })}>
+              <button type="button" class={ button({ color: "primary", size: "full" }) } onClick={create}>新規予約</button>
+            </div>
+            <div class={ css({ marginTop: "1rem", textAlign: "center" }) }>
+              <a class={ css({ cursor: "pointer", color: "#1e6bff", textDecoration: "underline" }) }
+                onClick={history}>予約履歴</a>
+            </div>
+          </Show>
         </Match>
         <Match when={status()===Status.DEPT_SELECT}>
           <DeptSelect depts={depts()} next={next} selected={selected} setSelected={setSelected} />
