@@ -10,7 +10,7 @@ import { css } from "../../styled-system/css/"
 
 type Props = {
     appointments: Accessor<Appointment[]>
-    modifyData: ()=>void
+    select: ()=>void
     setAppointment: Setter<Appointment>
 }
 
@@ -27,7 +27,7 @@ export function ListArea(props: Props) {
     const app = props.appointments().filter((a) => a.id === id);
     if(app && app.length > 0){
       props.setAppointment(app[0]);
-      props.modifyData();
+      props.select();
     }
   }
 

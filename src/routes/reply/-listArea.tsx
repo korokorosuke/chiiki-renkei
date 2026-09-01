@@ -6,7 +6,7 @@ import { css } from "../../styled-system/css/"
 
 type Props = {
     replies: Accessor<Referral[]>
-    modifyData: ()=>void
+    select: ()=>void
     setReply: Setter<Reply>
     newReply: (ref: Referral)=>void
 }
@@ -15,7 +15,7 @@ export function ListArea(props: Props) {
   function handleClick(reply: Reply){
     if(reply){
       props.setReply(reply);
-      props.modifyData();
+      props.select();
     }
   }
 

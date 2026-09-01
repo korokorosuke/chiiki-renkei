@@ -42,7 +42,7 @@ function App() {
     }
   }
 
-  function modifyData(){
+  function select(){
     setSelected(s=>{s.patient=patient();return s});
     setModification(true);
     setNewadd(false);
@@ -160,7 +160,7 @@ function App() {
             depts={depts()} terminateModification={terminateModification} />
         </Match>
         <Match when={referrals().length > 0}>
-          <ListArea referrals={referrals} modifyData={modifyData}
+          <ListArea referrals={referrals} select={select}
             setReferral={setSelected} />
         </Match>
       </Switch>

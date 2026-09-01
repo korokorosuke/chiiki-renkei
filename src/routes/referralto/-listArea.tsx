@@ -4,7 +4,7 @@ import { table, list } from "../../styled-system/recipes/"
 
 type Props = {
     referrals: Accessor<ReferralTo[]>
-    modifyData: ()=>void
+    select: ()=>void
     setReferral: Setter<ReferralTo>
 }
 
@@ -14,7 +14,7 @@ export function ListArea(props: Props) {
     const ref = props.referrals().filter((r) => r.id === id);
     if(ref && ref.length > 0){
       props.setReferral(ref[0]);
-      props.modifyData();
+      props.select();
     }
   }
 

@@ -45,7 +45,7 @@ function App() {
     }
   }
 
-  function modifyData(){
+  function select(){
     setModification(true);
     setNewadd(false);
   }
@@ -149,7 +149,7 @@ function App() {
             depts={depts()} terminateModification={terminateModification} />
         </Match>
         <Match when={replies().length > 0}>
-          <ListArea replies={replies} modifyData={modifyData}
+          <ListArea replies={replies} select={select}
             setReply={setSelected} newReply={handleNew} />
         </Match>
       </Switch>
