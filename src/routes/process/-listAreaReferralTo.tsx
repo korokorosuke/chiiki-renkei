@@ -10,9 +10,9 @@ type Props = {
 }
 
 export function ListAreaReferralTo(props: Props) {
-  function handleClick(id: string){
+  function handleClick(referral: ReferralTo){
     if(props.auth().authReferral>=2){
-      location.href = `/referralto/${id}`;
+      location.href = `/referralto/${referral.patient.id}/${referral.id}`;
     }
   }
 
@@ -20,7 +20,7 @@ export function ListAreaReferralTo(props: Props) {
     <div>
       <div class={ titleStyles }>逆紹介</div>
       <For each={props.list()}>{(referral)=>
-        <div class={ cx(procStyles, css({ marginBottom: "1rem" })) } onClick={()=>handleClick(referral.id)}>
+        <div class={ cx(procStyles, css({ marginBottom: "1rem" })) } onClick={()=>handleClick(referral)}>
           <span class={ css({ fontFamily: "number" }) }>{referral.date}</span>
           <span>[{referral.department.name}]</span>
           <span>{referral.dr.name}</span>

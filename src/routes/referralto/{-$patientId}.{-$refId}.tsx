@@ -5,7 +5,7 @@ import { ModificationArea } from "./-modificationArea.tsx"
 import { PatientArea } from "../../components/PatientArea.tsx"
 import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { initPatient, initReferralTo, toUser } from "../../helper/types.ts"
-import { getReferralTo as getServerRef, getReferralTos as getServerRefs } from "../../server/func/referralto.ts"
+import { getReferralTo, getReferralTos as getServerRefs } from "../../server/func/referralto.ts"
 import { getDepartments } from "../../server/func/department.ts"
 import { getPatient } from "../../server/func/patient.ts"
 import { Message, setMessage as setStatusMessage , type MessageStatus} from "../../components/Message.tsx"
@@ -15,7 +15,39 @@ import type { Department } from "../../server/domain/department.ts"
 import { button, input, area } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/referralto/{-$id}")({ component: App });
+export const Route = createFileRoute("/referralto/{-$patientId}/{-$refId}")({
+  component: App,
+  loader: async ({ params: { patientId, refId } }) => {
+    const depts = getDepartments();
+    if(refId){
+      let ref = await getReferralTo({data: {id: refId}});
+      if(!ref){
+        ref = initReferralTo();
+        ref.id = refId;
+      }
+      return { depts, ref };
+    }else if(patientId){
+      const ref = initReferralTo();
+      const patient = await getPatient({ data: { id: patientId } });
+      if(patient){
+        ref.patient = patient;
+      }else{
+        ref.patient.id = patientId;
+      }
+      return { depts, ref };
+    }
+    return { depts, ref: undefined };
+  },
+  head: ({ loaderData })=>({
+    meta: [
+      {
+        title: loaderData && loaderData.ref && loaderData.ref.patient.firstName ?
+          `${loaderData.ref.patient.id} - ${loaderData.ref.patient.lastName}　${loaderData.ref.patient.firstName}　[逆紹介登録]　地域連携システム` :
+          "[逆紹介登録]　地域連携システム"
+      }
+    ]
+  }),
+});
 
 let refInput: HTMLInputElement | undefined;
 
@@ -30,15 +62,14 @@ function App() {
   const [patient, setPatient] = createSignal<Patient>(initPatient());
   const [depts, setDepts] = createSignal<Department[]>([]);
 
-  const params = Route.useParams();
-  const paramId = params().id;
+  const loaderData = Route.useLoaderData();
 
   async function terminateModification(status: MessageStatus): Promise<void>{
     setModification(false);
     setVisible(true);
     setStatusMessage(status);
     if(patient().id){
-      await getReferrals(patient(), false);
+      await getReferrals(patient());
     }
   }
 
@@ -48,17 +79,17 @@ function App() {
     setNewadd(false);
   }
 
-  async function move(id: string){
-    if(id){
-      await loadData(id);
+  function move(patId: string){
+    if(patId){
+      location.href = `/referralto/${patId}`;
     }else{
       setMessage("患者を入力してください");
     }
   }
 
-  async function handleChange(e: KeyboardEvent){
+  function handleChange(e: KeyboardEvent){
     if(e.key === "Enter"){
-      await move(id());
+      move(id());
     }
   }
 
@@ -73,29 +104,7 @@ function App() {
     setModification(true);
   }
 
-  async function loadData(id: string){
-    setModification(false);
-    if(id != ""){
-      const pat = await getPatient({data: {id}});
-      if(pat){
-        setId("");
-        setPatient(pat);
-        setMessage("");
-        await getReferrals(pat, true);
-      }else{
-        setPatient(initPatient());
-        setMessage("患者がみつかりませんでした");
-        setVisible(false);
-        setReferrals([]);
-        if(refInput){
-          refInput.select();
-          refInput.focus();
-        }
-      }
-    }
-  }
-
-  async function getReferrals(pat: Patient, noDataModify: boolean){
+  async function getReferrals(pat: Patient){
     const res = await getServerRefs({data: {patientId: pat.id}});
     setVisible(true);
     const list = res.sort((v1,v2)=>{
@@ -108,31 +117,38 @@ function App() {
       }
     });
     setReferrals(list);
-    if(list.length === 0 && noDataModify){
+    if(list.length === 0){
       handleNew(pat);
     }
   }
 
-  async function getReferral(id: string){
-    const res = await getServerRef({data: {id}});
-    if(res){
-      setPatient(res.patient);
-      setSelected(res);
+  async function initialize(){
+    const {depts, ref} = loaderData();
+    depts.then(setDepts);
+    if(ref && ref.id){
+      setSelected(ref);
+      setPatient(ref.patient);
       setModification(true);
       setNewadd(false);
-      setVisible(true);
+    }else if(ref && ref.patient.id){
+      if(ref.patient.firstName){
+        setPatient(ref.patient);
+        await getReferrals(ref.patient);
+      }else{
+        setId(ref.patient.id);
+        setPatient(initPatient());
+        setMessage("患者がみつかりませんでした");
+        setVisible(false);
+        setReferrals([]);
+        if(refInput){
+          refInput.select();
+        }
+      }
+      setModification(false);
+      setNewadd(false);
     }
-  }
-
-  async function initialize(){
-    getDepartments().then(setDepts);
     if(refInput){
       refInput.focus();
-    }
-    if(paramId && paramId.length > 10){
-      await getReferral(paramId);
-    }else if(paramId && paramId.length <= 10){
-      await loadData(paramId);
     }
   }
 

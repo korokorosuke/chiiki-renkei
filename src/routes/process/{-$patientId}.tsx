@@ -14,7 +14,32 @@ import Header from "../-header.tsx"
 import { button, input, area } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/process/{-$patient}")({ component: App });
+export const Route = createFileRoute("/process/{-$patientId}")({
+  component: App,
+  loader: async ({ params: { patientId } }) => {
+    if(patientId){
+      const patient = await getPatient({ data: { id: patientId } });
+      if(patient){
+        return { patient }
+      }else{
+        return { patient: {
+          ...initPatient(),
+          id: patientId,
+        }}
+      }
+    }
+    return { patient: undefined };
+  },
+  head: ({ loaderData })=>({
+    meta: [
+      {
+        title: loaderData && loaderData.patient ?
+          `${loaderData.patient.id} - ${loaderData.patient.lastName}　${loaderData.patient.firstName}　[紹介状況]　地域連携システム` :
+          "[紹介状況]　地域連携システム"
+      }
+    ]
+  }),
+});
 
 function App() {
   const [inputData, setInputData] = createSignal<string>("");
@@ -25,8 +50,7 @@ function App() {
   const [repok, setRepok] = createSignal(false);
   const [refok, setRefok] = createSignal(false);
 
-  const params = Route.useParams();
-  const paramPatient = params().patient;
+  const loaderData = Route.useLoaderData();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -44,21 +68,9 @@ function App() {
     }
   }
 
-  async function loadData(patientid: string){
-    if(!patientid){
-      return;
-    }
-    const p = await getPatient({data: {id: patientid}});
-    if(p){
-      setPatient(p);
-    }else{
-      setReply([]);
-      setReferralTo([]);
-      setMessage("患者が存在しません");
-      setPatient(initPatient());
-      return;
-    }
-    getReplies({data: {patientId: patientid}}).then(res=>{
+  function loadData(patient: Patient){
+    setPatient(patient);
+    getReplies({data: {patientId: patient.id}}).then(res=>{
       if(res.length !== 0){
         setReply(res);
         setRepok(true);
@@ -67,7 +79,7 @@ function App() {
         setRepok(true);
       }
     });
-    getReferralTos({data: {patientId: patientid}}).then(res=>{
+    getReferralTos({data: {patientId: patient.id}}).then(res=>{
       if(res.length !== 0){
         setReferralTo(res.sort((v1, v2)=>{
           if(v1.date > v2.date){
@@ -86,12 +98,21 @@ function App() {
     });
   }
 
-  async function initialize(){
+  function initialize(){
+    const { patient } = loaderData();
+    if(patient){
+      if(patient.lastName){
+        loadData(patient);
+      }else{
+        setInputData(patient.id);
+        setMessage("患者が存在しません");
+        if(refInput){
+          refInput.select();
+        }
+      }
+    }
     if(refInput){
       refInput.focus();
-    }
-    if(paramPatient){
-      await loadData(paramPatient);
     }
   }
 

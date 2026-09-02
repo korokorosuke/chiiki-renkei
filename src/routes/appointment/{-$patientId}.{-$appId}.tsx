@@ -5,7 +5,7 @@ import { ModificationArea } from "./-modificationArea.tsx"
 import { PatientArea } from "../../components/PatientArea.tsx"
 import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { initPatient, initAppointment, toUser } from "../../helper/types.ts"
-import { getAppointment, getAppointments as getApp } from "../../server/func/appointment.ts"
+import { getAppointment, getAppointments as getServerApps } from "../../server/func/appointment.ts"
 import { getDepartments } from "../../server/func/department.ts"
 import { getPatient } from "../../server/func/patient.ts"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
@@ -15,7 +15,39 @@ import type { Department } from "../../server/domain/department.ts"
 import { button, input, area } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/appointment/{-$patient}")({ component: App });
+export const Route = createFileRoute("/appointment/{-$patientId}/{-$appId}")({
+  component: App,
+  loader: async ({ params: { patientId, appId } }) => {
+    const depts = getDepartments();
+    if(appId){
+      let app = await getAppointment({data: {id: appId}});
+      if(!app){
+        app = initAppointment();
+        app.id = appId;
+      }
+      return { depts, app };
+    }else if(patientId){
+      const app = initAppointment();
+      const patient = await getPatient({ data: { id: patientId } });
+      if(patient){
+        app.patient = patient;
+      }else{
+        app.patient.id = patientId;
+      }
+      return { depts, app };
+    }
+    return { depts, app: undefined };
+  },
+  head: ({ loaderData })=>({
+    meta: [
+      {
+        title: loaderData && loaderData.app && loaderData.app.patient.firstName ?
+          `${loaderData.app.patient.id} - ${loaderData.app.patient.lastName}　${loaderData.app.patient.firstName}　[紹介登録]　地域連携システム` :
+          "[紹介登録]　地域連携システム"
+      }
+    ]
+  }),
+});
 
 let refInput: HTMLInputElement | undefined;
 
@@ -30,35 +62,34 @@ function App() {
   const [patient, setPatient] = createSignal<Patient>(initPatient());
   const [depts, setDepts] = createSignal<Department[]>([]);
 
-  const params = Route.useParams();
-  const paramPatient = params().patient;
+  const loaderData = Route.useLoaderData();
 
   async function terminateModification(status: MessageStatus): Promise<void>{
     setModification(false);
     setVisible(true);
     setStatusMessage(status);
     if(patient().id){
-      await getAppointments(patient(), false);
+      await getAppointments(patient());
     }
   }
 
-  function modifyData(){
+  function select(){
     setSelected(s=>{s.patient=patient();return s});
     setModification(true);
     setNewadd(false);
   }
 
-  async function move(id: string){
-    if(id){
-      await loadData(id);
+  function move(patId: string){
+    if(patId){
+      location.href = `/appointment/${patId}`;
     }else{
       setMessage("患者を入力してください");
     }
   }
 
-  async function handleChange(e: KeyboardEvent){
+  function handleChange(e: KeyboardEvent){
     if(e.key === "Enter"){
-      await move(id());
+      move(id());
     }
   }
 
@@ -73,30 +104,8 @@ function App() {
     setModification(true);
   }
 
-  async function loadData(id: string){
-    setModification(false);
-    if(id != ""){
-      const pat = await getPatient({data: {id}});
-      if(pat){
-        setId("");
-        setPatient(pat);
-        setMessage("");
-        await getAppointments(pat, true);
-      }else{
-        setPatient(initPatient());
-        setMessage("患者がみつかりませんでした");
-        setVisible(false);
-        setAppointments([]);
-        if(refInput){
-          refInput.select();
-          refInput.focus();
-        }
-      }
-    }
-  }
-
-  async function getAppointments(pat: Patient, noDataModify: boolean){
-    const data = await getApp({data: {patientId: pat.id}});
+  async function getAppointments(pat: Patient){
+    const data = await getServerApps({data: {patientId: pat.id}});
     setVisible(true);
     const list = data.sort((v1,v2)=>{
       if(v1.date > v2.date){
@@ -108,30 +117,38 @@ function App() {
       }
     });
     setAppointments(list);
-    if(list.length === 0 && noDataModify){
+    if(list.length === 0){
       handleNew(pat);
     }
   }
 
-  async function getData(id: string){
-    const res = await getAppointment({data: {id}});
-    if(res){
-      setPatient(res.patient);
-      setSelected(res);
+  async function initialize(){
+    const {depts, app} = loaderData();
+    depts.then(setDepts);
+    if(app && app.id){
+      setSelected(app);
+      setPatient(app.patient);
       setModification(true);
       setNewadd(false);
+    }else if(app && app.patient.id){
+      if(app.patient.firstName){
+        setPatient(app.patient);
+        await getAppointments(app.patient);
+      }else{
+        setId(app.patient.id);
+        setPatient(initPatient());
+        setMessage("患者がみつかりませんでした");
+        setVisible(false);
+        setAppointments([]);
+        if(refInput){
+          refInput.select();
+        }
+      }
+      setModification(false);
+      setNewadd(false);
     }
-  }
-
-  async function initialize(){
-    getDepartments().then(setDepts);
     if(refInput){
       refInput.focus();
-    }
-    if(paramPatient && paramPatient.length < 20){
-      await loadData(paramPatient);
-    }else if(paramPatient){
-      await getData(paramPatient);
     }
   }
 
@@ -159,7 +176,7 @@ function App() {
             depts={depts()} terminateModification={terminateModification} />
         </Match>
         <Match when={appointments().length > 0}>
-          <ListArea appointments={appointments} modifyData={modifyData}
+          <ListArea appointments={appointments} select={select}
             setAppointment={setSelected} />
         </Match>
       </Switch>

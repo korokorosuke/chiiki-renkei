@@ -12,15 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActivityIndexRouteImport } from './routes/activity/index'
 import { Route as AddressIndexRouteImport } from './routes/address/index'
-import { Route as AppointmentChar123PatientChar125RouteImport } from './routes/appointment/{-$patient}'
 import { Route as FacilityChar123FacilityChar125RouteImport } from './routes/facility/{-$facility}'
 import { Route as InquiryIndexRouteImport } from './routes/inquiry/index'
 import { Route as LoginBaseRouteImport } from './routes/login/$base'
 import { Route as MasterIndexRouteImport } from './routes/master/index'
 import { Route as PatientIndexRouteImport } from './routes/patient/index'
-import { Route as ProcessChar123PatientChar125RouteImport } from './routes/process/{-$patient}'
-import { Route as ReferraltoChar123IdChar125RouteImport } from './routes/referralto/{-$id}'
-import { Route as ReplyChar123IdChar125RouteImport } from './routes/reply/{-$id}'
+import { Route as ProcessChar123PatientIdChar125RouteImport } from './routes/process/{-$patientId}'
 import { Route as ReportIndexRouteImport } from './routes/report/index'
 import { Route as StaffIndexRouteImport } from './routes/staff/index'
 import { Route as StatisticsChar123IdChar125RouteImport } from './routes/statistics/{-$id}'
@@ -28,6 +25,9 @@ import { Route as UserIndexRouteImport } from './routes/user/index'
 import { Route as WebappIndexRouteImport } from './routes/webapp/index'
 import { Route as AnswerBaseAppidRouteImport } from './routes/answer/$base.$appid'
 import { Route as AnswerPatientChar123IdChar125RouteImport } from './routes/answer/patient.{-$id}'
+import { Route as AppointmentChar123PatientIdChar125Char123AppIdChar125RouteImport } from './routes/appointment/{-$patientId}.{-$appId}'
+import { Route as ReferraltoChar123PatientIdChar125Char123RefIdChar125RouteImport } from './routes/referralto/{-$patientId}.{-$refId}'
+import { Route as ReplyChar123PatientIdChar125Char123RepIdChar125RouteImport } from './routes/reply/{-$patientId}.{-$repId}'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -44,12 +44,6 @@ const AddressIndexRoute = AddressIndexRouteImport.update({
   path: '/address/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppointmentChar123PatientChar125Route =
-  AppointmentChar123PatientChar125RouteImport.update({
-    id: '/appointment/{-$patient}',
-    path: '/appointment/{-$patient}',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const FacilityChar123FacilityChar125Route =
   FacilityChar123FacilityChar125RouteImport.update({
     id: '/facility/{-$facility}',
@@ -76,23 +70,12 @@ const PatientIndexRoute = PatientIndexRouteImport.update({
   path: '/patient/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProcessChar123PatientChar125Route =
-  ProcessChar123PatientChar125RouteImport.update({
-    id: '/process/{-$patient}',
-    path: '/process/{-$patient}',
+const ProcessChar123PatientIdChar125Route =
+  ProcessChar123PatientIdChar125RouteImport.update({
+    id: '/process/{-$patientId}',
+    path: '/process/{-$patientId}',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ReferraltoChar123IdChar125Route =
-  ReferraltoChar123IdChar125RouteImport.update({
-    id: '/referralto/{-$id}',
-    path: '/referralto/{-$id}',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ReplyChar123IdChar125Route = ReplyChar123IdChar125RouteImport.update({
-  id: '/reply/{-$id}',
-  path: '/reply/{-$id}',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ReportIndexRoute = ReportIndexRouteImport.update({
   id: '/report/',
   path: '/report/',
@@ -130,15 +113,30 @@ const AnswerPatientChar123IdChar125Route =
     path: '/answer/patient/{-$id}',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AppointmentChar123PatientIdChar125Char123AppIdChar125Route =
+  AppointmentChar123PatientIdChar125Char123AppIdChar125RouteImport.update({
+    id: '/appointment/{-$patientId}/{-$appId}',
+    path: '/appointment/{-$patientId}/{-$appId}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ReferraltoChar123PatientIdChar125Char123RefIdChar125Route =
+  ReferraltoChar123PatientIdChar125Char123RefIdChar125RouteImport.update({
+    id: '/referralto/{-$patientId}/{-$refId}',
+    path: '/referralto/{-$patientId}/{-$refId}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ReplyChar123PatientIdChar125Char123RepIdChar125Route =
+  ReplyChar123PatientIdChar125Char123RepIdChar125RouteImport.update({
+    id: '/reply/{-$patientId}/{-$repId}',
+    path: '/reply/{-$patientId}/{-$repId}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/appointment/{-$patient}': typeof AppointmentChar123PatientChar125Route
   '/facility/{-$facility}': typeof FacilityChar123FacilityChar125Route
   '/login/$base': typeof LoginBaseRoute
-  '/process/{-$patient}': typeof ProcessChar123PatientChar125Route
-  '/referralto/{-$id}': typeof ReferraltoChar123IdChar125Route
-  '/reply/{-$id}': typeof ReplyChar123IdChar125Route
+  '/process/{-$patientId}': typeof ProcessChar123PatientIdChar125Route
   '/statistics/{-$id}': typeof StatisticsChar123IdChar125Route
   '/activity/': typeof ActivityIndexRoute
   '/address/': typeof AddressIndexRoute
@@ -151,15 +149,15 @@ export interface FileRoutesByFullPath {
   '/webapp/': typeof WebappIndexRoute
   '/answer/$base/$appid': typeof AnswerBaseAppidRoute
   '/answer/patient/{-$id}': typeof AnswerPatientChar123IdChar125Route
+  '/appointment/{-$patientId}/{-$appId}': typeof AppointmentChar123PatientIdChar125Char123AppIdChar125Route
+  '/referralto/{-$patientId}/{-$refId}': typeof ReferraltoChar123PatientIdChar125Char123RefIdChar125Route
+  '/reply/{-$patientId}/{-$repId}': typeof ReplyChar123PatientIdChar125Char123RepIdChar125Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/appointment/{-$patient}': typeof AppointmentChar123PatientChar125Route
   '/facility/{-$facility}': typeof FacilityChar123FacilityChar125Route
   '/login/$base': typeof LoginBaseRoute
-  '/process/{-$patient}': typeof ProcessChar123PatientChar125Route
-  '/referralto/{-$id}': typeof ReferraltoChar123IdChar125Route
-  '/reply/{-$id}': typeof ReplyChar123IdChar125Route
+  '/process/{-$patientId}': typeof ProcessChar123PatientIdChar125Route
   '/statistics/{-$id}': typeof StatisticsChar123IdChar125Route
   '/activity': typeof ActivityIndexRoute
   '/address': typeof AddressIndexRoute
@@ -172,16 +170,16 @@ export interface FileRoutesByTo {
   '/webapp': typeof WebappIndexRoute
   '/answer/$base/$appid': typeof AnswerBaseAppidRoute
   '/answer/patient/{-$id}': typeof AnswerPatientChar123IdChar125Route
+  '/appointment/{-$patientId}/{-$appId}': typeof AppointmentChar123PatientIdChar125Char123AppIdChar125Route
+  '/referralto/{-$patientId}/{-$refId}': typeof ReferraltoChar123PatientIdChar125Char123RefIdChar125Route
+  '/reply/{-$patientId}/{-$repId}': typeof ReplyChar123PatientIdChar125Char123RepIdChar125Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/appointment/{-$patient}': typeof AppointmentChar123PatientChar125Route
   '/facility/{-$facility}': typeof FacilityChar123FacilityChar125Route
   '/login/$base': typeof LoginBaseRoute
-  '/process/{-$patient}': typeof ProcessChar123PatientChar125Route
-  '/referralto/{-$id}': typeof ReferraltoChar123IdChar125Route
-  '/reply/{-$id}': typeof ReplyChar123IdChar125Route
+  '/process/{-$patientId}': typeof ProcessChar123PatientIdChar125Route
   '/statistics/{-$id}': typeof StatisticsChar123IdChar125Route
   '/activity/': typeof ActivityIndexRoute
   '/address/': typeof AddressIndexRoute
@@ -194,17 +192,17 @@ export interface FileRoutesById {
   '/webapp/': typeof WebappIndexRoute
   '/answer/$base/$appid': typeof AnswerBaseAppidRoute
   '/answer/patient/{-$id}': typeof AnswerPatientChar123IdChar125Route
+  '/appointment/{-$patientId}/{-$appId}': typeof AppointmentChar123PatientIdChar125Char123AppIdChar125Route
+  '/referralto/{-$patientId}/{-$refId}': typeof ReferraltoChar123PatientIdChar125Char123RefIdChar125Route
+  '/reply/{-$patientId}/{-$repId}': typeof ReplyChar123PatientIdChar125Char123RepIdChar125Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/appointment/{-$patient}'
     | '/facility/{-$facility}'
     | '/login/$base'
-    | '/process/{-$patient}'
-    | '/referralto/{-$id}'
-    | '/reply/{-$id}'
+    | '/process/{-$patientId}'
     | '/statistics/{-$id}'
     | '/activity/'
     | '/address/'
@@ -217,15 +215,15 @@ export interface FileRouteTypes {
     | '/webapp/'
     | '/answer/$base/$appid'
     | '/answer/patient/{-$id}'
+    | '/appointment/{-$patientId}/{-$appId}'
+    | '/referralto/{-$patientId}/{-$refId}'
+    | '/reply/{-$patientId}/{-$repId}'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/appointment/{-$patient}'
     | '/facility/{-$facility}'
     | '/login/$base'
-    | '/process/{-$patient}'
-    | '/referralto/{-$id}'
-    | '/reply/{-$id}'
+    | '/process/{-$patientId}'
     | '/statistics/{-$id}'
     | '/activity'
     | '/address'
@@ -238,15 +236,15 @@ export interface FileRouteTypes {
     | '/webapp'
     | '/answer/$base/$appid'
     | '/answer/patient/{-$id}'
+    | '/appointment/{-$patientId}/{-$appId}'
+    | '/referralto/{-$patientId}/{-$refId}'
+    | '/reply/{-$patientId}/{-$repId}'
   id:
     | '__root__'
     | '/'
-    | '/appointment/{-$patient}'
     | '/facility/{-$facility}'
     | '/login/$base'
-    | '/process/{-$patient}'
-    | '/referralto/{-$id}'
-    | '/reply/{-$id}'
+    | '/process/{-$patientId}'
     | '/statistics/{-$id}'
     | '/activity/'
     | '/address/'
@@ -259,16 +257,16 @@ export interface FileRouteTypes {
     | '/webapp/'
     | '/answer/$base/$appid'
     | '/answer/patient/{-$id}'
+    | '/appointment/{-$patientId}/{-$appId}'
+    | '/referralto/{-$patientId}/{-$refId}'
+    | '/reply/{-$patientId}/{-$repId}'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppointmentChar123PatientChar125Route: typeof AppointmentChar123PatientChar125Route
   FacilityChar123FacilityChar125Route: typeof FacilityChar123FacilityChar125Route
   LoginBaseRoute: typeof LoginBaseRoute
-  ProcessChar123PatientChar125Route: typeof ProcessChar123PatientChar125Route
-  ReferraltoChar123IdChar125Route: typeof ReferraltoChar123IdChar125Route
-  ReplyChar123IdChar125Route: typeof ReplyChar123IdChar125Route
+  ProcessChar123PatientIdChar125Route: typeof ProcessChar123PatientIdChar125Route
   StatisticsChar123IdChar125Route: typeof StatisticsChar123IdChar125Route
   ActivityIndexRoute: typeof ActivityIndexRoute
   AddressIndexRoute: typeof AddressIndexRoute
@@ -281,6 +279,9 @@ export interface RootRouteChildren {
   WebappIndexRoute: typeof WebappIndexRoute
   AnswerBaseAppidRoute: typeof AnswerBaseAppidRoute
   AnswerPatientChar123IdChar125Route: typeof AnswerPatientChar123IdChar125Route
+  AppointmentChar123PatientIdChar125Char123AppIdChar125Route: typeof AppointmentChar123PatientIdChar125Char123AppIdChar125Route
+  ReferraltoChar123PatientIdChar125Char123RefIdChar125Route: typeof ReferraltoChar123PatientIdChar125Char123RefIdChar125Route
+  ReplyChar123PatientIdChar125Char123RepIdChar125Route: typeof ReplyChar123PatientIdChar125Char123RepIdChar125Route
 }
 
 declare module '@tanstack/solid-router' {
@@ -304,13 +305,6 @@ declare module '@tanstack/solid-router' {
       path: '/address'
       fullPath: '/address/'
       preLoaderRoute: typeof AddressIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/appointment/{-$patient}': {
-      id: '/appointment/{-$patient}'
-      path: '/appointment/{-$patient}'
-      fullPath: '/appointment/{-$patient}'
-      preLoaderRoute: typeof AppointmentChar123PatientChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/facility/{-$facility}': {
@@ -348,25 +342,11 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof PatientIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/process/{-$patient}': {
-      id: '/process/{-$patient}'
-      path: '/process/{-$patient}'
-      fullPath: '/process/{-$patient}'
-      preLoaderRoute: typeof ProcessChar123PatientChar125RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/referralto/{-$id}': {
-      id: '/referralto/{-$id}'
-      path: '/referralto/{-$id}'
-      fullPath: '/referralto/{-$id}'
-      preLoaderRoute: typeof ReferraltoChar123IdChar125RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reply/{-$id}': {
-      id: '/reply/{-$id}'
-      path: '/reply/{-$id}'
-      fullPath: '/reply/{-$id}'
-      preLoaderRoute: typeof ReplyChar123IdChar125RouteImport
+    '/process/{-$patientId}': {
+      id: '/process/{-$patientId}'
+      path: '/process/{-$patientId}'
+      fullPath: '/process/{-$patientId}'
+      preLoaderRoute: typeof ProcessChar123PatientIdChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/report/': {
@@ -418,17 +398,35 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof AnswerPatientChar123IdChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/appointment/{-$patientId}/{-$appId}': {
+      id: '/appointment/{-$patientId}/{-$appId}'
+      path: '/appointment/{-$patientId}/{-$appId}'
+      fullPath: '/appointment/{-$patientId}/{-$appId}'
+      preLoaderRoute: typeof AppointmentChar123PatientIdChar125Char123AppIdChar125RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/referralto/{-$patientId}/{-$refId}': {
+      id: '/referralto/{-$patientId}/{-$refId}'
+      path: '/referralto/{-$patientId}/{-$refId}'
+      fullPath: '/referralto/{-$patientId}/{-$refId}'
+      preLoaderRoute: typeof ReferraltoChar123PatientIdChar125Char123RefIdChar125RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reply/{-$patientId}/{-$repId}': {
+      id: '/reply/{-$patientId}/{-$repId}'
+      path: '/reply/{-$patientId}/{-$repId}'
+      fullPath: '/reply/{-$patientId}/{-$repId}'
+      preLoaderRoute: typeof ReplyChar123PatientIdChar125Char123RepIdChar125RouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppointmentChar123PatientChar125Route: AppointmentChar123PatientChar125Route,
   FacilityChar123FacilityChar125Route: FacilityChar123FacilityChar125Route,
   LoginBaseRoute: LoginBaseRoute,
-  ProcessChar123PatientChar125Route: ProcessChar123PatientChar125Route,
-  ReferraltoChar123IdChar125Route: ReferraltoChar123IdChar125Route,
-  ReplyChar123IdChar125Route: ReplyChar123IdChar125Route,
+  ProcessChar123PatientIdChar125Route: ProcessChar123PatientIdChar125Route,
   StatisticsChar123IdChar125Route: StatisticsChar123IdChar125Route,
   ActivityIndexRoute: ActivityIndexRoute,
   AddressIndexRoute: AddressIndexRoute,
@@ -441,6 +439,12 @@ const rootRouteChildren: RootRouteChildren = {
   WebappIndexRoute: WebappIndexRoute,
   AnswerBaseAppidRoute: AnswerBaseAppidRoute,
   AnswerPatientChar123IdChar125Route: AnswerPatientChar123IdChar125Route,
+  AppointmentChar123PatientIdChar125Char123AppIdChar125Route:
+    AppointmentChar123PatientIdChar125Char123AppIdChar125Route,
+  ReferraltoChar123PatientIdChar125Char123RefIdChar125Route:
+    ReferraltoChar123PatientIdChar125Char123RefIdChar125Route,
+  ReplyChar123PatientIdChar125Char123RepIdChar125Route:
+    ReplyChar123PatientIdChar125Char123RepIdChar125Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -10,14 +10,14 @@ type Props = {
 }
 
 export function ListAreaReply(props: Props) {
-  function handleClick(id: string){
+  function handleClick(referral: Referral){
     if(props.auth().authReferral>=2){
-      location.href = `/appointment/${id}`;
+      location.href = `/appointment/${referral.patient.id}/${referral.id}`;
     }
   }
-  function handleClickReply(id: string){
+  function handleClickReply(refId: string, repId: string){
     if(props.auth().authReferral>=2){
-      location.href = `/reply/${id}`;
+      location.href = `/reply/${refId}/${repId}`;
     }
   }
 
@@ -26,7 +26,7 @@ export function ListAreaReply(props: Props) {
       <div class={ titleStyles }>紹介</div>
       <For each={props.list()}>{(referral)=>
         <div class={ css({ marginBottom: "1rem" }) }>
-          <div class={ procStyles } onClick={()=>handleClick(referral.id)}>
+          <div class={ procStyles } onClick={()=>handleClick(referral)}>
             <span class={ css({ fontFamily: "number" }) }>{referral.date}</span>
             <span>[{referral.department.name}]</span>
             <span>{referral.dr.name}</span>
@@ -34,7 +34,7 @@ export function ListAreaReply(props: Props) {
           </div>
           <For each={referral.replies}>{rep=>
             <Show when={rep.id}>
-              <div class={ procStyles } onClick={()=>handleClickReply(rep.id)}>
+              <div class={ procStyles } onClick={()=>handleClickReply(referral.id, rep.id)}>
                 <span>→</span>
                 <span class={ css({ fontFamily: "number" }) }>{rep.date}</span>
                 <span>[{rep.department.name}]</span>
