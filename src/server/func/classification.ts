@@ -5,7 +5,10 @@ import type { Classification } from "../domain/classification.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
 
-const AUTH_READ_ALL = {auth: Auth.MASTER, role: Role.READ};
+const AUTH_READ_ALL = [
+  {auth: Auth.MASTER, role: Role.READ},
+  {auth: Auth.REFERRAL, role: Role.WRITE}
+];
 const AUTH_WRITE = {auth: Auth.MASTER, role: Role.WRITE};
 
 export const getAllClassifications = createServerFn({ method: "GET" })
