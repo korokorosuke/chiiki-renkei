@@ -32,7 +32,7 @@ export function ListAreaReply(props: ViewProps) {
                 <td class={ list({ size: "rem7", font: "number" }) }>{reply.date}</td>
                 <td class={ list({ size: "rem7" }) }>{reply.department.name}</td>
                 <td class={ list({ size: "rem7" }) }>{reply.dr.name}</td>
-                <td class={ list({ size: "rem7" }) }>{reply.classification}</td>
+                <td class={ list({ size: "rem7" }) }>{reply.classification.name}</td>
               </tr>
             }</For>
           }</For>
