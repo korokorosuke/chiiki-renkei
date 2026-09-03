@@ -10,7 +10,15 @@ import { css } from "../../styled-system/css/"
 import { searchError } from "../../styles/common.ts"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/answer/$base/$appid")({ component: App });
+export const Route = createFileRoute("/answer/$base/$appId")({
+  component: App,
+  loader: async ({ params: { base, appId }}) => {
+    if(base && appId){
+      return { base, appId, result: await exists({ data: { appId, base } }) };
+    }
+    return { base, appId, result: false };
+  }
+});
 
 function App() {
   const [selected, setSelected] = createSignal<Answer>(initAnswer());
@@ -22,9 +30,8 @@ function App() {
   const [existsData, setExistsData] = createSignal(false);
   const [loading, setLoading] = createSignal(true);
 
-  const params = Route.useParams()
-  const base = params().base;
-  const appId = params().appid;
+  const loaderData = Route.useLoaderData();
+  const { base, appId, result } = loaderData();
 
   function terminateModification(status: MessageStatus): void{
     setModification(false);
@@ -57,11 +64,8 @@ function App() {
     }
   }
 
-  onMount(async () => {
-    if(base && typeof(base) === "string" && appId){
-      const res = await exists({ data: { appId, base } });
-      setExistsData(res);
-    }
+  onMount(() => {
+    setExistsData(result);
     setLoading(false);
   });
 

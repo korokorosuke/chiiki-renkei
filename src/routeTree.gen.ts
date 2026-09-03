@@ -23,7 +23,7 @@ import { Route as StaffIndexRouteImport } from './routes/staff/index'
 import { Route as StatisticsChar123IdChar125RouteImport } from './routes/statistics/{-$id}'
 import { Route as UserIndexRouteImport } from './routes/user/index'
 import { Route as WebappIndexRouteImport } from './routes/webapp/index'
-import { Route as AnswerBaseAppidRouteImport } from './routes/answer/$base.$appid'
+import { Route as AnswerBaseAppIdRouteImport } from './routes/answer/$base.$appId'
 import { Route as AnswerPatientChar123IdChar125RouteImport } from './routes/answer/patient.{-$id}'
 import { Route as AppointmentChar123PatientIdChar125Char123AppIdChar125RouteImport } from './routes/appointment/{-$patientId}.{-$appId}'
 import { Route as ReferraltoChar123PatientIdChar125Char123RefIdChar125RouteImport } from './routes/referralto/{-$patientId}.{-$refId}'
@@ -102,9 +102,9 @@ const WebappIndexRoute = WebappIndexRouteImport.update({
   path: '/webapp/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AnswerBaseAppidRoute = AnswerBaseAppidRouteImport.update({
-  id: '/answer/$base/$appid',
-  path: '/answer/$base/$appid',
+const AnswerBaseAppIdRoute = AnswerBaseAppIdRouteImport.update({
+  id: '/answer/$base/$appId',
+  path: '/answer/$base/$appId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnswerPatientChar123IdChar125Route =
@@ -147,7 +147,7 @@ export interface FileRoutesByFullPath {
   '/staff/': typeof StaffIndexRoute
   '/user/': typeof UserIndexRoute
   '/webapp/': typeof WebappIndexRoute
-  '/answer/$base/$appid': typeof AnswerBaseAppidRoute
+  '/answer/$base/$appId': typeof AnswerBaseAppIdRoute
   '/answer/patient/{-$id}': typeof AnswerPatientChar123IdChar125Route
   '/appointment/{-$patientId}/{-$appId}': typeof AppointmentChar123PatientIdChar125Char123AppIdChar125Route
   '/referralto/{-$patientId}/{-$refId}': typeof ReferraltoChar123PatientIdChar125Char123RefIdChar125Route
@@ -168,7 +168,7 @@ export interface FileRoutesByTo {
   '/staff': typeof StaffIndexRoute
   '/user': typeof UserIndexRoute
   '/webapp': typeof WebappIndexRoute
-  '/answer/$base/$appid': typeof AnswerBaseAppidRoute
+  '/answer/$base/$appId': typeof AnswerBaseAppIdRoute
   '/answer/patient/{-$id}': typeof AnswerPatientChar123IdChar125Route
   '/appointment/{-$patientId}/{-$appId}': typeof AppointmentChar123PatientIdChar125Char123AppIdChar125Route
   '/referralto/{-$patientId}/{-$refId}': typeof ReferraltoChar123PatientIdChar125Char123RefIdChar125Route
@@ -190,7 +190,7 @@ export interface FileRoutesById {
   '/staff/': typeof StaffIndexRoute
   '/user/': typeof UserIndexRoute
   '/webapp/': typeof WebappIndexRoute
-  '/answer/$base/$appid': typeof AnswerBaseAppidRoute
+  '/answer/$base/$appId': typeof AnswerBaseAppIdRoute
   '/answer/patient/{-$id}': typeof AnswerPatientChar123IdChar125Route
   '/appointment/{-$patientId}/{-$appId}': typeof AppointmentChar123PatientIdChar125Char123AppIdChar125Route
   '/referralto/{-$patientId}/{-$refId}': typeof ReferraltoChar123PatientIdChar125Char123RefIdChar125Route
@@ -213,7 +213,7 @@ export interface FileRouteTypes {
     | '/staff/'
     | '/user/'
     | '/webapp/'
-    | '/answer/$base/$appid'
+    | '/answer/$base/$appId'
     | '/answer/patient/{-$id}'
     | '/appointment/{-$patientId}/{-$appId}'
     | '/referralto/{-$patientId}/{-$refId}'
@@ -234,7 +234,7 @@ export interface FileRouteTypes {
     | '/staff'
     | '/user'
     | '/webapp'
-    | '/answer/$base/$appid'
+    | '/answer/$base/$appId'
     | '/answer/patient/{-$id}'
     | '/appointment/{-$patientId}/{-$appId}'
     | '/referralto/{-$patientId}/{-$refId}'
@@ -255,7 +255,7 @@ export interface FileRouteTypes {
     | '/staff/'
     | '/user/'
     | '/webapp/'
-    | '/answer/$base/$appid'
+    | '/answer/$base/$appId'
     | '/answer/patient/{-$id}'
     | '/appointment/{-$patientId}/{-$appId}'
     | '/referralto/{-$patientId}/{-$refId}'
@@ -277,7 +277,7 @@ export interface RootRouteChildren {
   StaffIndexRoute: typeof StaffIndexRoute
   UserIndexRoute: typeof UserIndexRoute
   WebappIndexRoute: typeof WebappIndexRoute
-  AnswerBaseAppidRoute: typeof AnswerBaseAppidRoute
+  AnswerBaseAppIdRoute: typeof AnswerBaseAppIdRoute
   AnswerPatientChar123IdChar125Route: typeof AnswerPatientChar123IdChar125Route
   AppointmentChar123PatientIdChar125Char123AppIdChar125Route: typeof AppointmentChar123PatientIdChar125Char123AppIdChar125Route
   ReferraltoChar123PatientIdChar125Char123RefIdChar125Route: typeof ReferraltoChar123PatientIdChar125Char123RefIdChar125Route
@@ -384,11 +384,11 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof WebappIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/answer/$base/$appid': {
-      id: '/answer/$base/$appid'
-      path: '/answer/$base/$appid'
-      fullPath: '/answer/$base/$appid'
-      preLoaderRoute: typeof AnswerBaseAppidRouteImport
+    '/answer/$base/$appId': {
+      id: '/answer/$base/$appId'
+      path: '/answer/$base/$appId'
+      fullPath: '/answer/$base/$appId'
+      preLoaderRoute: typeof AnswerBaseAppIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/answer/patient/{-$id}': {
@@ -437,7 +437,7 @@ const rootRouteChildren: RootRouteChildren = {
   StaffIndexRoute: StaffIndexRoute,
   UserIndexRoute: UserIndexRoute,
   WebappIndexRoute: WebappIndexRoute,
-  AnswerBaseAppidRoute: AnswerBaseAppidRoute,
+  AnswerBaseAppIdRoute: AnswerBaseAppIdRoute,
   AnswerPatientChar123IdChar125Route: AnswerPatientChar123IdChar125Route,
   AppointmentChar123PatientIdChar125Char123AppIdChar125Route:
     AppointmentChar123PatientIdChar125Char123AppIdChar125Route,
