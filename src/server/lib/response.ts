@@ -1,13 +1,17 @@
-export interface Result{
-    ok: boolean
-    errors?: string[]
+interface Ok {
+  ok: true
+}
+interface Ng {
+  ok: false
+  errors: string[]
+}
+interface OkData<T> extends Ok {
+  data?: T
 }
 
-export interface FetchResult<T> extends Result{
-    ok: boolean
-    data?: T
-    errors?: string[]
-}
+export type Result = Ok | Ng;
+
+export type FetchResult<T> = OkData<T> | Ng;
 
 /**
  * return json response

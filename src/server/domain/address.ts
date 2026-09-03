@@ -1,4 +1,4 @@
-import type { ValidationResult } from "../lib/validation.ts"
+import { validater } from "../lib/validation.ts"
 import { z } from "zod"
 
 export const addressBaseSchema = z.object({
@@ -22,23 +22,7 @@ export const addressSchema = z.object({
 
 export type Address = z.infer<typeof addressSchema>;
 
-export function validate(a: Address): ValidationResult {
-    const valid = addressSchema.safeParse(a);
-    if(valid.success){
-        return {ok: true, errors: []};
-    }else{
-        return {ok: false, errors: valid.error.issues.map(res=>res.message)};
-    }
-}
-
-export function validateFormat(a: Address): ValidationResult {
-    const valid = addressSchema.safeParse(a);
-    if(valid.success){
-        return {ok: true, errors: []};
-    }else{
-        return {ok: false, errors: valid.error.issues.map(res=>res.message)};
-    }
-}
+export const validate = validater<Address>(addressSchema);
 
 export function initialize(): Address {
     return {

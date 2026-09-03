@@ -1,7 +1,7 @@
 import { type Answer, type AnswerPassword, validate, validatePassword, MAX_CHECK_COUNT } from "./answer.ts"
 import { BaseService, type IRepository, setId } from "./baseService.ts"
 import { Crypto } from "../../lib/crypto.ts"
-import { type Result, type FetchResult, ok } from "../lib/response.ts"
+import { type Result, type FetchResult, ok, ng } from "../lib/response.ts"
 
 export interface IAnswerRepository extends IRepository<Answer>{
     list(appId: string): Promise<Answer[]>
@@ -84,9 +84,9 @@ export class AnswerPasswordService extends BaseService<AnswerPassword, IAnswerPa
     async countUp(appId: string): Promise<Result>{
         const res = await this.getRepository().countUp(appId);
         if(res){
-            return {ok: true};
+            return ok();
         }else{
-            return {ok: false, errors: ["更新に失敗しました。"]};
+            return ng(["更新に失敗しました。"]);
         }
     }
 
@@ -94,15 +94,15 @@ export class AnswerPasswordService extends BaseService<AnswerPassword, IAnswerPa
         const ap = await this.getRepository().read(appId);
         if(ap){
             if(ap.failCount >= MAX_CHECK_COUNT){
-                return {ok: false, errors: ["パスワードの試行回数が上限に達しました。"]};
+                return ng(["パスワードの試行回数が上限に達しました。"]);
             }
             if(ap.password === password){
-                return {ok: true};
+                return ok();
             }else{
                 await this.getRepository().countUp(appId);
-                return {ok: false, errors: ["パスワードが違います。"]};
+                return ng(["パスワードが違います。"]);
             }
         }
-        return {ok: false, errors: ["不正なデータです。"]};
+        return ng(["不正なデータです。"]);
     }
 }

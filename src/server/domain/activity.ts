@@ -1,4 +1,4 @@
-import { type ValidationResult } from "../lib/validation.ts"
+import { validater } from "../lib/validation.ts"
 import { userBaseSchema, initializeUser } from "./user.ts"
 import { type Fac, facBaseSchema, initializeFac } from "./facility.ts"
 import { z } from "zod"
@@ -29,14 +29,7 @@ const activitySchema = z.object({
 
 export type Activity = z.infer<typeof activitySchema>;
 
-export function validate(act: Activity): ValidationResult{
-    const valid = activitySchema.safeParse(act);
-    if(valid.success){
-        return {ok: true, errors: []};
-    }else{
-        return {ok: false, errors: valid.error.issues.map(res=>res.message)};
-    }
-}
+export const validate = validater<Activity>(activitySchema);
 
 export function initialize(): Activity {
     return {

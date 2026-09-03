@@ -1,9 +1,6 @@
 import type { Result } from "../lib/response.ts"
 
-export interface ValidationResult extends Result {
-    ok: boolean
-    errors?: string[]
-}
+export type ValidationResult = Result;
 
 interface Schema {
     // deno-lint-ignore no-explicit-any
@@ -17,7 +14,7 @@ export function validater<T>(schema: Schema): (val: T) => ValidationResult {
     return (val: T): ValidationResult => {
         const valid = schema.safeParse(val);
         if(valid.success){
-            return {ok: true, errors: []};
+            return {ok: true};
         }else{
             return {ok: false, errors: valid.error!.issues.map(res=>res.message)};
         }
