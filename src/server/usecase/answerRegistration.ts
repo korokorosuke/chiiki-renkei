@@ -2,7 +2,7 @@ import { type Answer, initialize } from "../domain/answer.ts"
 import type { AnswerPasswordService } from "../domain/answerService.ts"
 import type { Questionnaire } from "../domain/questionnaire.ts"
 import type { Appointment } from "../domain/appointment.ts"
-import { type Result, ok } from "../lib/response.ts"
+import { type Result, ok, ng } from "../lib/response.ts"
 
 export interface IAnswerService{
     insert(val: Answer): Promise<Result>
@@ -84,16 +84,15 @@ export class AnswerRegistration{
     }
 
     async delete(app: Appointment): Promise<Result>{
-        const result = ok();
+        let result = ok();
         for await(const ans of (await this.service.getList(app.id))){
             if(!ans.inputDate){
                 const res = await this.service.delete(ans);
                 if(!res.ok){
                     if(result.ok){
-                        result.ok = false;
-                        result.errors = res.errors;
+                        result = ng(res.errors);
                     }else{
-                        result.errors = [...result.errors!, ...res.errors!];
+                        result.errors = [...result.errors, ...res.errors];
                     }
                 }
             }
@@ -104,10 +103,9 @@ export class AnswerRegistration{
             const res = await service.delete(ap);
             if(!res.ok){
                 if(result.ok){
-                    result.ok = false;
-                    result.errors = res.errors;
+                    result = ng(res.errors);
                 }else{
-                    result.errors = [...result.errors!, ...res.errors!];
+                    result.errors = [...result.errors, ...res.errors];
                 }
             }
         }
