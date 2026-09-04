@@ -23,13 +23,10 @@ export const getFacilities = createServerFn({ method: "GET" })
 });
 
 const getFacilityMain =  createServerOnlyFn(
-  async function (id: string): Promise<Facility | undefined> {
-    const auth = await authenticate(AUTH_READ);
-    if(auth.ok){
-      if(id){
-        const service = new FacilityService(new FacilityRepository(auth.user!.base));
-        return await service.get(id);
-      }
+  async function (id: string, base: string): Promise<Facility | undefined> {
+    if(id && base){
+      const service = new FacilityService(new FacilityRepository(base));
+      return await service.get(id);
     }
     return undefined;
 });
@@ -37,15 +34,22 @@ const getFacilityMain =  createServerOnlyFn(
 export const getFacility = createServerFn({ method: "GET" })
   .validator((data : {id: string}) => data)
   .handler(async ({ data }): Promise<Facility | undefined> => {
-    return await getFacilityMain(data.id);
+    const auth = await authenticate(AUTH_READ);
+    if(auth.ok){
+      return await getFacilityMain(data.id, auth.user!.base);
+    }
+    return undefined;
 });
 
 export const getFac = createServerFn({ method: "GET" })
   .validator((data : {id: string}) => data)
   .handler(async ({ data }): Promise<Fac | undefined> => {
-    const fac = await getFacilityMain(data.id);
-    if(fac){
-      return toFac(fac);
+    const auth = await authenticate(AUTH_READ);
+    if(auth.ok){
+      const facility = await getFacilityMain(data.id, auth.user!.base);
+      if(facility){
+        return toFac(facility);
+      }
     }
     return undefined;
 });
@@ -55,12 +59,9 @@ export const getUserFac = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<Fac | undefined> => {
     const auth = await verify();
     if(auth.ok){
-      if(data.id){
-        const service = new FacilityService(new FacilityRepository(auth.user!.base));
-        const fac = await service.get(data.id);
-        if(fac){
-          return toFac(fac);
-        }
+      const facility = await getFacilityMain(data.id, auth.user!.base);
+      if(facility){
+        return toFac(facility);
       }
     }
     return undefined;
