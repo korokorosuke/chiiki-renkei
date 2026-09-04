@@ -45,7 +45,8 @@ export const Route = createFileRoute("/appointment/{-$patientId}/{-$appId}")({
           `${loaderData.app.patient.id} - ${loaderData.app.patient.lastName}　${loaderData.app.patient.firstName}　[紹介登録]　地域連携システム` :
           "[紹介登録]　地域連携システム"
       }
-    ]
+    ],
+    scripts: [ { src: "/html2pdf.js" }, ],
   }),
 });
 

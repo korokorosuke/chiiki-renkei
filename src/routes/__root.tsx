@@ -27,11 +27,6 @@ export const Route = createRootRouteWithContext()({
       },
     ],
     links: [{ rel: 'stylesheet', href: styleCss }],
-    scripts: [
-      {
-        src: "/html2pdf.js"
-      },
-    ],
   }),
   shellComponent: RootComponent,
 })

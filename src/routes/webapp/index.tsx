@@ -22,7 +22,12 @@ import { button, area, progress } from "../../styled-system/recipes/"
 import { css } from "../../styled-system/css/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/webapp/")({ component: App });
+export const Route = createFileRoute("/webapp/")({
+  component: App,
+  head: () => ({
+    scripts: [ { src: "/html2pdf.js" }, ],
+  }),
+});
 
 enum Status {
   DETAIL = -2,

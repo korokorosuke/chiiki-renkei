@@ -13,7 +13,12 @@ import { button, input, area, etc } from "../../styled-system/recipes/"
 import { css } from "../../styled-system/css/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/report/")({ component: App });
+export const Route = createFileRoute("/report/")({
+  component: App,
+  head: ()=>({
+    scripts: [ { src: "/html2pdf.js" }, ],
+  }),
+});
 
 function App() {
   const [inputData, setInputData] = createSignal<string>(toDateString(new Date()));
