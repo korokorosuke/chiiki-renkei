@@ -18,31 +18,32 @@ import { createFileRoute } from "@tanstack/solid-router"
 export const Route = createFileRoute("/appointment/{-$patientId}/{-$appId}")({
   component: App,
   loader: async ({ params: { patientId, appId } }) => {
+    let ok = true;
     const depts = getDepartments();
-    if(appId){
-      let app = await getAppointment({data: {id: appId}});
+    if(appId && patientId){
+      let patient: Patient|undefined;
+      const app = await getAppointment({data: {id: appId}});
       if(!app){
-        app = initAppointment();
-        app.id = appId;
-      }
-      return { depts, app };
-    }else if(patientId){
-      const app = initAppointment();
-      const patient = await getPatient({ data: { id: patientId } });
-      if(patient){
-        app.patient = patient;
+        patient = await getPatient({ data: { id: patientId } });
+        ok = false;
       }else{
-        app.patient.id = patientId;
+        patient = app.patient;
       }
-      return { depts, app };
+      return { ok, depts, app, patient, appId, patientId };
+    }else if(patientId){
+      const patient = await getPatient({ data: { id: patientId } });
+      if(!patient){
+        ok = false;
+      }
+      return { ok, depts, app: undefined, patient, appId, patientId };
     }
-    return { depts, app: undefined };
+    return { ok: false, depts, app: undefined, patient: undefined, appId, patientId };
   },
   head: ({ loaderData })=>({
     meta: [
       {
-        title: loaderData && loaderData.app && loaderData.app.patient.firstName ?
-          `${loaderData.app.patient.id} - ${loaderData.app.patient.lastName}　${loaderData.app.patient.firstName}　[紹介登録]　地域連携システム` :
+        title: loaderData && loaderData.ok && loaderData.patient ?
+          `${loaderData.patient.id} - ${loaderData.patient.lastName}　${loaderData.patient.firstName}　[紹介登録]　地域連携システム` :
           "[紹介登録]　地域連携システム"
       }
     ],
@@ -124,29 +125,27 @@ function App() {
   }
 
   async function initialize(){
-    const {depts, app} = loaderData();
+    const {ok, depts, app, patient, patientId} = loaderData();
     depts.then(setDepts);
-    if(app && app.id){
+    if(ok && app){
       setSelected(app);
       setPatient(app.patient);
       setModification(true);
-      setNewadd(false);
-    }else if(app && app.patient.id){
-      if(app.patient.firstName){
-        setPatient(app.patient);
-        await getAppointments(app.patient);
-      }else{
-        setId(app.patient.id);
-        setPatient(initPatient());
+    }else if(ok && patient){
+      setPatient(patient);
+      await getAppointments(patient);
+    }else if(!ok){
+      if(patient){
+        setPatient(patient);
+        await getAppointments(patient);
+        setMessage("紹介データがみつかりませんでした")
+      }else if(patientId){
         setMessage("患者がみつかりませんでした");
-        setVisible(false);
-        setAppointments([]);
+        setId(patientId);
         if(refInput){
           refInput.select();
         }
       }
-      setModification(false);
-      setNewadd(false);
     }
     if(refInput){
       refInput.focus();

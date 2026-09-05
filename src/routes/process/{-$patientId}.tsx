@@ -20,20 +20,20 @@ export const Route = createFileRoute("/process/{-$patientId}")({
     if(patientId){
       const patient = await getPatient({ data: { id: patientId } });
       if(patient){
-        return { patient }
+        return { ok: true, patient }
       }else{
-        return { patient: {
+        return { ok: false, patient: {
           ...initPatient(),
           id: patientId,
         }}
       }
     }
-    return { patient: undefined };
+    return { ok: false, patient: undefined };
   },
   head: ({ loaderData })=>({
     meta: [
       {
-        title: loaderData && loaderData.patient ?
+        title: loaderData && loaderData.ok && loaderData.patient ?
           `${loaderData.patient.id} - ${loaderData.patient.lastName}　${loaderData.patient.firstName}　[紹介状況]　地域連携システム` :
           "[紹介状況]　地域連携システム"
       }
@@ -99,9 +99,9 @@ function App() {
   }
 
   function initialize(){
-    const { patient } = loaderData();
+    const { ok, patient } = loaderData();
     if(patient){
-      if(patient.lastName){
+      if(ok){
         loadData(patient);
       }else{
         setInputData(patient.id);

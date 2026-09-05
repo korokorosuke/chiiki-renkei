@@ -5,7 +5,7 @@ import { ModificationArea } from "./-modificationArea.tsx"
 import { getReply, getReplies as getServerReps } from "../../server/func/reply.ts"
 import { PatientArea } from "../../components/PatientArea.tsx"
 import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
-import { initPatient, initReply, initReferral, toUser } from "../../helper/types.ts"
+import { initPatient, initReply, toUser } from "../../helper/types.ts"
 import { getAllClassifications } from "../../server/func/classification.ts"
 import { getDepartments } from "../../server/func/department.ts"
 import { getPatient } from "../../server/func/patient.ts"
@@ -22,31 +22,32 @@ import { createFileRoute } from "@tanstack/solid-router"
 export const Route = createFileRoute("/reply/{-$patientId}/{-$repId}")({
   component: App,
   loader: async ({ params: { patientId, repId } }) => {
+    let ok = true;
     const depts = getDepartments();
-    if(repId){
-      let ref = await getReply({data: {id: repId}});
+    if(repId && patientId){
+      let patient: Patient|undefined;
+      const ref = await getReply({data: {id: repId}});
       if(!ref){
-        ref = initReferral();
-        ref.id = repId;
-      }
-      return { depts, ref };
-    }else if(patientId){
-      const ref = initReferral();
-      const patient = await getPatient({ data: { id: patientId } });
-      if(patient){
-        ref.patient = patient;
+        patient = await getPatient({ data: { id: patientId } });
+        ok = false;
       }else{
-        ref.patient.id = patientId;
+        patient = ref.patient;
       }
-      return { depts, ref };
+      return { ok, depts, ref, patient, repId, patientId };
+    }else if(patientId){
+      const patient = await getPatient({ data: { id: patientId } });
+      if(!patient){
+        ok = false;
+      }
+      return { ok, depts, ref: undefined, patient, repId, patientId };
     }
-    return { depts, ref: undefined };
+    return { ok: false, depts, ref: undefined, patient: undefined, repId, patientId };
   },
   head: ({ loaderData })=>({
     meta: [
       {
-        title: loaderData && loaderData.ref && loaderData.ref.patient.firstName ?
-          `${loaderData.ref.patient.id} - ${loaderData.ref.patient.lastName}　${loaderData.ref.patient.firstName}　[返事登録]　地域連携システム` :
+        title: loaderData && loaderData.ok && loaderData.patient ?
+          `${loaderData.patient.id} - ${loaderData.patient.lastName}　${loaderData.patient.firstName}　[返事登録]　地域連携システム` :
           "[返事登録]　地域連携システム"
       }
     ]
@@ -113,28 +114,27 @@ function App() {
 
   async function initialize(){
     getAllClassifications().then(setClasses);
-    const {depts, ref} = loaderData();
+    const {ok, depts, ref, patient, patientId} = loaderData();
     depts.then(setDepts);
-    if(ref && ref.replies.length === 1){
+    if(ok && ref && ref.replies.length === 1){
       setSelected(ref.replies[0]);
       setPatient(ref.patient);
       setModification(true);
-      setNewadd(false);
-    }else if(ref && ref.patient.id){
-      if(ref.patient.firstName){
-        setPatient(ref.patient);
-        await getReplies(ref.patient);
-      }else{
-        setId(ref.patient.id);
-        setPatient(initPatient());
+    }else if(ok && patient){
+      setPatient(patient);
+      await getReplies(patient);
+    }else if(!ok){
+      if(patient){
+        setPatient(patient);
+        await getReplies(patient);
+        setMessage("返事データがみつかりませんでした");
+      }else if(patientId){
         setMessage("患者がみつかりませんでした");
-        setReplies([]);
+        setId(patientId);
         if(refInput){
           refInput.select();
         }
       }
-      setModification(false);
-      setNewadd(false);
     }
     if(refInput){
       refInput.focus();
