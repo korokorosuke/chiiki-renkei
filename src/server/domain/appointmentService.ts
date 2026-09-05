@@ -1,4 +1,4 @@
-import { type FetchResult, ok } from "../lib/response.ts";
+import { type FetchResult, okWithData } from "../lib/response.ts";
 import { type Appointment, type Condition, validate } from "./appointment.ts"
 import { BaseService, type IRepository, setId } from "./baseService.ts"
 
@@ -33,7 +33,7 @@ export class AppointmentService extends BaseService<Appointment, IAppointmentRep
     override async insert(val: Appointment): Promise<FetchResult<Appointment>>{
         const res = await super.insert(val);
         if(res.ok){
-            return ok(val);
+            return okWithData(val);
         }
         return res;
     }
@@ -41,7 +41,7 @@ export class AppointmentService extends BaseService<Appointment, IAppointmentRep
     override async update(val: Appointment): Promise<FetchResult<Appointment>>{
         const res = await super.update(val);
         if(res.ok){
-            return ok(val);
+            return okWithData(val);
         }
         return res;
     }

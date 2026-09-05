@@ -1,7 +1,7 @@
 import { ID_EMPTY, DATE_EMPTY } from "../domain/webAppointmentService.ts"
 import type { WebAppointment } from "../domain/webAppointment.ts"
 import type { AppointmentRegistration } from "./appointmentRegistration.ts"
-import { type FetchResult, type Result, ng, ok } from "../lib/response.ts"
+import { type FetchResult, type Result, ng, okWithData } from "../lib/response.ts"
 import { toAppointment } from "../lib/types.ts"
 
 export interface IWebAppointmentService{
@@ -24,11 +24,11 @@ export class WebAppointmentRegistration{
         if(res.ok){
             const app = res.data!;
             if(app.patient.id == ID_EMPTY || app.date === DATE_EMPTY){
-                return ok<WebAppointment>(app);
+                return okWithData<WebAppointment>(app);
             }
             const resapp = await this.appusecase.insert(toAppointment(app));
             if(resapp.ok){
-                return ok<WebAppointment>(app);
+                return okWithData<WebAppointment>(app);
             }else{
                 return resapp;
             }
@@ -75,7 +75,7 @@ export class WebAppointmentRegistration{
                     return resapp;
                 }
             }
-            return ok<WebAppointment>(app);
+            return okWithData<WebAppointment>(app);
         }else{
             return res;
         }
@@ -100,10 +100,10 @@ export class WebAppointmentRegistration{
         if(res.ok){
             const app = res.data!;
             if(app.patient.id == ID_EMPTY || app.date === DATE_EMPTY){
-                return ok<WebAppointment>(app);
+                return okWithData<WebAppointment>(app);
             }
             await this.appusecase.delete(toAppointment(app));
-            return ok<WebAppointment>(app);
+            return okWithData<WebAppointment>(app);
         }else{
             return res;
         }

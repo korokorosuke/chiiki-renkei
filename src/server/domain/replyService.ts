@@ -1,6 +1,6 @@
 import { type Reply, type Condition, validate } from "./reply.ts"
 import type { Referral } from "./referral.ts"
-import { type Result, type FetchResult, ok, ng } from "../lib/response.ts"
+import { type Result, type FetchResult, ok, okWithData, ng } from "../lib/response.ts"
 import { generateId } from "./baseService.ts"
 import { getNow } from "../lib/datetime.ts"
 
@@ -44,7 +44,7 @@ export class ReplyService{
             val.id = generateId();
             val.updatedAt = getNow();
             if(await this.i.insert(val)){
-                return ok(val.id);
+                return okWithData(val.id);
             }else{
                 return ng(["登録に失敗しました。"]);
             }

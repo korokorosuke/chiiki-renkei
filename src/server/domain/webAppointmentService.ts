@@ -1,6 +1,6 @@
 import { type WebAppointment, type Condition, validate } from "./webAppointment.ts"
 import { toNumberCode } from "./address.ts"
-import { type Result, type FetchResult, ok, ng } from "../lib/response.ts"
+import { type Result, type FetchResult, ok, okWithData, ng } from "../lib/response.ts"
 import { generateId } from "./baseService.ts"
 import { getNow } from "../lib/datetime.ts"
 
@@ -117,7 +117,7 @@ export class WebAppService{
         val = this.convertToEmpty(val);
         const res = await this.i.insert(val);
         if(res){
-            return ok<WebAppointment>(val);
+            return okWithData<WebAppointment>(val);
         }else{
             return ng(["登録に失敗しました。"]);
         }
@@ -134,7 +134,7 @@ export class WebAppService{
         val = this.convertToEmpty(val);
         const res = await this.i.update(val);
         if(res){
-            return ok<WebAppointment>(val);
+            return okWithData<WebAppointment>(val);
         }else{
             return ng(["登録に失敗しました。"]);
         }

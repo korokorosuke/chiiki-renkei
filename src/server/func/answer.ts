@@ -4,7 +4,7 @@ import { QuestionnaireService } from "../domain/questionnaireService.ts"
 import { AnswerRepository, AnswerPasswordRepository, QuestionnaireRepository } from "../infra/allRepository.ts"
 import { type Answer, initialize } from "../domain/answer.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
-import { type Result, type FetchResult, ok, ng } from "../lib/response.ts"
+import { type Result, type FetchResult, okWithData, ng } from "../lib/response.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -80,7 +80,7 @@ export const getAnswersByPassword = createServerFn({ method: "GET" })
       const service = new AnswerService(new AnswerRepository(data.base),
         new AnswerPasswordRepository(data.base));
       const answers = await service.getList(data.appId);
-      return ok(answers);
+      return okWithData(answers);
     }else{
       return res;
     }

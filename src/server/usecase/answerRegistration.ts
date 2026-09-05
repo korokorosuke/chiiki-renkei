@@ -84,7 +84,7 @@ export class AnswerRegistration{
     }
 
     async delete(app: Appointment): Promise<Result>{
-        let result = ok();
+        let result: Result = ok();
         for await(const ans of (await this.service.getList(app.id))){
             if(!ans.inputDate){
                 const res = await this.service.delete(ans);

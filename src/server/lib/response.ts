@@ -6,7 +6,7 @@ interface Ng {
   errors: string[]
 }
 interface OkData<T> extends Ok {
-  data?: T
+  data: T
 }
 
 export type Result = Ok | Ng;
@@ -74,7 +74,18 @@ export function failure(errors: string[], status: number): Response {
  *
  * @return result
  */
-export function ok<T>(data?: T): FetchResult<T> {
+export function ok(): Ok {
+    return {
+        ok: true,
+    };
+}
+
+/**
+ * return ok result
+ *
+ * @return result
+ */
+export function okWithData<T>(data: T): OkData<T> {
     return {
         ok: true,
         data: data
@@ -87,7 +98,7 @@ export function ok<T>(data?: T): FetchResult<T> {
  * @param errors - error message list
  * @return result
  */
-export function ng(errors: string[]): Result {
+export function ng(errors: string[]): Ng {
     return {
         ok: false,
         errors: errors
