@@ -1,7 +1,6 @@
 import { createSignal, Switch, Match } from "solid-js"
 import { ListArea } from "./-listArea.tsx"
 import { ModificationArea } from "./-modificationArea.tsx"
-import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import Header from "../-header.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
 import { toDateString, addDays } from "../../lib/datetime.ts"
@@ -22,6 +21,9 @@ function App() {
   const [activities, setActivities] = createSignal<Activity[]>([]);
   const [modification, setModification] = createSignal<boolean>(false);
   const [newadd, setNewadd] = createSignal<boolean>(false);
+
+  const context = Route.useRouteContext();
+  const { user } = context();
 
   async function terminateModification(status: MessageStatus): Promise<void>{
     setModification(false);
@@ -70,7 +72,6 @@ function App() {
 
   return (
     <>
-    <Authenticator />
     <Header title="活動記録" visible handler={handleNew} auth={user} />
     <main>
       <div class={ area({ type: "search" }) }>

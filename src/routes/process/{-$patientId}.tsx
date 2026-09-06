@@ -1,8 +1,7 @@
-import { createSignal, Show } from "solid-js"
+import { createSignal, Show, onMount } from "solid-js"
 import { ListAreaReferralTo } from "./-listAreaReferralTo.tsx"
 import { ListAreaReply } from "./-listAreaReply.tsx"
 import { PatientArea } from "../../components/PatientArea.tsx"
-import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { initPatient } from "../../helper/types.ts"
 import { getPatient } from "../../server/func/patient.ts"
 import { getReplies } from "../../server/func/reply.ts"
@@ -51,6 +50,8 @@ function App() {
   const [refok, setRefok] = createSignal(false);
 
   const loaderData = Route.useLoaderData();
+  const context = Route.useRouteContext();
+  const { user } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -98,7 +99,7 @@ function App() {
     });
   }
 
-  function initialize(){
+  onMount(() => {
     const { ok, patient } = loaderData();
     if(patient){
       if(ok){
@@ -114,11 +115,10 @@ function App() {
     if(refInput){
       refInput.focus();
     }
-  }
+  });
 
   return (
     <>
-    <Authenticator initializer={initialize} />
     <Header title="紹介状況" visible={false} handler={()=>{}} auth={user} />
     <main>
       <div class={ area({ type: "search" })}>

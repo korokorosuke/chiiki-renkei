@@ -6,12 +6,12 @@ import { css, cx } from "../../styled-system/css/"
 
 type Props = {
     list: Accessor<ReferralTo[]>
-    auth: Accessor<AuthUser>
+    auth: AuthUser
 }
 
 export function ListAreaReferralTo(props: Props) {
   function handleClick(referral: ReferralTo){
-    if(props.auth().authReferral>=2){
+    if(props.auth.authReferral>=2){
       location.href = `/referralto/${referral.patient.id}/${referral.id}`;
     }
   }

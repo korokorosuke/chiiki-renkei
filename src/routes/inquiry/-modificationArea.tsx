@@ -26,7 +26,7 @@ type ViewProps = {
   newadd: Accessor<boolean>
   selected: Accessor<Inquiry>
   setSelected: Setter<Inquiry>
-  auth: Accessor<AuthUser>
+  auth: AuthUser
 }
 
 type ListProps = {
@@ -36,7 +36,7 @@ type ListProps = {
   deleteResponse: (index: number)=>void
   selected: Accessor<Inquiry>
   setSelected: Setter<Inquiry>
-  auth: Accessor<AuthUser>
+  auth: AuthUser
 }
 
 function handleKeyUp(e: KeyboardEvent,
@@ -52,7 +52,7 @@ function ResponseList(props: ListProps){
 
   function initResponse(): Response{
     return {
-      responder: toUser(props.auth()), datetime: toDateHHMMString(new Date()), details: ""
+      responder: toUser(props.auth), datetime: toDateHHMMString(new Date()), details: ""
     };
   }
 

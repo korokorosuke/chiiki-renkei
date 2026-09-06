@@ -1,4 +1,4 @@
-import { onMount, Index, createSignal, createMemo, Show, For, type Accessor } from "solid-js"
+import { onMount, Index, createSignal, createMemo, Show, For } from "solid-js"
 import { unwrap, type SetStoreFunction } from "solid-js/store"
 import { addDays, toYM, toDateString } from "../../lib/datetime.ts"
 import { initWebDr, isMaster, isUser } from "../../helper/webtypes.ts"
@@ -18,7 +18,7 @@ type Props = {
   next: ()=>void
   setForce: (force: boolean)=>void
   deferment: number
-  user: Accessor<AuthUser>
+  user: AuthUser
   selected: WebAppointment
   setSelected: SetStoreFunction<WebAppointment>
 }
@@ -145,13 +145,13 @@ export function AppSelect(props: Props){
   function prevMonth(){
     const prev = new Date(baseDate().getFullYear(), baseDate().getMonth()-1,1);
     setBaseDate(prev);
-    getReservation(unwrap(props.selected.department.id), toYM(prev), props.user().authWeb >= 2);
+    getReservation(unwrap(props.selected.department.id), toYM(prev), props.user.authWeb >= 2);
   }
 
   function nextMonth(){
     const next = new Date(baseDate().getFullYear(), baseDate().getMonth()+1,1);
     setBaseDate(next);
-    getReservation(unwrap(props.selected.department.id), toYM(next), props.user().authWeb >= 2);
+    getReservation(unwrap(props.selected.department.id), toYM(next), props.user.authWeb >= 2);
   }
 
   const weeks = createMemo<Date[][]>(() => {
@@ -216,9 +216,9 @@ export function AppSelect(props: Props){
     setBaseDate(new Date());
     getDrs();
     const dept = unwrap(props.selected.department.id);
-    await getReservation(dept, toYM(new Date()), props.user().authWeb >= 2);
-    getReservation(dept, toYM(new Date()), props.user().authWeb >= 2).then(()=>{});
-    getReservation(dept, toYM(new Date()), props.user().authWeb >= 2).then(()=>{});
+    await getReservation(dept, toYM(new Date()), props.user.authWeb >= 2);
+    getReservation(dept, toYM(new Date()), props.user.authWeb >= 2).then(()=>{});
+    getReservation(dept, toYM(new Date()), props.user.authWeb >= 2).then(()=>{});
   });
 
 
@@ -238,11 +238,11 @@ export function AppSelect(props: Props){
           onClick={nextMonth}>翌月</button>
       </div>
       <div class={ css({ textAlign: "right" }) }>
-      <Show when={isUser(props.user())}>
+      <Show when={isUser(props.user)}>
         <button type="button" onClick={()=>showDialog(consult_dialog!)}
           class={ button( { color: "success", size: "long" }) }>その他の予約希望</button>
       </Show>
-      <Show when={isMaster(props.user())}>
+      <Show when={isMaster(props.user)}>
         <button type="button" onClick={()=>showDialog(decide_dialog!)}
           class={ button( { color: "success", size: "long" }) }>枠外の予約設定</button>
       </Show>
@@ -302,7 +302,7 @@ export function AppSelect(props: Props){
     <ConsultationInput close={closeDialog(consult_dialog!)} next={props.next}
       selected={props.selected} setSelected={props.setSelected} />
   </dialog>
-  <Show when={isMaster(props.user())}>
+  <Show when={isMaster(props.user)}>
     <dialog id="app-dialog" ref={decide_dialog} class={ styles }>
       <DecisionInput department={props.selected.department.id} close={closeDialog(decide_dialog!)}
         next={props.next} setForce={props.setForce}

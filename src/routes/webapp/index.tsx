@@ -1,4 +1,4 @@
-import { createSignal, Switch, Match, Show } from "solid-js"
+import { createSignal, Switch, Match, Show, onMount } from "solid-js"
 import { createStore, unwrap, reconcile } from "solid-js/store"
 import { ListArea } from "./-listArea.tsx"
 import { DeptSelect } from "./-deptSelect.tsx"
@@ -11,7 +11,6 @@ import { Completed } from "./-completed.tsx"
 import { initWebAppointment, isUser } from "../../helper/webtypes.ts"
 import { toUser } from "../../helper/types.ts"
 import { Header } from "./-header.tsx"
-import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { getWebDepartments } from "../../server/func/webdepartment.ts"
 import { getUserFac } from "../../server/func/facility.ts"
 import { insert, update as updateData, del as deleteData } from "../../server/func/webappointment.ts"
@@ -48,12 +47,15 @@ function App() {
   const [force, setForce] = createSignal(false);
   const [depts, setDepts] = createSignal<WebDepartment[]>([]);
 
+  const context = Route.useRouteContext();
+  const { user } = context();
+
   const deferment = 1;
   let facility: Fac;
 
   async function register(): Promise<boolean>{
-    if(isUser(user())){
-      if(user() && facility){
+    if(isUser(user)){
+      if(user && facility){
         setSelected("facility", facility);
       }else{
         alert("ユーザーの施設情報が登録されていません。");
@@ -63,11 +65,11 @@ function App() {
     if(force()){
       setSelected("force", force());
     }
-    setSelected("updatedBy", toUser(user()));
+    setSelected("updatedBy", toUser(user));
     const app = unwrap(selected);
     let res;
     if(newadd()){
-      setSelected("createdBy", toUser(user()));
+      setSelected("createdBy", toUser(user));
       res = await insert({data: {appointment: app}});
     }else{
       res = await updateData({data: {appointment: app}});
@@ -171,11 +173,11 @@ function App() {
   }
 
 
-  function initialize(){
+  onMount(() => {
     getWebDepartments().then(setDepts);
-    if(isUser(user())){
-      if(user().facilityId){
-        getUserFac({data: {id: user().facilityId!}}).then(res=>{
+    if(isUser(user)){
+      if(user.facilityId){
+        getUserFac({data: {id: user.facilityId!}}).then(res=>{
           if(res && res.name){
             facility = res;
           }else{
@@ -183,14 +185,14 @@ function App() {
           }
         }).catch(()=>{
           alert("施設情報の取得に失敗しました。")
-          location.href = `/login/${user().base}?src=${location.href}`;
+          location.href = `/login/${user.base}?src=${location.href}`;
         });
       }else{
         alert("ユーザーの施設情報が登録されていません。");
-        location.href = `/login/${user().base}?src=${location.href}`;
+        location.href = `/login/${user.base}?src=${location.href}`;
       }
     }
-  }
+  });
 
   interface Progress {
     step: string;
@@ -202,7 +204,6 @@ function App() {
   const progyet = progress({ status: "yet" });
   return (
     <>
-    <Authenticator initializer={initialize} />
     <Header create={create} history={history} home={toHome} user={user} />
     <main class={status()===Status.LIST?"main-list-area":"main-area"}>
       <div>
@@ -241,7 +242,7 @@ function App() {
       <Switch>
         <Match when={status()===Status.READY}>
           <Notice />
-          <Show when={isUser(user())}>
+          <Show when={isUser(user)}>
             <div class={ css({ marginTop: "1rem" })}>
               <button type="button" class={ button({ color: "primary", size: "full" }) } onClick={create}>新規予約</button>
             </div>

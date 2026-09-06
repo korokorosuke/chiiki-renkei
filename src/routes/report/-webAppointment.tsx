@@ -1,7 +1,6 @@
 import { createResource } from "solid-js"
 import { initAppointment } from "../../helper/types.ts"
 import { AppointmentBase } from "./-appointmentBase.tsx"
-import { Authenticator } from "../../components/Authenticator.tsx"
 import { toAppointment } from "../../helper/webtypes.ts"
 import { getFac } from "../../server/func/facility.ts"
 import { getWebAppointment } from "../../server/func/webappointment.ts"
@@ -35,7 +34,6 @@ export function WebAppointmentReport(props: Props) {
 
   return (
     <>
-    <Authenticator />
     <AppointmentBase appointment={appointment()} />
     </>
   );

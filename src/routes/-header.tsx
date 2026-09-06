@@ -1,4 +1,4 @@
-import { Show, type Accessor } from "solid-js"
+import { Show } from "solid-js"
 import plus from "./assets/plus.svg"
 import logout from "./assets/logout.svg"
 import hospital from "./assets/hospitalwhite.svg"
@@ -10,18 +10,18 @@ type Props = {
     title: string
     handler: ()=>void
     visible: boolean
-    auth: Accessor<AuthUser>
+    auth: AuthUser
 }
 
 function App(props: Props){
 
     function signout(){
         del().then(()=>{});
-        location.href = `/login/${props.auth().base}`;
+        location.href = `/login/${props.auth.base}`;
     }
 
     function getAuthAct(level: number){
-        if(props.auth && props.auth().authActivity>=level){
+        if(props.auth && props.auth.authActivity>=level){
             return true;
         }else{
             return false;
@@ -29,7 +29,7 @@ function App(props: Props){
     }
 
     function getAuthRef(level: number){
-        if(props.auth && props.auth().authReferral>=level){
+        if(props.auth && props.auth.authReferral>=level){
             return true;
         }else{
             return false;
@@ -37,7 +37,7 @@ function App(props: Props){
     }
 
     function getAuthFac(level: number){
-        if(props.auth && props.auth().authFacility>=level){
+        if(props.auth && props.auth.authFacility>=level){
             return true;
         }else{
             return false;

@@ -1,7 +1,6 @@
-import { createSignal, type Accessor } from "solid-js"
+import { createSignal, onMount, type Accessor } from "solid-js"
 import { initAppointment } from "../../helper/types.ts"
 import { AppointmentBase } from "./-appointmentBase.tsx"
-import { Authenticator } from "../../components/Authenticator.tsx"
 import { getAppointment } from "../../server/func/appointment.ts"
 import type { Appointment } from "../../server/domain/appointment.ts"
 
@@ -13,7 +12,7 @@ type Props = {
 export function AppointmentReport(props: Props) {
   const [appointment, setAppointment] = createSignal<Appointment>(initAppointment());
 
-  async function initialize(){
+  onMount(async () => {
     const res = await getAppointment({data: {id: props.id()}});
     if(res){
       setAppointment(res);
@@ -23,11 +22,10 @@ export function AppointmentReport(props: Props) {
     }else{
       setAppointment(initAppointment());
     }
-  }
+  });
 
   return (
     <>
-      <Authenticator initializer={initialize} />
       <AppointmentBase appointment={appointment()} />
     </>
   )

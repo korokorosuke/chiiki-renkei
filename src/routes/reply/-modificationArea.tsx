@@ -22,7 +22,7 @@ type ViewProps = {
   depts: Department[]
   classes: Classification[]
   newadd: Accessor<boolean>
-  auth: Accessor<AuthUser>
+  auth: AuthUser
 }
 
 function handleEnter(e: KeyboardEvent, func: ()=>void){
@@ -39,7 +39,7 @@ export function ModificationArea(props: ViewProps){
   async function handleRegister(){
     const r = {
       ...unwrap(reply),
-      updatedBy: toUser(props.auth())
+      updatedBy: toUser(props.auth)
     };
     let res;
     if(props.newadd()){

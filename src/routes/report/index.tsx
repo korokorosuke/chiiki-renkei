@@ -1,7 +1,6 @@
-import { createSignal, For, Switch, Match, Show } from "solid-js"
+import { createSignal, For, Switch, Match, Show, onMount } from "solid-js"
 import { ListArea } from "./-listArea.tsx"
 import Header from "../-header.tsx"
-import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { DoneBase } from "../report/-doneBase.tsx"
 import { toDateString } from "../../lib/datetime.ts"
 import { getDepartments } from "../../server/func/department.ts"
@@ -27,6 +26,9 @@ function App() {
   const [result, setResult] = createSignal<AppointmentPrint[]>([]);
   const [depts, setDepts] = createSignal<Department[]>([]);
   const [appointment, setAppointment] = createSignal<Appointment>(initAppointment());
+
+  const context = Route.useRouteContext();
+  const { user } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -76,17 +78,16 @@ function App() {
     }
   }
 
-  function initialize(){
+  onMount(() => {
     getDepartments().then(setDepts);
     if(refInput){
       refInput.focus();
     }
-  }
+  });
 
 
   return (
     <>
-    <Authenticator initializer={initialize} />
     <Header title="受診報告一覧" visible={false} handler={()=>{}} auth={user} />
     <main>
       <div class={ area({ type: "search" }) }>

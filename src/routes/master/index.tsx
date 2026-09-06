@@ -13,7 +13,6 @@ import { WebMaster } from "./-webMaster.tsx"
 import { WebNotice } from "./-webNotice.tsx"
 import { Questionnaire } from "./-questionnaire.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
-import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { input, area } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
@@ -22,6 +21,9 @@ export const Route = createFileRoute("/master/")({ component: App });
 function App() {
   const [id, setId] = createSignal<string>("");
 
+  const context = Route.useRouteContext();
+  const { user } = context();
+
   function setMessage(status: MessageStatus): void{
     setStatusMessage(status);
   }
@@ -29,7 +31,6 @@ function App() {
 
   return (
     <>
-    <Authenticator />
     <Header title="マスター登録" visible={false} handler={()=>{}} auth={user} />
     <main>
       <div class={ area({ type: "search" })}>

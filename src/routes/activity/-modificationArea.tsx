@@ -20,7 +20,7 @@ type ViewProps = {
   newadd: Accessor<boolean>
   selected: Accessor<Activity>
   setSelected: Setter<Activity>
-  auth: Accessor<AuthUser>
+  auth: AuthUser
 }
 
 export function ModificationArea(props: ViewProps){
@@ -48,7 +48,7 @@ export function ModificationArea(props: ViewProps){
     const act: Activity = {
       ...unwrap(activity),
       facility: f,
-      updatedBy: toUser(props.auth()),
+      updatedBy: toUser(props.auth),
     };
 
     let res;

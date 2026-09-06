@@ -1,4 +1,4 @@
-import { createSignal, onMount, For, Show, type Accessor } from "solid-js"
+import { createSignal, onMount, For, Show } from "solid-js"
 import { reconcile, type SetStoreFunction } from "solid-js/store"
 import { toDateString, toDateHHMMString, addDays } from "../../lib/datetime.ts"
 import { isUser, isMaster } from "../../helper/webtypes.ts"
@@ -11,7 +11,7 @@ import { css } from "../../styled-system/css/"
 
 type Props = {
   previous: ()=>void
-  user: Accessor<AuthUser>
+  user: AuthUser
   setSelected: SetStoreFunction<WebAppointment>
 }
 
@@ -49,8 +49,8 @@ export function ListArea(props: Props) {
 
   async function loadConsultation(){
     let res;
-    if(isUser(props.user())){
-      res = await getConsultation({data: {facid: props.user().facilityId!}});
+    if(isUser(props.user)){
+      res = await getConsultation({data: {facid: props.user.facilityId!}});
     }else{
       res = await getConsultation({data: {}});
     }
@@ -60,8 +60,8 @@ export function ListArea(props: Props) {
   }
 
   async function loadData(patid: string, facid: string, fromdate: string, todate: string){
-    if(isUser(props.user())){
-      facid = props.user().facilityId!;
+    if(isUser(props.user)){
+      facid = props.user.facilityId!;
     }
     if(!patid && !facid && !fromdate && !todate){
       const today = new Date();
@@ -84,10 +84,10 @@ export function ListArea(props: Props) {
 
   async function getApps(){
     let res;
-    if(isMaster(props.user())){
+    if(isMaster(props.user)){
       res = await getWebAppointments({data: {cond: {from: toDateString(new Date())}}});
     }else{
-      res = await getWebAppointments({data: {cond: {facid: props.user().facilityId}}});
+      res = await getWebAppointments({data: {cond: {facid: props.user.facilityId}}});
     }
     if(res){
       setApps(ar=>ar.concat(res.sort((v1,v2)=>{
@@ -118,7 +118,7 @@ export function ListArea(props: Props) {
   return (
     <div>
       <div class={ area({ type: "search" }) }>
-        <Show when={isMaster(props.user())}>
+        <Show when={isMaster(props.user)}>
         <div>
         <label><div>患者ID</div><input type="text" class={ input({ size: "search" }) }
           value={inputPatData()}
@@ -152,7 +152,7 @@ export function ListArea(props: Props) {
         <button type="button" class={ button({ color: "normal", size: "slim" }) }
           onClick={async ()=>{await loadConsultation()}}>未確定</button>
         </div>
-        <Show when={isMaster(props.user())}>
+        <Show when={isMaster(props.user)}>
         <div>
         <button type="button" class={ button({ color: "normal", size: "slim" }) }
           onClick={async ()=>{await loadNoID()}}>ID無し</button>
@@ -164,11 +164,11 @@ export function ListArea(props: Props) {
         <thead>
           <tr>
             <th>状態</th>
-            <Show when={isMaster(props.user())}>
+            <Show when={isMaster(props.user)}>
             <th>ID</th>
             </Show>
             <th>氏名</th><th>予約日時</th><th>予約医師</th>
-            <Show when={isMaster(props.user())}>
+            <Show when={isMaster(props.user)}>
             <th>施設</th>
             </Show>
             <th>更新日時</th><th>更新者</th>
@@ -179,15 +179,15 @@ export function ListArea(props: Props) {
             <tr onClick={()=>handleClick(app)}>
               <td class={ css({ color: (app.cancel||(!app.date&&app.consultation)?"red":"black") }) }>
                 {app.cancel?"キャンセル":(!app.date&&app.consultation?"調整中":"")}</td>
-              <Show when={isMaster(props.user())}>
+              <Show when={isMaster(props.user)}>
               <td class={ css({ fontFamily: "number" }) }>{app.patient.id}</td>
               </Show>
               <td>{app.patient.lastName}　{app.patient.firstName}</td>
               <td class={ css({ fontFamily: "number" }) }>{app.date} {app.time}</td>
-              <Show when={isUser(props.user())}>
+              <Show when={isUser(props.user)}>
               <td>{app.dr.displayName}</td>
               </Show>
-              <Show when={isMaster(props.user())}>
+              <Show when={isMaster(props.user)}>
               <td>{app.dr.name}</td>
               <td>
                 <span class={ css({ fontFamily: "number" }) }>{app.facility?.id}:</span>{app.facility?.name}

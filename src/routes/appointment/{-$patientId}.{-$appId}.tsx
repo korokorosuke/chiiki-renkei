@@ -1,9 +1,8 @@
-import { createSignal, Switch, Match } from "solid-js"
+import { createSignal, Switch, Match, onMount } from "solid-js"
 import Header from "../-header.tsx"
 import { ListArea } from "./-listArea.tsx"
 import { ModificationArea } from "./-modificationArea.tsx"
 import { PatientArea } from "../../components/PatientArea.tsx"
-import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { initPatient, initAppointment, toUser } from "../../helper/types.ts"
 import { getAppointment, getAppointments as getServerApps } from "../../server/func/appointment.ts"
 import { getDepartments } from "../../server/func/department.ts"
@@ -65,6 +64,8 @@ function App() {
   const [depts, setDepts] = createSignal<Department[]>([]);
 
   const loaderData = Route.useLoaderData();
+  const context = Route.useRouteContext();
+  const { user } = context();
 
   async function terminateModification(status: MessageStatus): Promise<void>{
     setModification(false);
@@ -100,7 +101,7 @@ function App() {
     setSelected({
       ...initAppointment(),
       patient: (pat ?? patient()),
-      personInCharge: toUser(user()),
+      personInCharge: toUser(user),
     });
     setNewadd(true);
     setModification(true);
@@ -124,7 +125,7 @@ function App() {
     }
   }
 
-  async function initialize(){
+  onMount(async () => {
     const {ok, depts, app, patient, patientId} = loaderData();
     depts.then(setDepts);
     if(ok && app){
@@ -150,12 +151,11 @@ function App() {
     if(refInput){
       refInput.focus();
     }
-  }
+  });
 
 
   return (
     <>
-    <Authenticator initializer={initialize} />
     <Header title="紹介予約" visible={visible()} handler={()=>handleNew(patient())} auth={user} />
     <main>
       <div class={ area({ type: "search" })}>

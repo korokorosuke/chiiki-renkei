@@ -15,7 +15,7 @@ type ViewProps = {
   setStaff: Setter<Staff>
   terminateModification: (status: MessageStatus)=>void
   newadd: boolean
-  auth: Accessor<AuthUser>
+  auth: AuthUser
 }
 
 export function ModificationArea(props: ViewProps){
@@ -26,7 +26,7 @@ export function ModificationArea(props: ViewProps){
   async function handleRegister(){
     const s = {
       ...unwrap(staff),
-      updatedBy: toUser(props.auth()),
+      updatedBy: toUser(props.auth),
     };
     let res;
     if(props.newadd){

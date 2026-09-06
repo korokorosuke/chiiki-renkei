@@ -1,4 +1,4 @@
-import { createSignal, onMount, type Accessor } from "solid-js"
+import { createSignal, onMount } from "solid-js"
 import { unwrap, type SetStoreFunction } from "solid-js/store"
 import { initPatient, toUser } from "../../helper/types.ts"
 import { getPatientForId } from "../../server/func/webpatient.ts"
@@ -13,7 +13,7 @@ type Props = {
   close: (e?: MouseEvent)=>void
   selected: WebAppointment
   setSelected: SetStoreFunction<WebAppointment>
-  user: Accessor<AuthUser>
+  user: AuthUser
 }
 
 export function PatIdInput(props: Props){
@@ -25,7 +25,7 @@ export function PatIdInput(props: Props){
   async function handleOK(e: MouseEvent){
     const app = unwrap(props.selected);
     app.patient.id = id();
-    app.updatedBy = toUser(props.user());
+    app.updatedBy = toUser(props.user);
     const res = await update({data: {appointment: app}});
     if(res.ok){
       props.setSelected("updatedBy", app.updatedBy);

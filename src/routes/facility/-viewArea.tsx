@@ -1,4 +1,4 @@
-import { For, Show, Switch, Match, type Accessor } from "solid-js"
+import { For, Show, Switch, Match } from "solid-js"
 import { Container, ContainerButton } from "../../components/Container.tsx"
 import type { Facility, Contact } from "../../server/domain/facility.ts"
 import type { AuthUser } from "../../server/domain/user.ts"
@@ -8,7 +8,7 @@ import { css } from "../../styled-system/css/"
 type ViewProps = {
     facility: Facility
     modifyData: ()=>void
-    auth: Accessor<AuthUser>
+    auth: AuthUser
 }
 
 type ContactProps = {
@@ -47,7 +47,7 @@ export function ViewArea(props: ViewProps){
           <div class={ prewrap }>{props.facility.id}</div>
         </Container>
       }>
-        <Match when={props.auth && props.auth().authFacility>=2}>
+        <Match when={props.auth && props.auth.authFacility>=2}>
           <ContainerButton title="ID" buttonTitle="修正"
               onClick={props.modifyData} class={ button({ color: "primary", size: "tiny" }) }>
             <div class={ prewrap }>{props.facility.id}</div>

@@ -1,9 +1,8 @@
-import { createSignal, Switch, Match } from "solid-js"
+import { createSignal, Switch, Match, onMount } from "solid-js"
 import { ViewArea } from "./-viewArea.tsx"
 import { ListArea } from "./-listArea.tsx"
 import { ModificationArea } from "./-modificationArea.tsx"
 import Header from "../-header.tsx"
-import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
 import { initFacility } from "../../helper/types.ts"
 import { getFacility, getFacilities } from "../../server/func/facility.ts"
@@ -22,6 +21,9 @@ function App() {
   const [modification, setModification] = createSignal<boolean>(false);
   const [newadd, setNewadd] = createSignal<boolean>(false);
   const [message, setMessage] = createSignal("");
+
+  const context = Route.useRouteContext();
+  const { user } = context();
 
   function terminateModification(status: MessageStatus): void{
     setModification(false);
@@ -92,15 +94,14 @@ function App() {
     }
   }
 
-  function initialize(){
+  onMount(() => {
     if(refInput){
       refInput.focus();
     }
-  }
+  });
 
   return (
     <>
-    <Authenticator initializer={initialize} />
     <Header title="施設検索" visible handler={handleNew} auth={user} />
     <main>
       <div class={ area({ type: "search" }) }>

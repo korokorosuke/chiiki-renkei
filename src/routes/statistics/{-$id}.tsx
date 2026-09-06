@@ -1,9 +1,8 @@
-import { createSignal, createMemo, For, Switch, Match, type Accessor } from "solid-js"
+import { createSignal, createMemo, For, Switch, Match, onMount, type Accessor } from "solid-js"
 import { ListAreaReferral } from "./-listAreaReferral.tsx"
 import { ListAreaReferralTo } from "./-listAreaReferralTo.tsx"
 import { ListAreaReply } from "./-listAreaReply.tsx"
 import Header from "../-header.tsx"
-import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { addDays, toDateString } from "../../lib/datetime.ts"
 import { getDepartments } from "../../server/func/department.ts"
 import { getDrs } from "../../server/func/dr.ts"
@@ -28,6 +27,9 @@ function App() {
   const [depts, setDepts] = createSignal<Department[]>([]);
   const [drs, setDrs] = createSignal<Dr[]>([]);
   const [id, setId] = createSignal("");
+
+  const context = Route.useRouteContext();
+  const { user } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -102,17 +104,16 @@ function App() {
     setDrs(await getDrs({data: {dept: val}}));
   }
 
-  function initialize(){
+  onMount(() => {
     getDepartments().then(setDepts);
     if(refInput){
       refInput.focus();
     }
-  }
+  });
 
 
   return (
     <>
-    <Authenticator initializer={initialize} />
     <Header title={title()} visible={false} handler={()=>{}} auth={user} />
     <main>
       <div class={ area({ type: "search" }) }>

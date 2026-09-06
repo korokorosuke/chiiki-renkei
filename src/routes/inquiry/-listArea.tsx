@@ -17,13 +17,13 @@ type ViewProps = {
     deleteResponse: (inq: Inquiry)=>Promise<void>
     selected: Accessor<Inquiry>
     setSelected: Setter<Inquiry>
-    auth: Accessor<AuthUser>
+    auth: AuthUser
 }
 
 
 export function ListArea(props: ViewProps) {
   const [selectedRes, setSelectedRes] = createSignal<Response>({
-    responder: toUser(props.auth()), datetime: toDateHHMMString(new Date()), details: ""
+    responder: toUser(props.auth), datetime: toDateHHMMString(new Date()), details: ""
   });
   const [selectedResIndex, setSelectedResIndex] = createSignal(-1);
   const [newadd, setNewadd] = createSignal(false);
@@ -59,7 +59,7 @@ export function ListArea(props: ViewProps) {
     props.setSelected(structuredClone(inq));
     setSelectedResIndex(-1);
     setSelectedRes({
-      responder:toUser(props.auth()), datetime: toDateHHMMString(new Date()), details:""
+      responder:toUser(props.auth), datetime: toDateHHMMString(new Date()), details:""
     });
 
     showDialog();

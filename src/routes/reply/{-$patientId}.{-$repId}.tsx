@@ -1,10 +1,9 @@
-import { createSignal, Switch, Match } from "solid-js"
+import { createSignal, Switch, Match, onMount } from "solid-js"
 import Header from "../-header.tsx"
 import { ListArea } from "./-listArea.tsx"
 import { ModificationArea } from "./-modificationArea.tsx"
 import { getReply, getReplies as getServerReps } from "../../server/func/reply.ts"
 import { PatientArea } from "../../components/PatientArea.tsx"
-import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { initPatient, initReply, toUser } from "../../helper/types.ts"
 import { getAllClassifications } from "../../server/func/classification.ts"
 import { getDepartments } from "../../server/func/department.ts"
@@ -68,6 +67,8 @@ function App() {
   const [classes, setClasses] = createSignal<Classification[]>([]);
 
   const loaderData = Route.useLoaderData();
+  const context = Route.useRouteContext();
+  const { user } = context();
 
   async function terminateModification(status: MessageStatus): Promise<void>{
     setModification(false);
@@ -101,7 +102,7 @@ function App() {
     setSelected({
       ...initReply(),
       refId: ref.id,
-      personInCharge: toUser(user()),
+      personInCharge: toUser(user),
     });
     setNewadd(true);
     setModification(true);
@@ -112,7 +113,7 @@ function App() {
     setReplies(res);
   }
 
-  async function initialize(){
+  onMount(async () => {
     getAllClassifications().then(setClasses);
     const {ok, depts, ref, patient, patientId} = loaderData();
     depts.then(setDepts);
@@ -139,12 +140,11 @@ function App() {
     if(refInput){
       refInput.focus();
     }
-  }
+  });
 
 
   return (
     <>
-    <Authenticator initializer={initialize} />
     <Header title="返事登録" visible={false} handler={()=>{}} auth={user} />
     <main>
       <div class={ area({ type: "search" })}>

@@ -6,17 +6,17 @@ import { css } from "../../styled-system/css/"
 
 type Props = {
     list: Accessor<Referral[]>
-    auth: Accessor<AuthUser>
+    auth: AuthUser
 }
 
 export function ListAreaReply(props: Props) {
   function handleClick(referral: Referral){
-    if(props.auth().authReferral>=2){
+    if(props.auth.authReferral>=2){
       location.href = `/appointment/${referral.patient.id}/${referral.id}`;
     }
   }
   function handleClickReply(refId: string, repId: string){
-    if(props.auth().authReferral>=2){
+    if(props.auth.authReferral>=2){
       location.href = `/reply/${refId}/${repId}`;
     }
   }

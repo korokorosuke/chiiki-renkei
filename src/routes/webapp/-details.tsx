@@ -1,4 +1,4 @@
-import { createSignal, Show, type Accessor } from "solid-js"
+import { createSignal, Show } from "solid-js"
 import { reconcile, type SetStoreFunction } from "solid-js/store"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import { ViewArea } from "./-viewArea.tsx"
@@ -17,7 +17,7 @@ type Props = {
   deferment: number
   next: ()=>void
   changeStatus: (status: number)=>void
-  user: Accessor<AuthUser>
+  user: AuthUser
   selected: WebAppointment
   setSelected: SetStoreFunction<WebAppointment>
 }
@@ -76,19 +76,19 @@ export function Details(props: Props){
           onClick={handleReturn}>戻る</button>
 
         <Show when={!props.selected.cancel &&
-          ((isUser(props.user()) && props.selected.date && new Date(props.selected.date) > limit) ||
+          ((isUser(props.user) && props.selected.date && new Date(props.selected.date) > limit) ||
           !props.selected.date ||
-          (isMaster(props.user()) && props.selected.date && new Date(props.selected.date) >= admin_limit))}>
+          (isMaster(props.user) && props.selected.date && new Date(props.selected.date) >= admin_limit))}>
           <button type="button" class={ button({ color: "success", size: "normal" }) }
             onClick={handleUpdate}>変更</button>
           <button type="button" class={ button({ color: "error", size: "normal" }) }
             onClick={handleCancel}>キャンセル</button>
         </Show>
-        <Show when={!props.selected.cancel && props.selected.time && isUser(props.user()) && reportPrepared()}>
+        <Show when={!props.selected.cancel && props.selected.time && isUser(props.user) && reportPrepared()}>
           <button type="button" class={ button({ color: "primary", size: "normal" }) }
             onClick={handlePrint}>予約票</button>
         </Show>
-        <Show when={isMaster(props.user())}>
+        <Show when={isMaster(props.user)}>
           <Show when={!props.selected.time}>
             <button type="button" class={ button({ color: "primary", size: "normal" }) }
               onClick={()=>props.changeStatus(2)}>予約調整</button>
@@ -102,7 +102,7 @@ export function Details(props: Props){
         </Show>
       </div>
 
-      <Show when={isMaster(props.user())}>
+      <Show when={isMaster(props.user)}>
         <NormalDialog>
           <PatIdInput close={(e?: MouseEvent)=>closeDialog(e)}
             user={props.user} selected={props.selected} setSelected={props.setSelected} />

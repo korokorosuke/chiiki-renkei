@@ -1,11 +1,10 @@
-import { createSignal, Show, Switch, Match } from "solid-js"
+import { createSignal, Show, Switch, Match, onMount } from "solid-js"
 import { ListArea } from "./-listArea.tsx"
 import { ModificationArea } from "./-modificationArea.tsx"
 import { initStaff, initFac } from "../../helper/types.ts"
 import { getFac } from "../../server/func/facility.ts"
 import { getStaffs } from "../../server/func/staff.ts"
 import Header from "../-header.tsx"
-import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
 import type { Fac } from "../../server/domain/facility.ts"
 import type { Staff } from "../../server/domain/staff.ts"
@@ -25,6 +24,9 @@ function App() {
   const [newadd, setNewadd] = createSignal<boolean>(false);
   const [message, setMessage] = createSignal("");
   const [visible, setVisible] = createSignal(false);
+
+  const context = Route.useRouteContext();
+  const { user } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -97,15 +99,14 @@ function App() {
     }
   }
 
-  function initialize(){
+  onMount(() => {
     if(refInput){
       refInput.focus();
     }
-  }
+  });
 
   return (
     <>
-    <Authenticator initializer={initialize} />
     <Header title="施設医師登録" visible={visible()} handler={handleNew} auth={user} />
     <main>
       <div class={ area({ type: "search" })}>

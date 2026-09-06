@@ -19,7 +19,7 @@ type ViewProps = {
   setFacility: Setter<Facility>
   terminateModification: (status: MessageStatus)=>void
   newadd: Accessor<boolean>
-  auth: Accessor<AuthUser>
+  auth: AuthUser
 }
 
 type ListProps = {
@@ -80,10 +80,10 @@ export function ModificationArea(props: ViewProps){
   async function handleRegister(){
     const f = {
       ...unwrap(facility),
-      updatedBy: toUser(props.auth()),
+      updatedBy: toUser(props.auth),
     }
     if(props.newadd()){
-      f.createdBy = toUser(props.auth());
+      f.createdBy = toUser(props.auth);
     }
 
     let res;

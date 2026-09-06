@@ -1,9 +1,8 @@
-import { createSignal, Switch, Match } from "solid-js"
+import { createSignal, Switch, Match, onMount } from "solid-js"
 import { ListArea } from "./-listArea.tsx"
 import { ModificationArea } from "./-modificationArea.tsx"
 import { getInquiries, update, del } from "../../server/func/inquiry.ts"
 import Header from "../-header.tsx"
-import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
 import { toDateHHMMString, toDateString, addDays } from "../../lib/datetime.ts"
 import { toUser, initInquiry } from "../../helper/types.ts"
@@ -23,6 +22,9 @@ function App() {
   const [inquiries, setInquiries] = createSignal<Inquiry[]>([]);
   const [modification, setModification] = createSignal<boolean>(false);
   const [newadd, setNewadd] = createSignal<boolean>(false);
+
+  const context = Route.useRouteContext();
+  const { user } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -44,7 +46,7 @@ function App() {
     setModification(false);
     setSelected({
       ...initInquiry(),
-      personInCharge: toUser(user()),
+      personInCharge: toUser(user),
       datetime: toDateHHMMString(new Date()),
     });
     setModification(true);
@@ -113,16 +115,15 @@ function App() {
     }
   }
 
-  function initialize(){
+  onMount(() => {
     loadData("", "", "", "").then();
     if(refInput){
       refInput.focus();
     }
-  }
+  });
 
   return (
     <>
-    <Authenticator initializer={initialize} />
     <Header title="問い合わせ登録" visible handler={handleNew} auth={user} />
     <main>
       <div class={ area({ type: "search" }) }>

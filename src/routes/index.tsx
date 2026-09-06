@@ -15,12 +15,11 @@ import activity from "./assets/activity.svg"
 import questionnaire from "./assets/questionnaire.svg"
 import printer from "./assets/printer.svg"
 import Header from "./-header.tsx"
-import { Authenticator, authenticatedUser as user } from "../components/Authenticator.tsx"
 import { Notice } from "./-notice.tsx"
 import { flex } from "../styled-system/patterns/"
 import { css } from "../styled-system/css/"
 
-export const Route = createFileRoute('/')({ component: Home })
+export const Route = createFileRoute('/')({ component: Home });
 
 type Props = {
   title: string
@@ -58,37 +57,38 @@ function MenuBlock(props: Props) {
 }
 
 function Home() {
+  const context = Route.useRouteContext();
+  const { user } = context();
 
   return (
     <>
-    <Authenticator />
     <Header title="地域連携システム" visible={false} handler={()=>{}} auth={user} />
     <main class={ flex({ direction: "column" }) }>
       <Notice />
-      <Show when={user().authActivity >= 2 || user().authWeb >= 1}>
+      <Show when={user.authActivity >= 2 || user.authWeb >= 1}>
       <div>
-        <Show when={user().authActivity >= 2}>
+        <Show when={user.authActivity >= 2}>
         <h1 class={ h1 }>受付関連</h1>
         </Show>
-        <Show when={user().authActivity < 2}>
+        <Show when={user.authActivity < 2}>
           <h1 class={ h1 }>Web予約</h1>
         </Show>
         <div class={ flex({ direction: "row" }) }>
-        <Show when={user().authActivity >= 2}>
+        <Show when={user.authActivity >= 2}>
           <MenuBlock title="問合せ登録" href="/inquiry" img={ope} />
           <MenuBlock title="活動記録" href="/activity" img={activity} />
         </Show>
-        <Show when={user().authWeb >= 1}>
+        <Show when={user.authWeb >= 1}>
           <MenuBlock title="Web予約" href="/webapp" img={appointment} />
         </Show>
         </div>
       </div>
       </Show>
-      <Show when={user().authReferral >= 1}>
+      <Show when={user.authReferral >= 1}>
       <div>
         <h1 class={ h1 }>紹介関連</h1>
         <div class={ flex({ direction: "row" }) }>
-          <Show when={user().authReferral >= 2}>
+          <Show when={user.authReferral >= 2}>
             <MenuBlock title="紹介登録" href="/appointment" img={appointment} />
             <Block title="逆紹介登録" href="/referralto">
               <div class={ css({ display: "flex", direction: "row", paddingTop: "0.3rem" }) }>
@@ -98,38 +98,38 @@ function Home() {
             </Block>
             <MenuBlock title="返事登録" href="/reply" img={letter} />
           </Show>
-          <Show when={user().authReferral >= 1}>
+          <Show when={user.authReferral >= 1}>
             <MenuBlock title="紹介状況" href="/process" img={file} />
             <MenuBlock title="問診閲覧" href="/answer/patient" img={questionnaire} />
           </Show>
         </div>
       </div>
       </Show>
-      <Show when={user().authFacility >= 1}>
+      <Show when={user.authFacility >= 1}>
       <div>
         <h1 class={ h1 }>施設関連</h1>
         <div class={ flex({ direction: "row" }) }>
           <MenuBlock title="施設検索" href="/facility" img={hosp} />
-          <Show when={user().authFacility >= 2}>
+          <Show when={user.authFacility >= 2}>
             <MenuBlock title="施設医師登録" href="/staff" img={staff} />
           </Show>
         </div>
       </div>
       </Show>
-      <Show when={user().authStatistics >= 1}>
+      <Show when={user.authStatistics >= 1}>
       <div>
         <h1 class={ h1 }>統計</h1>
         <div class={ flex({ direction: "row" }) }>
           <MenuBlock title="紹介統計" href="/statistics" img={list} />
           <MenuBlock title="逆紹介統計" href="/statistics/referralto" img={list} />
           <MenuBlock title="返事統計" href="/statistics/reply" img={list} />
-          <Show when={user().authReferral >= 1}>
+          <Show when={user.authReferral >= 1}>
             <MenuBlock title="受診報告出力" href="/report/" img={printer} />
           </Show>
         </div>
       </div>
       </Show>
-      <Show when={user().authMaster >= 2}>
+      <Show when={user.authMaster >= 2}>
       <div>
         <h1 class={ h1 }>その他</h1>
         <div class={ flex({ direction: "row" }) }>

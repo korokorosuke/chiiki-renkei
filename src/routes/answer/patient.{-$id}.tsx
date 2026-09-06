@@ -1,4 +1,4 @@
-import { createSignal, Show } from "solid-js"
+import { createSignal, Show, onMount } from "solid-js"
 import type { Answer } from "../../server/domain/answer.ts"
 import Header from "../-header.tsx"
 import { ListArea } from "./-listArea.tsx"
@@ -8,7 +8,6 @@ import type { Patient } from "../../server/domain/patient.ts"
 import { getPatient } from "../../server/func/patient.ts"
 import { getAnswersByPatient } from "../../server/func/answer.ts"
 import { initPatient, initAnswer } from "../../helper/types.ts"
-import { Authenticator, authenticatedUser as user } from "../../components/Authenticator.tsx"
 import { area, input, button } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
@@ -25,6 +24,8 @@ function App() {
 
   const params = Route.useParams();
   const paramPatient = params().id;
+  const context = Route.useRouteContext();
+  const { user } = context();
 
   async function handleChange(e: KeyboardEvent){
     if(e.key === "Enter"){
@@ -68,18 +69,18 @@ function App() {
     setSelected(initAnswer());
   }
 
-  async function initialize(){
+  onMount(async () => {
     if(refInput){
       refInput.focus();
     }
     if(paramPatient){
       await loadData(paramPatient);
     }
-  }
+  });
+
 
   return (
     <>
-    <Authenticator initializer={initialize} />
     <Header title="問診一覧" visible={false} handler={()=>{}} auth={user} />
     <main>
       <div class={ area({ type: "search" })}>
