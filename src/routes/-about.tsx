@@ -1,12 +1,15 @@
 import { cva, css } from "../styled-system/css/"
+import { closeDialog } from "../components/NormalDialog.tsx"
 
 export function About(){
   return (
     <>
       <main class={ css({ marginLeft: "1rem"})}>
-      <h1>
-        このシステムは以下のframework, libraryを使用しています。
-      </h1>
+      <div class={ css({ textAlign: "left" })}>
+        <h1>
+          このシステムは以下のframework, libraryを使用しています。
+        </h1>
+      </div>
       <table class={ style() }>
         <thead>
           <tr>
@@ -43,13 +46,13 @@ export function About(){
         </tr>
         <tr>
           <td>drizzle-orm</td>
-          <td><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License Version 2.0(link)</a></td>
+          <td>Apache License Version 2.0</td>
           <td>drizzle team</td>
         </tr>
         <tr>
-          <td>libsql</td>
+          <td>pg</td>
           <td>MIT License</td>
-          <td>Copyright 2023 the sqld authors</td>
+          <td>Copyright 2010 - 2021 Brian Carlson</td>
         </tr>
         <tr>
           <td>html2pdf</td>
@@ -58,6 +61,14 @@ export function About(){
         </tr>
         </tbody>
       </table>
+      <div class={css({ textAlign: "left" })}>
+        <div><a href="https://opensource.org/license/mit">※ MIT License(https://opensource.org/license/mit)</a></div>
+        <div><a href="http://www.apache.org/licenses/LICENSE-2.0">※　Apache License Version 2.0(http://www.apache.org/licenses/LICENSE-2.0)</a></div>
+      </div>
+      <div>
+        <button type="button" class={ css({ cursor: "pointer" })}
+          onClick={closeDialog}>閉じる</button>
+      </div>
       </main>
   </>);
 }
