@@ -6,10 +6,13 @@ import { NormalDialog, showDialog } from "../../components/NormalDialog.tsx"
 import { About } from "../-about.tsx"
 import type { AuthUser } from "../../server/domain/user.ts"
 import type { Notice } from "../../server/domain/notice.ts"
+import { getLocalStorage, setLocalStorage } from "../../lib/storage.ts"
 import { css } from "../../styled-system/css/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/login/$base")({ component: App });
+export const Route = createFileRoute("/login/{-$base}")({ component: App });
+
+const STORAGE_KEY = "reco_base";
 
 function App() {
   const [user, setUser] = createSignal("");
@@ -23,10 +26,18 @@ function App() {
   let input: HTMLInputElement | undefined;
 
   const params = Route.useParams();
+  const paramBase = params().base;
 
-  if(params().base){
-    setBase(params().base);
+  if(paramBase){
+    setBase(paramBase);
     setVisible(false);
+  }else{
+    const base = getLocalStorage(STORAGE_KEY);
+    if(base){
+      location.href = `/login/${base}`;
+      return;
+    }
+    return <div>ログイン画面から再度ログインしてください</div>;
   }
 
   function handleKeyUp(e: KeyboardEvent){
@@ -47,6 +58,7 @@ function App() {
       ...initAuthUser(), id: user(), password: password(), base: base()
     }}}).then(res=>{
       if(res.ok){
+        setLocalStorage(STORAGE_KEY, base());
         if(isWebOnly(res.data!)){
           location.href = "/webapp";
           return;

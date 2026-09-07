@@ -14,7 +14,7 @@ import { Route as ActivityIndexRouteImport } from './routes/activity/index'
 import { Route as AddressIndexRouteImport } from './routes/address/index'
 import { Route as FacilityChar123FacilityChar125RouteImport } from './routes/facility/{-$facility}'
 import { Route as InquiryIndexRouteImport } from './routes/inquiry/index'
-import { Route as LoginBaseRouteImport } from './routes/login/$base'
+import { Route as LoginChar123BaseChar125RouteImport } from './routes/login/{-$base}'
 import { Route as MasterIndexRouteImport } from './routes/master/index'
 import { Route as PatientIndexRouteImport } from './routes/patient/index'
 import { Route as ProcessChar123PatientIdChar125RouteImport } from './routes/process/{-$patientId}'
@@ -55,9 +55,9 @@ const InquiryIndexRoute = InquiryIndexRouteImport.update({
   path: '/inquiry/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginBaseRoute = LoginBaseRouteImport.update({
-  id: '/login/$base',
-  path: '/login/$base',
+const LoginChar123BaseChar125Route = LoginChar123BaseChar125RouteImport.update({
+  id: '/login/{-$base}',
+  path: '/login/{-$base}',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MasterIndexRoute = MasterIndexRouteImport.update({
@@ -135,7 +135,7 @@ const ReplyChar123PatientIdChar125Char123RepIdChar125Route =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/facility/{-$facility}': typeof FacilityChar123FacilityChar125Route
-  '/login/$base': typeof LoginBaseRoute
+  '/login/{-$base}': typeof LoginChar123BaseChar125Route
   '/process/{-$patientId}': typeof ProcessChar123PatientIdChar125Route
   '/statistics/{-$id}': typeof StatisticsChar123IdChar125Route
   '/activity/': typeof ActivityIndexRoute
@@ -156,7 +156,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/facility/{-$facility}': typeof FacilityChar123FacilityChar125Route
-  '/login/$base': typeof LoginBaseRoute
+  '/login/{-$base}': typeof LoginChar123BaseChar125Route
   '/process/{-$patientId}': typeof ProcessChar123PatientIdChar125Route
   '/statistics/{-$id}': typeof StatisticsChar123IdChar125Route
   '/activity': typeof ActivityIndexRoute
@@ -178,7 +178,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/facility/{-$facility}': typeof FacilityChar123FacilityChar125Route
-  '/login/$base': typeof LoginBaseRoute
+  '/login/{-$base}': typeof LoginChar123BaseChar125Route
   '/process/{-$patientId}': typeof ProcessChar123PatientIdChar125Route
   '/statistics/{-$id}': typeof StatisticsChar123IdChar125Route
   '/activity/': typeof ActivityIndexRoute
@@ -201,7 +201,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/facility/{-$facility}'
-    | '/login/$base'
+    | '/login/{-$base}'
     | '/process/{-$patientId}'
     | '/statistics/{-$id}'
     | '/activity/'
@@ -222,7 +222,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/facility/{-$facility}'
-    | '/login/$base'
+    | '/login/{-$base}'
     | '/process/{-$patientId}'
     | '/statistics/{-$id}'
     | '/activity'
@@ -243,7 +243,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/facility/{-$facility}'
-    | '/login/$base'
+    | '/login/{-$base}'
     | '/process/{-$patientId}'
     | '/statistics/{-$id}'
     | '/activity/'
@@ -265,7 +265,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FacilityChar123FacilityChar125Route: typeof FacilityChar123FacilityChar125Route
-  LoginBaseRoute: typeof LoginBaseRoute
+  LoginChar123BaseChar125Route: typeof LoginChar123BaseChar125Route
   ProcessChar123PatientIdChar125Route: typeof ProcessChar123PatientIdChar125Route
   StatisticsChar123IdChar125Route: typeof StatisticsChar123IdChar125Route
   ActivityIndexRoute: typeof ActivityIndexRoute
@@ -321,11 +321,11 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof InquiryIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login/$base': {
-      id: '/login/$base'
-      path: '/login/$base'
-      fullPath: '/login/$base'
-      preLoaderRoute: typeof LoginBaseRouteImport
+    '/login/{-$base}': {
+      id: '/login/{-$base}'
+      path: '/login/{-$base}'
+      fullPath: '/login/{-$base}'
+      preLoaderRoute: typeof LoginChar123BaseChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/master/': {
@@ -425,7 +425,7 @@ declare module '@tanstack/solid-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FacilityChar123FacilityChar125Route: FacilityChar123FacilityChar125Route,
-  LoginBaseRoute: LoginBaseRoute,
+  LoginChar123BaseChar125Route: LoginChar123BaseChar125Route,
   ProcessChar123PatientIdChar125Route: ProcessChar123PatientIdChar125Route,
   StatisticsChar123IdChar125Route: StatisticsChar123IdChar125Route,
   ActivityIndexRoute: ActivityIndexRoute,
