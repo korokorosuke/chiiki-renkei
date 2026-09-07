@@ -62,8 +62,8 @@ export function About(){
         </tbody>
       </table>
       <div class={css({ textAlign: "left" })}>
-        <div><a href="https://opensource.org/license/mit">※ MIT License(https://opensource.org/license/mit)</a></div>
-        <div><a href="http://www.apache.org/licenses/LICENSE-2.0">※　Apache License Version 2.0(http://www.apache.org/licenses/LICENSE-2.0)</a></div>
+        <div><a href="https://opensource.org/license/mit" target="_blank" rel="noopener noreferrer">※ MIT License(https://opensource.org/license/mit)</a></div>
+        <div><a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener noreferrer">※　Apache License Version 2.0(http://www.apache.org/licenses/LICENSE-2.0)</a></div>
       </div>
       <div>
         <button type="button" class={ css({ cursor: "pointer" })}
