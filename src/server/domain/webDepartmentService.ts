@@ -1,11 +1,11 @@
 import { type WebDepartment, validate } from "./webDepartment.ts"
-import { BaseService, type IRepository } from "./baseService.ts"
+import { MainService, type IRepository } from "./mainService.ts"
 
 export interface IWebDepartmentRepository extends IRepository<WebDepartment>{
     all(): Promise<WebDepartment[]>
 }
 
-export class WebDepartmentService extends BaseService<WebDepartment, IWebDepartmentRepository>{
+export class WebDepartmentService extends MainService<WebDepartment, IWebDepartmentRepository>{
     constructor(i: IWebDepartmentRepository){
         super(i, validate);
     }

@@ -1,6 +1,6 @@
 import { type FetchResult, okWithData } from "../lib/response.ts";
 import { type Appointment, type Condition, validate } from "./appointment.ts"
-import { BaseService, type IRepository, setId } from "./baseService.ts"
+import { MainService, type IRepository, setId } from "./mainService.ts"
 
 export interface IReferralRepository extends IRepository<Appointment>{
     list(cond: Condition): Promise<Appointment[]>
@@ -9,7 +9,7 @@ export interface IReferralRepository extends IRepository<Appointment>{
 
 export interface IAppointmentRepository extends IReferralRepository{}
 
-export class AppointmentService extends BaseService<Appointment, IAppointmentRepository>{
+export class AppointmentService extends MainService<Appointment, IAppointmentRepository>{
     constructor(i: IAppointmentRepository){
         super(i, validate, (val)=>{
             if(!val.id){

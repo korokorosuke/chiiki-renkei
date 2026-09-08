@@ -1,11 +1,11 @@
 import { type Questionnaire, validate } from "./questionnaire.ts"
-import { BaseService, type IRepository, setId } from "./baseService.ts"
+import { MainService, type IRepository, setId } from "./mainService.ts"
 
 export interface IQuestionnaireRepository extends IRepository<Questionnaire>{
     list(): Promise<Questionnaire[]>
 }
 
-export class QuestionnaireService extends BaseService<Questionnaire, IQuestionnaireRepository>{
+export class QuestionnaireService extends MainService<Questionnaire, IQuestionnaireRepository>{
     constructor(i: IQuestionnaireRepository){
         super(i, validate, setId);
     }

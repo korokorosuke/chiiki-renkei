@@ -3,13 +3,13 @@ import { validate } from "./user.ts"
 import { Crypto } from "../../lib/crypto.ts"
 import * as base64 from "../../lib/base64.ts"
 import { type Result, ok, ng } from "../lib/response.ts"
-import { BaseService, type IRepository } from "./baseService.ts"
+import { MainService, type IRepository } from "./mainService.ts"
 
 export interface IUserRepository extends IRepository<AuthUser>{
     list(c: Condition): Promise<AuthUser[]>
 }
 
-export class UserService extends BaseService<AuthUser, IUserRepository>{
+export class UserService extends MainService<AuthUser, IUserRepository>{
     constructor(i: IUserRepository){
         super(i, validate);
     }

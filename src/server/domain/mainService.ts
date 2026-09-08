@@ -36,7 +36,7 @@ export function setId(val: IIdentifiable): void{
     val.id = generateId();
 }
 
-export class BaseWriteService<T, R extends IWriteRepository<T>>{
+export class MainWriteService<T, R extends IWriteRepository<T>>{
     protected i: R
     private validate: (val: T)=>ValidationResult
     private createId: (val: IIdentifiable)=>void
@@ -118,7 +118,7 @@ export class BaseWriteService<T, R extends IWriteRepository<T>>{
     }
 }
 
-export class BaseService<T, R extends IRepository<T>> extends BaseWriteService<T, R>{
+export class MainService<T, R extends IRepository<T>> extends MainWriteService<T, R>{
     constructor(i: R, validate: (val: T)=>ValidationResult,
         createId: (val: IIdentifiable)=>void = (_)=>{}){
       super(i, validate, createId);

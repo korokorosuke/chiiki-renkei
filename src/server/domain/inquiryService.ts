@@ -1,11 +1,11 @@
 import { type Inquiry, type Condition, validate } from "./inquiry.ts"
-import { BaseService, type IRepository, setId } from "./baseService.ts"
+import { MainService, type IRepository, setId } from "./mainService.ts"
 
 export interface IInquiryRepository extends IRepository<Inquiry>{
     list(cond: Condition): Promise<Inquiry[]>
 }
 
-export class InquiryService extends BaseService<Inquiry, IInquiryRepository>{
+export class InquiryService extends MainService<Inquiry, IInquiryRepository>{
     constructor(i: IInquiryRepository){
         super(i, validate, setId);
     }

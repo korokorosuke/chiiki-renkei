@@ -1,13 +1,13 @@
 import { type WebNotice, type NOTICE_PAGE, validate } from "./webNotice.ts"
 import { getTodayString } from "../../lib/datetime.ts"
-import { BaseService, type IRepository, setId } from "./baseService.ts"
+import { MainService, type IRepository, setId } from "./mainService.ts"
 
 export interface IWebNoticeRepository extends IRepository<WebNotice>{
     list(type: NOTICE_PAGE, date: string): Promise<WebNotice[]>
     all(): Promise<WebNotice[]>
 }
 
-export class WebNoticeService extends BaseService<WebNotice, IWebNoticeRepository>{
+export class WebNoticeService extends MainService<WebNotice, IWebNoticeRepository>{
     constructor(i: IWebNoticeRepository){
         super(i, validate, setId);
     }

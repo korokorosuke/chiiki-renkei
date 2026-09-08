@@ -1,5 +1,5 @@
 import { type WebReservation, validate } from "./webReservation.ts"
-import { BaseWriteService, type IWriteRepository } from "./baseService.ts"
+import { MainWriteService, type IWriteRepository } from "./mainService.ts"
 
 export interface IWebReservationRepository extends IWriteRepository<WebReservation>{
     read(dept: string, dr: string, date: string, time: string): Promise<WebReservation|undefined>
@@ -7,7 +7,7 @@ export interface IWebReservationRepository extends IWriteRepository<WebReservati
     listByDate(dept: string, yyyymm: string): Promise<WebReservation[]>
 }
 
-export class WebReservationService extends BaseWriteService<WebReservation, IWebReservationRepository>{
+export class WebReservationService extends MainWriteService<WebReservation, IWebReservationRepository>{
     constructor(i: IWebReservationRepository){
         super(i, validate);
     }

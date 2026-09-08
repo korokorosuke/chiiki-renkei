@@ -1,5 +1,5 @@
 import { type Answer, type AnswerPassword, validate, validatePassword, MAX_CHECK_COUNT } from "./answer.ts"
-import { BaseService, type IRepository, setId } from "./baseService.ts"
+import { MainService, type IRepository, setId } from "./mainService.ts"
 import { Crypto } from "../../lib/crypto.ts"
 import { type Result, type FetchResult, ok, ng } from "../lib/response.ts"
 
@@ -13,7 +13,7 @@ export interface IAnswerPasswordRepository extends IRepository<AnswerPassword>{
     countUp(appId: string): Promise<boolean>
 }
 
-export class AnswerService extends BaseService<Answer, IAnswerRepository>{
+export class AnswerService extends MainService<Answer, IAnswerRepository>{
     private passService: AnswerPasswordService
     constructor(i: IAnswerRepository, repo: IAnswerPasswordRepository){
         super(i, validate, setId);
@@ -42,7 +42,7 @@ export class AnswerService extends BaseService<Answer, IAnswerRepository>{
     }
 }
 
-export class AnswerPasswordService extends BaseService<AnswerPassword, IAnswerPasswordRepository>{
+export class AnswerPasswordService extends MainService<AnswerPassword, IAnswerPasswordRepository>{
     constructor(i: IAnswerPasswordRepository){
         super(i, validatePassword);
     }

@@ -1,11 +1,11 @@
 import { type ReferralTo, type Condition, validate } from "./referralto.ts"
-import { BaseService, type IRepository, setId } from "./baseService.ts"
+import { MainService, type IRepository, setId } from "./mainService.ts"
 
 export interface IReferralToRepository extends IRepository<ReferralTo>{
     list(cond: Condition): Promise<ReferralTo[]>
 }
 
-export class ReferralToService extends BaseService<ReferralTo, IReferralToRepository>{
+export class ReferralToService extends MainService<ReferralTo, IReferralToRepository>{
     constructor(i: IReferralToRepository){
         super(i, validate, setId);
     }

@@ -1,7 +1,7 @@
 import { type Reply, type Condition, validate } from "./reply.ts"
 import type { Referral } from "./referral.ts"
 import { type Result, type FetchResult, ok, okWithData, ng } from "../lib/response.ts"
-import { generateId } from "./baseService.ts"
+import { generateId } from "./mainService.ts"
 import { getNow } from "../lib/datetime.ts"
 
 

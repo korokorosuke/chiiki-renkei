@@ -1,12 +1,12 @@
 import { type Due, validate } from "./due.ts"
-import { BaseWriteService, type IWriteRepository } from "./baseService.ts"
+import { MainWriteService, type IWriteRepository } from "./mainService.ts"
 
 export interface IDueRepository extends IWriteRepository<Due>{
     read(id: number): Promise<Due|undefined>
     all(): Promise<Due[]>
 }
 
-export class DueService extends BaseWriteService<Due, IDueRepository>{
+export class DueService extends MainWriteService<Due, IDueRepository>{
     constructor(i: IDueRepository){
         super(i, validate);
     }

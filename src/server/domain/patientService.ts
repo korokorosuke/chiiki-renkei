@@ -1,13 +1,13 @@
 import { type Patient, type Condition, validate } from "./patient.ts"
 import { type Result } from "../lib/response.ts"
 import { toNumberCode } from "./address.ts"
-import { BaseService, type IRepository } from "./baseService.ts"
+import { MainService, type IRepository } from "./mainService.ts"
 
 export interface IPatientRepository extends IRepository<Patient>{
     list(cond: Condition): Promise<Patient[]>
 }
 
-export class PatientService extends BaseService<Patient, IPatientRepository>{
+export class PatientService extends MainService<Patient, IPatientRepository>{
     constructor(i: IPatientRepository){
         super(i, validate);
     }

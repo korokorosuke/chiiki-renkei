@@ -1,11 +1,11 @@
 import { type Activity, type Condition, validate } from "./activity.ts"
-import { BaseService, type IRepository, setId } from "./baseService.ts"
+import { MainService, type IRepository, setId } from "./mainService.ts"
 
 export interface IActivityRepository extends IRepository<Activity>{
     list(cond: Condition): Promise<Activity[]>
 }
 
-export class ActivityService extends BaseService<Activity, IActivityRepository>{
+export class ActivityService extends MainService<Activity, IActivityRepository>{
     constructor(i: IActivityRepository){
         super(i, validate, setId);
     }
