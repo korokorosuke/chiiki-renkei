@@ -10,7 +10,20 @@ import type { Facility } from "../../server/domain/facility.ts"
 import { button, input, area } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/facility/{-$facility}")({ component: App });
+export const Route = createFileRoute("/facility/{-$id}")({
+  component: App,
+  loader: async ({ params: { id } }) => {
+    if(id){
+      const f = await getFacility({data: { id }});
+      if(f){
+        return { ok: true, id, facility: f };
+      }else{
+        return { ok: false, id, facility: undefined };
+      }
+    }
+    return { ok: false, id: undefined, facility: undefined }
+  }
+});
 
 let refInput: HTMLInputElement | undefined
 
@@ -22,6 +35,7 @@ function App() {
   const [newadd, setNewadd] = createSignal<boolean>(false);
   const [message, setMessage] = createSignal("");
 
+  const loaderData = Route.useLoaderData();
   const context = Route.useRouteContext();
   const { user } = context();
 
@@ -95,6 +109,16 @@ function App() {
   }
 
   onMount(() => {
+    const { ok, id, facility } = loaderData();
+    if(ok && facility){
+      setSelected(facility);
+    }else if(!ok && id){
+      setId(id);
+      setMessage("データが見つかりませんでした");
+      if(refInput){
+        refInput.select();
+      }
+    }
     if(refInput){
       refInput.focus();
     }
