@@ -11,7 +11,29 @@ import { initPatient, initAnswer } from "../../helper/types.ts"
 import { area, input, button } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/answer/patient/{-$id}")({ component: App });
+export const Route = createFileRoute("/answer/patient/{-$id}")({
+  component: App,
+  loader: async ({ params: { id } }) => {
+    if(id){
+      const patient = await getPatient({ data: { id } });
+      if(patient){
+        return { ok: true, patient, id };
+      }else{
+        return { ok: false, patient: undefined, id };
+      }
+    }
+    return { ok: false, patient: undefined, id: undefined };
+  },
+  head: ({ loaderData })=>({
+    meta: [
+      {
+        title: loaderData && loaderData.ok && loaderData.patient ?
+          `${loaderData.patient.id} - ${loaderData.patient.lastName}　${loaderData.patient.firstName}　[問診閲覧]　地域連携システム` :
+          "[問診閲覧]　地域連携システム"
+      }
+    ]
+  }),
+});
 
 let refInput: HTMLInputElement | undefined;
 
@@ -22,46 +44,26 @@ function App() {
   const [patient, setPatient] = createSignal<Patient>(initPatient());
   const [selected, setSelected] = createSignal<Answer>(initAnswer());
 
-  const params = Route.useParams();
-  const paramPatient = params().id;
+  const loaderData = Route.useLoaderData();
   const context = Route.useRouteContext();
   const { user } = context();
 
-  async function handleChange(e: KeyboardEvent){
+  function handleChange(e: KeyboardEvent){
     if(e.key === "Enter"){
-      await move(id());
+      move(id());
     }
   }
 
-  async function move(id: string){
+  function move(id: string){
     if(id){
-      await loadData(id);
+      location.href = `/answer/patient/${id}`;
     }else{
       setMessage("患者を入力してください");
     }
   }
 
-  async function loadData(id: string){
-    if(id != ""){
-      const pat = await getPatient({data: { id }});
-      if(pat){
-        setId("");
-        setPatient(pat);
-        setMessage("");
-        setAnswers(await getAnswersByPatient({data: { patientId: pat.id }}));
-      }else{
-        setPatient(initPatient());
-        setMessage("患者がみつかりませんでした");
-        setAnswers([]);
-        if(refInput){
-          refInput.select();
-          refInput.focus();
-        }
-      }
-    }
-  }
-
   function select(answer: Answer){
+    setAnswers([]);
     setSelected(answer);
   }
 
@@ -70,11 +72,19 @@ function App() {
   }
 
   onMount(async () => {
+    const { ok, patient, id } = loaderData();
+    if(ok && patient){
+      setPatient(patient);
+      setAnswers(await getAnswersByPatient({data: { patientId: patient.id }}));
+    }else if(!ok && id){
+      setId(id);
+      setMessage("患者が見つかりませんでした");
+      if(refInput){
+        refInput.select();
+      }
+    }
     if(refInput){
       refInput.focus();
-    }
-    if(paramPatient){
-      await loadData(paramPatient);
     }
   });
 
@@ -95,10 +105,10 @@ function App() {
       <hr />
       <PatientArea patient={patient()} />
 
-      <Show when={selected().id === ""}>
+      <Show when={answers().length > 0 || (selected().id === "" && patient().lastName)}>
         <ListArea select={select} answers={answers} />
       </Show>
-      <Show when={selected().id != ""}>
+      <Show when={selected().id !== ""}>
         <ViewArea selected={selected()} displayList={displayList} />
       </Show>
     </main>
