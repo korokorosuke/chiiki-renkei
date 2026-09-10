@@ -160,7 +160,7 @@ const patient: Patient[] = [
   {
     id: "0001", lastName: "患者", firstName: "太郎",
     lastKana: "かんじゃ", firstKana: "たろう", sex: 0,
-    birthday: "2000-01-12", tel: "086-422-0000",
+    birthday: "2000-01-12", tel: "03-000-0000",
     tel2: "",
     address: {postalCode: "100-0004", name: "東京都千代田区大手町",
       plus: "１－３－１０"}, memo: ""
@@ -168,7 +168,7 @@ const patient: Patient[] = [
   {
     id: "0002", lastName: "患者", firstName: "次郎",
     lastKana: "かんじゃ", firstKana: "じろう", sex: 0,
-    birthday: "2000-02-12", tel: "086-422-0001",
+    birthday: "2000-02-12", tel: "03-000-0001",
     tel2: "",
     address: {postalCode: "100-0004", name: "東京都千代田区大手町",
       plus: "１－３－１１"}, memo: ""
@@ -176,7 +176,7 @@ const patient: Patient[] = [
   {
     id: "0003", lastName: "患者", firstName: "美津子",
     lastKana: "かんじゃ", firstKana: "みつこ", sex: 1,
-    birthday: "2001-03-12", tel: "086-422-0002",
+    birthday: "2001-03-12", tel: "03-000-0002",
     tel2: "",
     address:{postalCode: "100-0004", name: "東京都千代田区大手町",
       plus: "１－３－１３"}, memo: ""
@@ -184,7 +184,7 @@ const patient: Patient[] = [
   {
     id: "0004", lastName: "患者", firstName: "四子",
     lastKana: "かんじゃ", firstKana: "よんこ", sex: 1,
-    birthday: "1990-04-12", tel: "086-422-0003",
+    birthday: "1990-04-12", tel: "03-000-0003",
     tel2: "",
     address: {postalCode: "100-0004", name: "東京都千代田区大手町",
       plus: "１－３－１３"}, memo: ""
@@ -192,7 +192,7 @@ const patient: Patient[] = [
   {
     id: "0005", lastName: "患者", firstName: "五郎",
     lastKana: "かんじゃ", firstKana: "ごろう", sex: 0,
-    birthday: "1960-05-02", tel: "086-422-0004",
+    birthday: "1960-05-02", tel: "03-000-0004",
     tel2: "",
     address: {postalCode: "100-0004", name: "東京都千代田区大手町",
       plus: "１－５－１３"}, memo: ""
@@ -202,7 +202,7 @@ const patient: Patient[] = [
 const facility: Facility[] = [
   {
     id: "001", name: "山田病院", nameCorp:"", kana: "やまだびょういん",
-    tel: "086-123-4567", fax: "086-123-4568", email: "", attribute: "病院",
+    tel: "03-123-4567", fax: "03-123-4568", email: "", attribute: "病院",
     address: {postalCode: "100-0004", name:"東京都千代田区大手町",
         plus:"１－１"}, memo: "", closedDate: "",
     faxSendNo: "", notSend: false,
@@ -214,7 +214,7 @@ const facility: Facility[] = [
   },
   {
     id: "002", name: "山下クリニック", nameCorp:"", kana: "やましたくりにっく",
-    tel: "086-123-4567", fax: "086-123-4568", email: "", attribute: "診療所",
+    tel: "03-123-4567", fax: "03-123-4568", email: "", attribute: "診療所",
     address: {postalCode: "100-0004", name:"東京都千代田区大手町",
         plus:"１－２"}, memo: "", closedDate: "",
     faxSendNo: "", notSend: false,
@@ -226,7 +226,7 @@ const facility: Facility[] = [
   },
   {
     id: "003", name: "山本診療所", nameCorp:"", kana: "やまもとしんりょうじょ",
-    tel: "086-123-4567", fax: "086-123-4568", email: "", attribute: "診療所",
+    tel: "03-123-4567", fax: "03-123-4568", email: "", attribute: "診療所",
     address: {postalCode: "100-0004", name:"東京都千代田区大手町",
         plus:"１－３"}, memo: "", closedDate: "",
     faxSendNo: "", notSend: false,

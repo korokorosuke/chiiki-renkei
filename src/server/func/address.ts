@@ -11,8 +11,9 @@ export const getAddress = createServerFn({ method: "GET" })
   .validator((data : {postalCode: string}) => data)
   .handler(async ({ data }): Promise<Address|undefined> => {
     if(data && data.postalCode){
+      const pcode = data.postalCode.includes("-") ? data.postalCode.replace("-", "") : data.postalCode;
       const service = new AddressService(new AddressRepository());
-      return await service.get(data.postalCode);
+      return await service.get(pcode);
     }
     return undefined;
 });
@@ -52,6 +53,6 @@ export const del = createServerFn({ method: "POST" })
         return ng(["データが不正です。"]);
       }
     }else{
-      return auth;
+      return ng(auth.errors!);
     }
 });
