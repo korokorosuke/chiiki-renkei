@@ -1,8 +1,9 @@
 import { createServerFn } from "@tanstack/solid-start"
 import { UserService } from "../domain/userService.ts"
-import { UserRepository } from "../infra/allRepository.ts"
+import { UserRepository, BaseRepository } from "../infra/allRepository.ts"
 import type { AuthUser } from "../domain/user.ts"
 import { AuthService } from "../domain/authService.ts"
+import { BaseService } from "../domain/baseService.ts"
 import { getSessionData, setSessionData, type SessionData } from "../lib/session.ts"
 import { type Result, type FetchResult, ok, ng } from "../lib/response.ts"
 import * as base64 from "../../lib/base64.ts"
@@ -42,7 +43,8 @@ export const create = createServerFn({ method: "POST" })
       }
       const secret = await AuthService.getSecret(id);
       const token = await AuthService.sign(secret, user);
-      await setSessionData({token: token, base: base});
+      const baseData = await (new BaseService(new BaseRepository())).get(base);
+      await setSessionData({token: token, base: baseData});
       user.password = "";
       return {ok: true, data: user};
     }else if(user){
@@ -63,6 +65,6 @@ export const create = createServerFn({ method: "POST" })
 
 export const del = createServerFn({ method: "POST" })
   .handler(async (): Promise<Result> => {
-    await setSessionData({token: "", base: ""});
+    await setSessionData({token: "", base: undefined});
     return ok();
 });

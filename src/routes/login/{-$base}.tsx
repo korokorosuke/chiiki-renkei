@@ -6,7 +6,9 @@ import { NormalDialog, showDialog } from "../../components/NormalDialog.tsx"
 import { About } from "../-about.tsx"
 import type { AuthUser } from "../../server/domain/user.ts"
 import type { Notice } from "../../server/domain/notice.ts"
+import type { Base } from "../../server/domain/base.ts"
 import { getLocalStorage, setLocalStorage } from "../../lib/storage.ts"
+import { getBase } from "../../server/func/base.ts"
 import { css } from "../../styled-system/css/"
 import { createFileRoute } from "@tanstack/solid-router"
 
@@ -19,6 +21,7 @@ function App() {
   const [password, setPassword] = createSignal("");
   const [message, setMessage] = createSignal("　");
   const [base, setBase] = createSignal("");
+  const [baseInfo, setBaseInfo] = createSignal<Base|undefined>();
   const [visible, setVisible] = createSignal(true);
   const [notices, setNotices] = createSignal<Notice[]>([]);
   const [disabled, setDisabled] = createSignal(false);
@@ -79,9 +82,8 @@ function App() {
   }
 
   onMount(()=>{
-    getLoginNotices({data: {base: base() }}).then((res)=>{
-      setNotices(res);
-    });
+    getLoginNotices({data: {base: base()}}).then(setNotices);
+    getBase({data: {id: base()}}).then(setBaseInfo);
     if(input){
       input.focus();
     }
@@ -154,7 +156,11 @@ function App() {
             textAlign: "left",
             "& label": { color: "#474747" } }) }>
           <div>
-            <label class={ css({ width: "20rem", fontSize: "2.5rem" }) }>ログイン</label>
+            <div class={ css({ color: "white", bg: baseInfo()?.color ?? "white" }) }>
+              {baseInfo()?.name}</div>
+          </div>
+          <div>
+            <label class={ css({ width: "20rem", fontSize: "2rem" }) }>ログイン</label>
           </div>
           <div class={ css({ marginTop: "1rem" }) }>
             <input type="text" class={ inputStyle }
@@ -192,7 +198,6 @@ function App() {
 }
 
 // Styles
-const elemWidth = "25rem";
 const buttonColor = "#4a89ff";
 const buttonColorHover = "#2f78ff";
 const messageStyle = {
@@ -207,7 +212,7 @@ const inputStyle = css({
   fontSize: "1.5rem!",
   borderRadius: "5px",
   border: "solid 2px #b0b0b0",
-  width: elemWidth,
+  width: "100%",
   _focus: {
       outlineColor: "#82b4ff",
   }
@@ -215,7 +220,7 @@ const inputStyle = css({
 const buttonStyle = css({
   marginTop: "3rem",
   backgroundColor: buttonColor,
-  width: `calc(${elemWidth} + 1.3rem)`,
+  width: "100%",
   borderRadius: "5px",
   border: "1px solid transparent",
   padding: "0.3em 1.2em",

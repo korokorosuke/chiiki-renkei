@@ -1,6 +1,6 @@
 import { defineConfig } from "@pandacss/dev"
 import { inputRecipe, buttonRecipe, tableRecipe, headerRecipe, alertAreaRecipe,
-  webpageRecipe, listRecipe, areaRecipe, etcRecipe, progressRecipe, 
+  webpageRecipe, listRecipe, areaRecipe, etcRecipe, progressRecipe,
   calendarRecipe, timeAreaRecipe } from "./src/styles/recipes.ts"
 import { globalCss } from "./src/styles/global.ts"
 import { baseTokens, semanticTokens } from "./src/styles/tokens.ts"
@@ -8,11 +8,20 @@ import { keyframes, animationStyles } from "./src/styles/animation.ts"
 
 export default defineConfig({
   globalCss,
+  staticCss: {
+    css: [
+      {
+        properties: {
+          bg: ["neutral.800", "neutral.700"]
+        }
+      }
+    ]
+  },
   theme: {
     extend: {
       tokens: {
         fonts: {
-          body: { value: "'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', 'BIZ UDPGothic', sans-serif" }, 
+          body: { value: "'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', 'BIZ UDPGothic', sans-serif" },
           number: { value: "Arial, Helvetica, sans-serif" },
         },
         colors: baseTokens.colors,

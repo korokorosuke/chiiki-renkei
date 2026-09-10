@@ -25,8 +25,12 @@ import { DueRepository } from "../src/server/infra/dueRepository.ts"
 import { DueRepository as RdbDueRepository } from "../src/server/infra/rdb/dueRepository.ts"
 import { MasterRepository } from "../src/server/infra/masterRepository.ts"
 import { MasterRepository as RdbMasterRepository } from "../src/server/infra/rdb/masterRepository.ts"
+import { BaseRepository } from "../src/server/infra/baseRepository.ts"
+import { BaseRepository as RdbBaseRepository } from "../src/server/infra/rdb/baseRepository.ts"
 
 let BASE = "demo";
+let BASE_NAME = "デモ病院";
+let BASE_COLOR = "neutral.800";
 
 console.log("施設IDを入力してください(default:demo):");
 const decoder = new TextDecoder();
@@ -34,7 +38,22 @@ for await (const chunk of Deno.stdin.readable) {
   BASE = decoder.decode(chunk);
   break
 }
+console.log("施設名を入力してください(default:デモ病院):");
+for await (const chunk of Deno.stdin.readable) {
+  BASE_NAME = decoder.decode(chunk);
+  break
+}
+console.log("色を入力してください(default:neutral.800):");
+for await (const chunk of Deno.stdin.readable) {
+  BASE_COLOR = decoder.decode(chunk);
+  break
+}
 
+const base = {
+  id: BASE,
+  name: BASE_NAME,
+  color: BASE_COLOR
+}
 
 const department: Department[] = [
   {
@@ -296,6 +315,7 @@ async function main(){
   let dueRepository;
   let masterRepository;
   let classRepository;
+  let baseRepository;
 
   const dbType = Deno.env.get(DB_TYPE_KEY);
   if(dbType === "postgresql"){
@@ -308,6 +328,7 @@ async function main(){
     dueRepository = new RdbDueRepository(BASE);
     classRepository = new RdbClassificationRepository(BASE);
     masterRepository = new RdbMasterRepository(BASE);
+    baseRepository = new RdbBaseRepository();
   }else{
     departmentRepository = new DepartmentRepository(BASE);
     drRepository = new DrRepository(BASE);
@@ -318,8 +339,12 @@ async function main(){
     dueRepository = new DueRepository(BASE);
     classRepository = new ClassificationRepository(BASE);
     masterRepository = new MasterRepository(BASE);
+    baseRepository = new BaseRepository();
   }
 
+  console.log("base create ...");
+  await baseRepository.insert(base);
+  console.log("base end");
   console.log("classification create ...");
   for await (const d of classes){
     await classRepository.insert(d);

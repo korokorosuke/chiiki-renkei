@@ -82,6 +82,12 @@ export const appointment = snakeCase.table("appointment", {
   index("idx_appointment_date").on(table.base, table.date),
 ]);
 
+export const base = snakeCase.table("base", {
+  id: text().primaryKey().notNull(),
+  name: text().notNull(),
+  color: text().notNull(),
+});
+
 export const classification = snakeCase.table("classification", {
   base: text().notNull(),
   id: text().notNull(),
