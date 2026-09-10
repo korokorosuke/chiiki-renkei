@@ -23,6 +23,7 @@ export const Route = createFileRoute("/reply/{-$patientId}/{-$repId}")({
   loader: async ({ params: { patientId, repId } }) => {
     let ok = true;
     const depts = getDepartments();
+    const classifications = getAllClassifications();
     if(repId && patientId){
       let patient: Patient|undefined;
       const ref = await getReply({data: {id: repId}});
@@ -32,15 +33,15 @@ export const Route = createFileRoute("/reply/{-$patientId}/{-$repId}")({
       }else{
         patient = ref.patient;
       }
-      return { ok, depts, ref, patient, repId, patientId };
+      return { ok, depts, ref, patient, repId, patientId, classifications };
     }else if(patientId){
       const patient = await getPatient({ data: { id: patientId } });
       if(!patient){
         ok = false;
       }
-      return { ok, depts, ref: undefined, patient, repId, patientId };
+      return { ok, depts, ref: undefined, patient, repId, patientId, classifications };
     }
-    return { ok: false, depts, ref: undefined, patient: undefined, repId, patientId };
+    return { ok: false, depts, ref: undefined, patient: undefined, repId, patientId, classifications };
   },
   head: ({ loaderData })=>({
     meta: [
@@ -114,9 +115,9 @@ function App() {
   }
 
   onMount(async () => {
-    getAllClassifications().then(setClasses);
-    const {ok, depts, ref, patient, patientId} = loaderData();
+    const {ok, depts, ref, patient, patientId, classifications} = loaderData();
     depts.then(setDepts);
+    classifications.then(setClasses);
     if(ok && ref && ref.replies.length === 1){
       setSelected(ref.replies[0]);
       setPatient(ref.patient);
