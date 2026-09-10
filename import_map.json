@@ -7,7 +7,7 @@
     "@std/fs": "jsr:@std/fs@1.0.24",
     "@std/streams": "jsr:@std/streams@1.1.2",
     "@std/uuid": "jsr:@std/uuid@1.1.1",
-    "@pandacss/dev": "npm:@pandacss/dev@1.12.0",
+    "@pandacss/dev": "npm:@pandacss/dev@1.12.1",
     "zod": "npm:zod@4.4.3",
     "drizzle-kit": "npm:drizzle-kit@1.0.0-rc.4",
     "drizzle-orm": "npm:drizzle-orm@1.0.0-rc.4",

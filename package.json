@@ -12,11 +12,11 @@
   },
   "dependencies": {
     "@tanstack/router-plugin": "^1.168.35",
-    "@tanstack/solid-query": "^5.101.4",
-    "@tanstack/solid-query-devtools": "^5.101.4",
+    "@tanstack/solid-query": "^5.102.8",
+    "@tanstack/solid-query-devtools": "^5.102.8",
     "@tanstack/solid-router": "^1.170.30",
     "@tanstack/solid-router-devtools": "^1.167.1",
-    "@tanstack/solid-router-ssr-query": "^1.167.1",
+    "@tanstack/solid-router-ssr-query": "^1.167.2",
     "@tanstack/solid-start": "^1.168.47",
     "@std/crypto": "npm:@jsr/std__crypto@1.1.0",
     "@std/encoding": "npm:@jsr/std__encoding@1.0.11",
@@ -32,7 +32,7 @@
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
     "vite-plugin-solid": "^2.11.14",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
