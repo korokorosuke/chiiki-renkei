@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/solid-start"
 import { NoticeService } from "../domain/noticeService.ts"
 import { NoticeRepository } from "../infra/allRepository.ts"
-import type { Notice, NOTICE_PAGE } from "../domain/notice.ts"
+import type { Notice, NoticePage } from "../domain/notice.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
 
@@ -19,7 +19,7 @@ export const getAllNotices = createServerFn({ method: "GET" })
     }
 });
 
-async function getList(base: string, page: NOTICE_PAGE): Promise<Notice[]> {
+async function getList(base: string, page: NoticePage): Promise<Notice[]> {
   const service = new NoticeService(new NoticeRepository(base));
   if(base){
     return await service.getList(page);

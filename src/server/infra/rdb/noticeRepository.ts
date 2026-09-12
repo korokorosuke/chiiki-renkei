@@ -1,4 +1,4 @@
-import type { Notice, NOTICE_PAGE } from "../../domain/notice.ts"
+import type { Notice, NoticePage } from "../../domain/notice.ts"
 import type { INoticeRepository } from "../../domain/noticeService.ts"
 import { Db } from "./db.ts"
 import { notice } from "../../db/schema.ts"
@@ -101,7 +101,7 @@ export class NoticeRepository implements INoticeRepository {
     return res;
   }
 
-  async list(page: NOTICE_PAGE, date: string): Promise<Notice[]> {
+  async list(page: NoticePage, date: string): Promise<Notice[]> {
     const db = await this.database.open();
     const res = await db.query.notice.findMany({
       columns: {

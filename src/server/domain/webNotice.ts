@@ -2,12 +2,12 @@ import { validater } from "../lib/validation.ts"
 import { toDateString } from "../lib/datetime.ts"
 import { z } from "zod"
 
-export const NOTICE_PAGES = ["ログイン", "メニュー"];
-export type NOTICE_PAGE = typeof NOTICE_PAGES[number];
+export const NOTICE_PAGES = ["ログイン", "メニュー"] as const;
+export type NoticePage = typeof NOTICE_PAGES[number];
 
 export const webNoticeSchema = z.object({
     id: z.string(),
-    page: z.enum(["", ...NOTICE_PAGES]),
+    page: z.enum(NOTICE_PAGES, {message: "ページ指定が不正です。"}),
     message: z.string()
         .min(1, {message: "メッセージを入力してください。"})
         .max(1000, {message: "メッセージは１０００文字までです。"}),
@@ -21,10 +21,7 @@ export const webNoticeSchema = z.object({
 })
 .refine((val) => {
     return val.fromDate && val.toDate && new Date(val.fromDate) <= new Date(val.toDate);
-}, "終了日は開始日以降にしてください。")
-.refine((val) => {
-    return val.page && NOTICE_PAGES.includes(val.page);
-}, "お知らせの種類が不正です。");
+}, "終了日は開始日以降にしてください。");
 
 export type WebNotice = z.infer<typeof webNoticeSchema>;
 

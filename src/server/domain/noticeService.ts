@@ -1,9 +1,9 @@
-import { type Notice, type NOTICE_PAGE, validate } from "./notice.ts"
+import { type Notice, type NoticePage, validate } from "./notice.ts"
 import { getTodayString } from "../../lib/datetime.ts"
 import { MainService, type IRepository, setId } from "./mainService.ts"
 
 export interface INoticeRepository extends IRepository<Notice>{
-    list(type: NOTICE_PAGE, date: string): Promise<Notice[]>
+    list(type: NoticePage, date: string): Promise<Notice[]>
     all(): Promise<Notice[]>
 }
 
@@ -12,7 +12,7 @@ export class NoticeService extends MainService<Notice, INoticeRepository>{
         super(i, validate, setId);
     }
 
-    async getList(page: NOTICE_PAGE): Promise<Notice[]>{
+    async getList(page: NoticePage): Promise<Notice[]>{
         return await this.getRepository().list(page, getTodayString());
     }
 

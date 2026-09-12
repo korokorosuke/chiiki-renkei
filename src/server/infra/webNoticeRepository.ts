@@ -1,5 +1,5 @@
 /// <reference lib="deno.unstable" />
-import type { WebNotice, NOTICE_PAGE } from "../domain/webNotice.ts"
+import type { WebNotice, NoticePage } from "../domain/webNotice.ts"
 import type { IWebNoticeRepository } from "../domain/webNoticeService.ts"
 import { Kv } from "./kv.ts"
 import { fatal } from "../lib/log.ts"
@@ -59,7 +59,7 @@ export class WebNoticeRepository implements IWebNoticeRepository {
         list.sort((a, b) => b.fromDate.localeCompare(a.fromDate));
         return list;
     }
-    async list(page: NOTICE_PAGE, date: string): Promise<WebNotice[]> {
+    async list(page: NoticePage, date: string): Promise<WebNotice[]> {
         const kv = await this.database.open();
         const res = kv.list<WebNotice>({prefix: [this.base, this.KEY]});
         const list: WebNotice[] = [];

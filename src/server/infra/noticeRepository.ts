@@ -1,5 +1,5 @@
 /// <reference lib="deno.unstable" />
-import type { Notice, NOTICE_PAGE } from "../domain/notice.ts"
+import type { Notice, NoticePage } from "../domain/notice.ts"
 import type { INoticeRepository } from "../domain/noticeService.ts"
 import { Kv } from "./kv.ts"
 import { fatal } from "../lib/log.ts"
@@ -59,7 +59,7 @@ export class NoticeRepository implements INoticeRepository {
         list.sort((a, b) => b.fromDate.localeCompare(a.fromDate));
         return list;
     }
-    async list(page: NOTICE_PAGE, date: string): Promise<Notice[]> {
+    async list(page: NoticePage, date: string): Promise<Notice[]> {
         const kv = await this.database.open();
         const res = kv.list<Notice>({prefix: [this.base, this.KEY]});
         const list: Notice[] = [];
