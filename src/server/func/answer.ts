@@ -19,8 +19,8 @@ export const getAnswers = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<Answer[]> => {
     const auth = await authenticate(AUTH_READ_ALL);
     if(auth.ok){
-      const service = new AnswerService(new AnswerRepository(auth.user!.base),
-        new AnswerPasswordRepository(auth.user!.base));
+      const service = new AnswerService(new AnswerRepository(auth.user.base),
+        new AnswerPasswordRepository(auth.user.base));
       return await service.getList(data.appId);
     }
     return [];
@@ -31,8 +31,8 @@ export const getAnswersByPatient = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<Answer[]> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
-      const service = new AnswerService(new AnswerRepository(auth.user!.base),
-        new AnswerPasswordRepository(auth.user!.base));
+      const service = new AnswerService(new AnswerRepository(auth.user.base),
+        new AnswerPasswordRepository(auth.user.base));
       return await service.getListByPatient(data.patientId);
     }
     return [];
@@ -52,8 +52,8 @@ export const getPassword = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<string> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
-      const service = new AnswerService(new AnswerRepository(auth.user!.base),
-        new AnswerPasswordRepository(auth.user!.base));
+      const service = new AnswerService(new AnswerRepository(auth.user.base),
+        new AnswerPasswordRepository(auth.user.base));
       return await service.getPasswordService().getPassword(data.appId);
     }
     return "";
@@ -64,8 +64,8 @@ export const resetPassword = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<FetchResult<string>> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
-      const service = new AnswerService(new AnswerRepository(auth.user!.base),
-        new AnswerPasswordRepository(auth.user!.base));
+      const service = new AnswerService(new AnswerRepository(auth.user.base),
+        new AnswerPasswordRepository(auth.user.base));
       return await service.getPasswordService().resetPassword(data.appId);
     }
     return ng(["パスワードのリセットに失敗しました。"]);
@@ -92,8 +92,8 @@ export const getAnswer = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       if(data.id){
-        const service = new AnswerService(new AnswerRepository(auth.user!.base),
-          new AnswerPasswordRepository(auth.user!.base));
+        const service = new AnswerService(new AnswerRepository(auth.user.base),
+          new AnswerPasswordRepository(auth.user.base));
         return await service.get(data.id);
       }
     }
@@ -105,7 +105,7 @@ export const create = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Answer> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new QuestionnaireService(new QuestionnaireRepository(auth.user!.base));
+      const service = new QuestionnaireService(new QuestionnaireRepository(auth.user.base));
       const q = await service.get(data.qid);
       if(q){
         const aitems = q.items.map(()=>"");
@@ -126,8 +126,8 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new AnswerService(new AnswerRepository(auth.user!.base),
-        new AnswerPasswordRepository(auth.user!.base));
+      const service = new AnswerService(new AnswerRepository(auth.user.base),
+        new AnswerPasswordRepository(auth.user.base));
       return await service.insert(data.answer);
     }
     return ng(auth.errors!);
@@ -140,7 +140,7 @@ export const update = createServerFn({ method: "POST" })
     if(!data.base){
       auth = await authenticate(AUTH_WRITE);
       if(auth.ok){
-        data.base = auth.user!.base;
+        data.base = auth.user.base;
       }else{
         return ng(auth.errors!);
       }
@@ -158,8 +158,8 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new AnswerService(new AnswerRepository(auth.user!.base),
-        new AnswerPasswordRepository(auth.user!.base));
+      const service = new AnswerService(new AnswerRepository(auth.user.base),
+        new AnswerPasswordRepository(auth.user.base));
       return await service.delete(data.answer);
     }
     return ng(auth.errors!);

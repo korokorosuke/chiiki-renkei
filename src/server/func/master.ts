@@ -52,7 +52,7 @@ async function getMasterMain(id: string): Promise<string[]> {
   const auth = await authenticate(AUTH_READ);
   if(auth.ok){
     if(id){
-      const service = new MasterService(new MasterRepository(auth.user!.base));
+      const service = new MasterService(new MasterRepository(auth.user.base));
       const res = await service.get(id);
       if(res){
         return res;
@@ -67,7 +67,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new MasterService(new MasterRepository(auth.user!.base));
+      const service = new MasterService(new MasterRepository(auth.user.base));
       if(await service.update(data.master)){
         return ok();
       }else{

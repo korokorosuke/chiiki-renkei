@@ -12,7 +12,7 @@ export const getAllNotices = createServerFn({ method: "GET" })
   .handler(async (): Promise<Notice[]> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
-      const service = new NoticeService(new NoticeRepository(auth.user!.base));
+      const service = new NoticeService(new NoticeRepository(auth.user.base));
       return await service.getAll();
     }else{
       return [];
@@ -38,7 +38,7 @@ export const getMenuNotices = createServerFn({ method: "GET" })
   .handler(async (): Promise<Notice[]> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      return await getList(auth.user!.base, "メニュー");
+      return await getList(auth.user.base, "メニュー");
     }
     return [];
 });
@@ -48,7 +48,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const server = new NoticeService(new NoticeRepository(auth.user!.base));
+      const server = new NoticeService(new NoticeRepository(auth.user.base));
       return await server.insert(data.notice);
     }
     return ng(auth.errors!);
@@ -59,7 +59,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const server = new NoticeService(new NoticeRepository(auth.user!.base));
+      const server = new NoticeService(new NoticeRepository(auth.user.base));
       return await server.update(data.notice);
     }
     return ng(auth.errors!);
@@ -70,7 +70,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const server = new NoticeService(new NoticeRepository(auth.user!.base));
+      const server = new NoticeService(new NoticeRepository(auth.user.base));
       return await server.delete(data.notice);
     }
     return ng(auth.errors!);

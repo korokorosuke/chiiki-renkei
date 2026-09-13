@@ -15,7 +15,7 @@ export const getFacilities = createServerFn({ method: "GET" })
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       if(data.name){
-        const service = new FacilityService(new FacilityRepository(auth.user!.base));
+        const service = new FacilityService(new FacilityRepository(auth.user.base));
         return await service.getList({name: data.name});
       }
     }
@@ -36,7 +36,7 @@ export const getFacility = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<Facility | undefined> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
-      return await getFacilityMain(data.id, auth.user!.base);
+      return await getFacilityMain(data.id, auth.user.base);
     }
     return undefined;
 });
@@ -46,7 +46,7 @@ export const getFac = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<Fac | undefined> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
-      const facility = await getFacilityMain(data.id, auth.user!.base);
+      const facility = await getFacilityMain(data.id, auth.user.base);
       if(facility){
         return toFac(facility);
       }
@@ -59,7 +59,7 @@ export const getUserFac = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<Fac | undefined> => {
     const auth = await verify();
     if(auth.ok){
-      const facility = await getFacilityMain(data.id, auth.user!.base);
+      const facility = await getFacilityMain(data.id, auth.user.base);
       if(facility){
         return toFac(facility);
       }
@@ -72,7 +72,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new FacilityService(new FacilityRepository(auth.user!.base));
+      const service = new FacilityService(new FacilityRepository(auth.user.base));
       return await service.insert(data.facility);
     }
     return ng(auth.errors!);
@@ -83,7 +83,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new FacilityService(new FacilityRepository(auth.user!.base));
+      const service = new FacilityService(new FacilityRepository(auth.user.base));
       return await service.update(data.facility);
     }
     return ng(auth.errors!);
@@ -94,7 +94,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new FacilityService(new FacilityRepository(auth.user!.base));
+      const service = new FacilityService(new FacilityRepository(auth.user.base));
       return await service.delete(data.facility);
     }
     return ng(auth.errors!);

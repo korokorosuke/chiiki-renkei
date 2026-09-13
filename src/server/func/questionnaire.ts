@@ -17,7 +17,7 @@ export const getQuestionnaires = createServerFn({ method: "GET" })
   .handler(async (): Promise<Questionnaire[]> => {
     const auth = await authenticate(AUTH_READ_ALL);
     if(auth.ok){
-      const service = new QuestionnaireService(new QuestionnaireRepository(auth.user!.base));
+      const service = new QuestionnaireService(new QuestionnaireRepository(auth.user.base));
       return await service.getList();
     }
     return [];
@@ -29,7 +29,7 @@ export const getQuestionnaire = createServerFn({ method: "GET" })
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       if(data.id){
-        const service = new QuestionnaireService(new QuestionnaireRepository(auth.user!.base));
+        const service = new QuestionnaireService(new QuestionnaireRepository(auth.user.base));
         return await service.get(data.id);
       }
     }
@@ -41,7 +41,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new QuestionnaireService(new QuestionnaireRepository(auth.user!.base));
+      const service = new QuestionnaireService(new QuestionnaireRepository(auth.user.base));
       return await service.insert(data.q);
     }
     return ng(auth.errors!);
@@ -52,7 +52,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new QuestionnaireService(new QuestionnaireRepository(auth.user!.base));
+      const service = new QuestionnaireService(new QuestionnaireRepository(auth.user.base));
       return await service.update(data.q);
     }
     return ng(auth.errors!);
@@ -63,7 +63,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new QuestionnaireService(new QuestionnaireRepository(auth.user!.base));
+      const service = new QuestionnaireService(new QuestionnaireRepository(auth.user.base));
       return await service.delete(data.q);
     }
     return ng(auth.errors!);

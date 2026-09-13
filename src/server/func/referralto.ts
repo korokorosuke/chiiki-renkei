@@ -20,7 +20,7 @@ export const getReferralTo = createServerFn({ method: "GET" })
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       if(data.id){
-        const service = new ReferralToService(new ReferralToRepository(auth.user!.base));
+        const service = new ReferralToService(new ReferralToRepository(auth.user.base));
         return await service.get(data.id);
       }
     }
@@ -33,7 +33,7 @@ export const getReferralTos = createServerFn({ method: "GET" })
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       if(data.patientId){
-        const service = new ReferralToService(new ReferralToRepository(auth.user!.base));
+        const service = new ReferralToService(new ReferralToRepository(auth.user.base));
         return await service.getListByPatient(data.patientId);
       }
     }
@@ -45,7 +45,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new ReferralToService(new ReferralToRepository(auth.user!.base));
+      const service = new ReferralToService(new ReferralToRepository(auth.user.base));
       return await service.insert(data.referral);
     }
     return ng(auth.errors!);
@@ -56,7 +56,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new ReferralToService(new ReferralToRepository(auth.user!.base));
+      const service = new ReferralToService(new ReferralToRepository(auth.user.base));
       return await service.update(data.referral);
     }
     return ng(auth.errors!);
@@ -67,7 +67,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new ReferralToService(new ReferralToRepository(auth.user!.base));
+      const service = new ReferralToService(new ReferralToRepository(auth.user.base));
       return await service.delete(data.referral);
     }
     return ng(auth.errors!);

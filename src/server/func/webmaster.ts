@@ -13,7 +13,7 @@ export const getWebMaster = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<FetchResult<WebMaster>> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
-      const service = new WebMasterService(new WebMasterRepository(auth.user!.base));
+      const service = new WebMasterService(new WebMasterRepository(auth.user.base));
       const master = await service.get(data.dept, data.dr, data.week);
       if(master){
         return {ok: true, data: master};
@@ -29,7 +29,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new WebMasterService(new WebMasterRepository(auth.user!.base));
+      const service = new WebMasterService(new WebMasterRepository(auth.user.base));
       await service.delete(data.master);
       return await service.insert(data.master);
     }
@@ -43,7 +43,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new WebMasterService(new WebMasterRepository(auth.user!.base));
+      const service = new WebMasterService(new WebMasterRepository(auth.user.base));
       return await service.delete(data.master);
     }
     return ng(auth.errors!);

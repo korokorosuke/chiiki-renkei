@@ -16,7 +16,7 @@ export const getWebReservations = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<WebReservation[]> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
-      const service = new WebReservationService(new WebReservationRepository(auth.user!.base));
+      const service = new WebReservationService(new WebReservationRepository(auth.user.base));
       if(data.dept && data.dr && data.date){
           return await service.getList(data.dept, data.dr, data.date);
       }else if(data.dept && data.date){
@@ -31,7 +31,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new WebReservationService(new WebReservationRepository(auth.user!.base));
+      const service = new WebReservationService(new WebReservationRepository(auth.user.base));
       return await service.insert(data.reservation);
     }
     return ng(auth.errors!);
@@ -42,7 +42,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new WebReservationService(new WebReservationRepository(auth.user!.base));
+      const service = new WebReservationService(new WebReservationRepository(auth.user.base));
       return await service.update(data.reservation);
     }
     return ng(auth.errors!);
@@ -53,7 +53,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new WebReservationService(new WebReservationRepository(auth.user!.base));
+      const service = new WebReservationService(new WebReservationRepository(auth.user.base));
       return await service.delete(data.reservation);
     }
     return ng(auth.errors!);

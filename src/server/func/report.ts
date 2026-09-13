@@ -23,7 +23,7 @@ export const getAppointments = createServerFn({ method: "GET" })
       return [];
     }
     const service = new ReportService();
-    const refService = new AppointmentService(new AppointmentRepository(auth.user!.base));
+    const refService = new AppointmentService(new AppointmentRepository(auth.user.base));
     const d = await service.getAppointmentList(data.condition, refService);
     const list: AppointmentPrint[] = [];
     for(const item of d){

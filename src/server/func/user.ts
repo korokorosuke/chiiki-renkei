@@ -20,7 +20,7 @@ export const getAuthUser = createServerFn({ method: "GET" })
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       if(data.id){
-        const service = new UserService(new UserRepository(auth.user!.base));
+        const service = new UserService(new UserRepository(auth.user.base));
         return await service.get(data.id);
       }
     }
@@ -43,7 +43,7 @@ export const getUsers = createServerFn({ method: "GET" })
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       if(data.name){
-        const service = new UserService(new UserRepository(auth.user!.base));
+        const service = new UserService(new UserRepository(auth.user.base));
         return await service.getList(data.name);
       }
     }
@@ -55,7 +55,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new UserService(new UserRepository(auth.user!.base));
+      const service = new UserService(new UserRepository(auth.user.base));
       return await service.insert(data.user);
     }
     return ng(auth.errors!);
@@ -66,7 +66,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new UserService(new UserRepository(auth.user!.base));
+      const service = new UserService(new UserRepository(auth.user.base));
       return await service.update(data.user);
     }
     return ng(auth.errors!);
@@ -77,7 +77,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new UserService(new UserRepository(auth.user!.base));
+      const service = new UserService(new UserRepository(auth.user.base));
       return await service.delete(data.user);
     }
     return ng(auth.errors!);

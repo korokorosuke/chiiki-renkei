@@ -25,7 +25,7 @@ export const getAppointment = createServerFn({ method: "GET" })
     if(auth.ok){
       if(data.id){
         const service = new AppointmentService(
-          new AppointmentRepository(auth.user!.base));
+          new AppointmentRepository(auth.user.base));
         return await service.get(data.id);
       }
     }
@@ -39,7 +39,7 @@ export const getAppointments = createServerFn({ method: "GET" })
     if(auth.ok){
       if(data.patientId){
         const service = new AppointmentService(
-          new AppointmentRepository(auth.user!.base));
+          new AppointmentRepository(auth.user.base));
         return await service.getListByPatient(data.patientId);
       }
     }
@@ -52,7 +52,7 @@ export const getAppointmentsForDate = createServerFn({ method: "GET" })
     const auth = await authenticate(AUTH_DATE_READ);
     if(auth.ok){
       const service = new AppointmentService(
-        new AppointmentRepository(auth.user!.base));
+        new AppointmentRepository(auth.user.base));
       return await service.getListByDate(data.fromDate, data.toDate);
     }
     return [];
@@ -65,13 +65,13 @@ export const insert = createServerFn({ method: "POST" })
     if(auth.ok){
       const usecase = new AppointmentRegistration(
         new AppointmentService(
-          new AppointmentRepository(auth.user!.base)),
+          new AppointmentRepository(auth.user.base)),
         new AnswerRegistration(
           new AnswerService(
-            new AnswerRepository(auth.user!.base),
-            new AnswerPasswordRepository(auth.user!.base)),
+            new AnswerRepository(auth.user.base),
+            new AnswerPasswordRepository(auth.user.base)),
           new QuestionnaireService(
-            new QuestionnaireRepository(auth.user!.base))));
+            new QuestionnaireRepository(auth.user.base))));
       return await usecase.insert(data.appointment);
     }
     return ng(auth.errors!);
@@ -84,13 +84,13 @@ export const update = createServerFn({ method: "POST" })
     if(auth.ok){
       const usecase = new AppointmentRegistration(
         new AppointmentService(
-          new AppointmentRepository(auth.user!.base)),
+          new AppointmentRepository(auth.user.base)),
         new AnswerRegistration(
           new AnswerService(
-            new AnswerRepository(auth.user!.base),
-            new AnswerPasswordRepository(auth.user!.base)),
+            new AnswerRepository(auth.user.base),
+            new AnswerPasswordRepository(auth.user.base)),
           new QuestionnaireService(
-            new QuestionnaireRepository(auth.user!.base))));
+            new QuestionnaireRepository(auth.user.base))));
       return await usecase.update(data.appointment);
     }
     return ng(auth.errors!);
@@ -103,13 +103,13 @@ export const del = createServerFn({ method: "POST" })
     if(auth.ok){
       const usecase = new AppointmentRegistration(
         new AppointmentService(
-          new AppointmentRepository(auth.user!.base)),
+          new AppointmentRepository(auth.user.base)),
         new AnswerRegistration(
           new AnswerService(
-            new AnswerRepository(auth.user!.base),
-            new AnswerPasswordRepository(auth.user!.base)),
+            new AnswerRepository(auth.user.base),
+            new AnswerPasswordRepository(auth.user.base)),
           new QuestionnaireService(
-            new QuestionnaireRepository(auth.user!.base))));
+            new QuestionnaireRepository(auth.user.base))));
       return await usecase.delete(data.appointment);
     }
     return ng(auth.errors!);

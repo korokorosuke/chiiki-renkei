@@ -2,11 +2,16 @@ import { type SessionData, getSessionData } from "./session.ts"
 import { AuthService } from "../domain/authService.ts"
 import type { AuthUser } from "../domain/user.ts"
 
-export interface AuthResult{
-    ok: boolean
-    user?: AuthUser
-    errors?: string[]
+interface Ok {
+  ok: true
+  user: AuthUser
 }
+interface Ng {
+  ok: false
+  errors: string[]
+}
+
+export type AuthResult = Ok | Ng;
 
 export interface AuthOption{
     auth: Auth
@@ -30,7 +35,7 @@ export function auth(auth: AuthOption|AuthOption[]) {
 export async function authenticate(authoptions: AuthOption | AuthOption[]): Promise<AuthResult> {
     const options = Array.isArray(authoptions) ? authoptions : [authoptions];
     const res = await verify(options);
-    if(res.ok && res.user){
+    if(res.ok){
         return {ok: true, user: res.user};
     }else{
         return {ok: false, errors: res.errors};

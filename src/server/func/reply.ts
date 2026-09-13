@@ -16,7 +16,7 @@ export const getReply = createServerFn({ method: "GET" })
     if(auth.ok){
       if(data.id){
         const service = new ReplyListService(
-          new ReplyRepository(auth.user!.base));
+          new ReplyRepository(auth.user.base));
         return await service.get(data.id);
       }
     }
@@ -30,7 +30,7 @@ export const getReplies = createServerFn({ method: "GET" })
     if(auth.ok){
       if(data.patientId){
         const service = new ReplyListService(
-          new ReplyRepository(auth.user!.base));
+          new ReplyRepository(auth.user.base));
         return await service.getListByPatient(data.patientId);
       }
     }
@@ -42,7 +42,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new ReplyService(new ReplyRepository(auth.user!.base));
+      const service = new ReplyService(new ReplyRepository(auth.user.base));
       return await service.insert(data.reply);
     }
     return ng(auth.errors!);
@@ -53,7 +53,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new ReplyService(new ReplyRepository(auth.user!.base));
+      const service = new ReplyService(new ReplyRepository(auth.user.base));
       return await service.update(data.reply);
     }
     return ng(auth.errors!);
@@ -64,7 +64,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new ReplyService(new ReplyRepository(auth.user!.base));
+      const service = new ReplyService(new ReplyRepository(auth.user.base));
       return await service.delete(data.reply);
     }
     return ng(auth.errors!);

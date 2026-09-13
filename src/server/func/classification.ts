@@ -15,7 +15,7 @@ export const getAllClassifications = createServerFn({ method: "GET" })
   .handler(async (): Promise<Classification[]> => {
     const auth = await authenticate(AUTH_READ_ALL);
     if(auth.ok){
-      const service = new ClassificationService(new ClassificationRepository(auth.user!.base));
+      const service = new ClassificationService(new ClassificationRepository(auth.user.base));
       return await service.getAll();
     }
     return [];
@@ -26,7 +26,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new ClassificationService(new ClassificationRepository(auth.user!.base));
+      const service = new ClassificationService(new ClassificationRepository(auth.user.base));
       return await service.insert(data.Classification);
     }
     return ng(auth.errors!);
@@ -37,7 +37,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new ClassificationService(new ClassificationRepository(auth.user!.base));
+      const service = new ClassificationService(new ClassificationRepository(auth.user.base));
       return await service.update(data.Classification);
     }
     return ng(auth.errors!);
@@ -48,7 +48,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new ClassificationService(new ClassificationRepository(auth.user!.base));
+      const service = new ClassificationService(new ClassificationRepository(auth.user.base));
       return await service.delete(data.Classification);
     }
     return ng(auth.errors!);

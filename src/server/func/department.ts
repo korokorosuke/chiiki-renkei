@@ -17,7 +17,7 @@ export const getDepartments = createServerFn({ method: "GET" })
   .handler(async (): Promise<Department[]> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
-      const service = new DepartmentService(new DepartmentRepository(auth.user!.base));
+      const service = new DepartmentService(new DepartmentRepository(auth.user.base));
       return await service.getExam();
     }
     return [];
@@ -27,7 +27,7 @@ export const getAllDepartments = createServerFn({ method: "GET" })
   .handler(async (): Promise<Department[]> => {
     const auth = await authenticate(AUTH_READ_ALL);
     if(auth.ok){
-      const service = new DepartmentService(new DepartmentRepository(auth.user!.base));
+      const service = new DepartmentService(new DepartmentRepository(auth.user.base));
       return await service.getAll();
     }
     return [];
@@ -38,7 +38,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new DepartmentService(new DepartmentRepository(auth.user!.base));
+      const service = new DepartmentService(new DepartmentRepository(auth.user.base));
       return await service.insert(data.department);
     }
     return ng(auth.errors!);
@@ -49,7 +49,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new DepartmentService(new DepartmentRepository(auth.user!.base));
+      const service = new DepartmentService(new DepartmentRepository(auth.user.base));
       return await service.update(data.department);
     }
     return ng(auth.errors!);
@@ -60,7 +60,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new DepartmentService(new DepartmentRepository(auth.user!.base));
+      const service = new DepartmentService(new DepartmentRepository(auth.user.base));
       return await service.delete(data.department);
     }
     return ng(auth.errors!);

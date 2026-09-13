@@ -45,7 +45,7 @@ export const getReferrals = createServerFn({ method: "GET" })
       return [];
     }
     const service = new StatisticsService();
-    const refService = new AppointmentService(new AppointmentRepository(auth.user!.base));
+    const refService = new AppointmentService(new AppointmentRepository(auth.user.base));
     const d = await service.getReferralList(cond, refService);
     return d.result;
 });
@@ -62,7 +62,7 @@ export const getReferralTos = createServerFn({ method: "GET" })
       return [];
     }
     const service = new StatisticsService();
-    const refToService = new ReferralToService(new ReferralToRepository(auth.user!.base));
+    const refToService = new ReferralToService(new ReferralToRepository(auth.user.base));
     const d = await service.getReferralToList(cond, refToService);
     return d.result;
 });
@@ -79,7 +79,7 @@ export const getReplies = createServerFn({ method: "GET" })
       return [];
     }
     const service = new StatisticsService();
-    const replyService = new ReplyListService(new ReplyRepository(auth.user!.base));
+    const replyService = new ReplyListService(new ReplyRepository(auth.user.base));
     const d = await service.getReplyList(cond, replyService);
     return d.result;
 });

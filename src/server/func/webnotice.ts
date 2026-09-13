@@ -13,7 +13,7 @@ export const getAllNotices = createServerFn({ method: "GET" })
   .handler(async (): Promise<WebNotice[]> => {
     const auth = await authenticate(AUTH_READ_ALL);
     if(auth.ok){
-      const service = new WebNoticeService(new WebNoticeRepository(auth.user!.base));
+      const service = new WebNoticeService(new WebNoticeRepository(auth.user.base));
       return await service.getAll();
     }else{
       return [];
@@ -33,7 +33,7 @@ export const getNotices = createServerFn({ method: "GET" })
   .handler(async (): Promise<WebNotice[]> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
-      return await getList(auth.user!.base, "メニュー");
+      return await getList(auth.user.base, "メニュー");
     }else{
       return [];
     }
@@ -44,7 +44,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new WebNoticeService(new WebNoticeRepository(auth.user!.base));
+      const service = new WebNoticeService(new WebNoticeRepository(auth.user.base));
       return await service.insert(data.notice);
     }
     return ng(auth.errors!);
@@ -55,7 +55,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new WebNoticeService(new WebNoticeRepository(auth.user!.base));
+      const service = new WebNoticeService(new WebNoticeRepository(auth.user.base));
       return await service.update(data.notice);
     }
     return ng(auth.errors!);
@@ -66,7 +66,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new WebNoticeService(new WebNoticeRepository(auth.user!.base));
+      const service = new WebNoticeService(new WebNoticeRepository(auth.user.base));
       return await service.delete(data.notice);
     }
     return ng(auth.errors!);

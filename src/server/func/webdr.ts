@@ -18,7 +18,7 @@ export const getWebDrs = createServerFn({ method: "GET" })
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       if(data.dept){
-        const service = new WebDrService(new WebDrRepository(auth.user!.base));
+        const service = new WebDrService(new WebDrRepository(auth.user.base));
         return await service.getList(data.dept);
       }
     }
@@ -29,7 +29,7 @@ export const getAllWebDrs = createServerFn({ method: "GET" })
   .handler(async (): Promise<WebDr[]> => {
     const auth = await authenticate(AUTH_READ_ALL);
     if(auth.ok){
-      const service = new WebDrService(new WebDrRepository(auth.user!.base));
+      const service = new WebDrService(new WebDrRepository(auth.user.base));
       return await service.getAll();
     }
     return [];
@@ -40,7 +40,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new WebDrService(new WebDrRepository(auth.user!.base));
+      const service = new WebDrService(new WebDrRepository(auth.user.base));
       return await service.insert(data.dr);
     }
     return ng(auth.errors!);
@@ -51,7 +51,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new WebDrService(new WebDrRepository(auth.user!.base));
+      const service = new WebDrService(new WebDrRepository(auth.user.base));
       return await service.update(data.dr);
     }
     return ng(auth.errors!);
@@ -62,7 +62,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new WebDrService(new WebDrRepository(auth.user!.base));
+      const service = new WebDrService(new WebDrRepository(auth.user.base));
       return await service.delete(data.dr);
     }
     return ng(auth.errors!);

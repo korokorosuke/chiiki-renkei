@@ -18,7 +18,7 @@ export const getDrs = createServerFn({ method: "GET" })
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       if(data.facId){
-        const service = new StaffService(new StaffRepository(auth.user!.base));
+        const service = new StaffService(new StaffRepository(auth.user.base));
         return await service.getDr(data.facId);
       }
     }
@@ -31,7 +31,7 @@ export const getStaffs = createServerFn({ method: "GET" })
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       if(data.facId){
-        const service = new StaffService(new StaffRepository(auth.user!.base));
+        const service = new StaffService(new StaffRepository(auth.user.base));
         return await service.getAll(data.facId);
       }
     }
@@ -43,7 +43,7 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new StaffService(new StaffRepository(auth.user!.base));
+      const service = new StaffService(new StaffRepository(auth.user.base));
       return await service.insert(data.staff);
     }
     return ng(auth.errors!);
@@ -54,7 +54,7 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new StaffService(new StaffRepository(auth.user!.base));
+      const service = new StaffService(new StaffRepository(auth.user.base));
       return await service.update(data.staff);
     }
     return ng(auth.errors!);
@@ -65,7 +65,7 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new StaffService(new StaffRepository(auth.user!.base));
+      const service = new StaffService(new StaffRepository(auth.user.base));
       return await service.delete(data.staff);
     }
     return ng(auth.errors!);

@@ -21,7 +21,7 @@ export const getPatientForId = createServerFn({ method: "GET" })
       return ng(["パラメータが不正です。"]);
     }
 
-    const service = new PatientService(new PatientRepository(auth.user!.base));
+    const service = new PatientService(new PatientRepository(auth.user.base));
     const p = await service.get(data.id);
     if(p){
       return {ok: true, data: p};
@@ -42,8 +42,8 @@ export const getPatient = createServerFn({ method: "GET" })
       return ng(["患者IDを入力してください。"]);
     }
 
-    const service = new WebAppService(new WebAppRepository(auth.user!.base));
-    const app = await service.getByFacPatientId(auth.user!.facilityId!, data.facPatId)
+    const service = new WebAppService(new WebAppRepository(auth.user.base));
+    const app = await service.getByFacPatientId(auth.user.facilityId!, data.facPatId)
     if(app){
       return {ok: true, data: app.patient};
     }
