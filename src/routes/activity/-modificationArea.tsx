@@ -53,9 +53,9 @@ export function ModificationArea(props: ViewProps){
 
     let res;
     if(props.newadd()){
-      res = await insert({data: act});
+      res = await insert({data: {activity: act}});
     }else{
-      res = await update({data: act});
+      res = await update({data: {activity: act}});
     }
     if(res.ok){
       props.terminateModification("register");
@@ -70,7 +70,7 @@ export function ModificationArea(props: ViewProps){
       return;
     }
 
-    const res = await del({data: props.selected()});
+    const res = await del({data: {activity: props.selected()}});
     if(res.ok){
       props.terminateModification("delete");
     }else{

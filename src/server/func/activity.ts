@@ -24,34 +24,34 @@ export const getActivities = createServerFn({ method: "GET" })
 });
 
 export const insert = createServerFn({ method: "POST" })
-  .validator((data: Activity) => data)
+  .validator((data: { activity: Activity }) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
         const service = new ActivityService(new ActivityRepository(auth.user.base));
-        return await service.insert(data);
+        return await service.insert(data.activity);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
-  .validator((data: Activity) => data)
+  .validator((data: { activity: Activity }) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ActivityService(new ActivityRepository(auth.user.base));
-      return await service.update(data);
+      return await service.update(data.activity);
     }
     return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
-  .validator((activity: Activity) => activity)
+  .validator((data: { activity: Activity }) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ActivityService(new ActivityRepository(auth.user.base));
-      return await service.delete(data);
+      return await service.delete(data.activity);
     }
     return ng(auth.errors!);
 });
