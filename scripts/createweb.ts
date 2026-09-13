@@ -182,7 +182,7 @@ let BASE = "demo";
 console.log("施設IDを入力してください(default:demo):");
 const decoder = new TextDecoder();
 for await (const chunk of Deno.stdin.readable) {
-  BASE = decoder.decode(chunk);
+  BASE = decoder.decode(chunk).trim();
   break
 }
 

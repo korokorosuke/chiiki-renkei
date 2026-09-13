@@ -32,21 +32,26 @@ let BASE = "demo";
 let BASE_NAME = "デモ病院";
 let BASE_COLOR = "neutral.800";
 
-console.log("施設IDを入力してください(default:demo):");
 const decoder = new TextDecoder();
+console.log("施設IDを入力してください(default:demo):");
+let cnt = 1;
 for await (const chunk of Deno.stdin.readable) {
-  BASE = decoder.decode(chunk);
-  break
-}
-console.log("施設名を入力してください(default:デモ病院):");
-for await (const chunk of Deno.stdin.readable) {
-  BASE_NAME = decoder.decode(chunk);
-  break
-}
-console.log("色を入力してください(default:neutral.800):");
-for await (const chunk of Deno.stdin.readable) {
-  BASE_COLOR = decoder.decode(chunk);
-  break
+  if(cnt === 1){
+    BASE = decoder.decode(chunk).trim();
+    console.log("施設名を入力してください(default:デモ病院):");
+    cnt++;
+    continue;
+  }
+  if(cnt === 2){
+    BASE_NAME = decoder.decode(chunk).trim();
+    console.log("色を入力してください(default:neutral.800):");
+    cnt++;
+    continue;
+  }
+  if(cnt === 3){
+    BASE_COLOR = decoder.decode(chunk).trim();
+    break
+  }
 }
 
 const base = {
