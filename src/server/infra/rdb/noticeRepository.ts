@@ -7,6 +7,15 @@ import { fatal } from "../../lib/log.ts"
 
 type NoticeData = typeof notice.$inferInsert;
 
+export type NoticeDBResult = {
+  id: string,
+  page: string,
+  message: string,
+  fromDate: string,
+  toDate: string,
+  importance: boolean,
+}
+
 export class NoticeRepository implements INoticeRepository {
   database: Db
   base: string
@@ -19,6 +28,13 @@ export class NoticeRepository implements INoticeRepository {
     return {
       ...val,
       base: this.base,
+    };
+  }
+
+  fromData(val: NoticeDBResult): Notice {
+    return {
+      ...val,
+      page: val.page as NoticePage,
     };
   }
 
@@ -82,7 +98,10 @@ export class NoticeRepository implements INoticeRepository {
         id: id,
       },
     });
-    return res;
+    if(res){
+      return this.fromData(res);
+    }
+    return undefined;
   }
 
   async all(): Promise<Notice[]> {
@@ -98,7 +117,10 @@ export class NoticeRepository implements INoticeRepository {
         fromDate: "desc",
       }
     });
-    return res;
+    if(res.length > 0){
+      return res.map((n) => this.fromData(n));
+    }
+    return [];
   }
 
   async list(page: NoticePage, date: string): Promise<Notice[]> {
@@ -117,6 +139,9 @@ export class NoticeRepository implements INoticeRepository {
         fromDate: "desc",
       }
     });
-    return res;
+    if(res.length > 0){
+      return res.map((n) => this.fromData(n));
+    }
+    return [];
   }
 }

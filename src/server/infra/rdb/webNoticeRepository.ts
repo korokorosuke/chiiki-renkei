@@ -7,6 +7,15 @@ import { fatal } from "../../lib/log.ts"
 
 type WebNoticeData = typeof webNotice.$inferInsert;
 
+export type WebNoticeDBResult = {
+  id: string,
+  page: string,
+  message: string,
+  fromDate: string,
+  toDate: string,
+  importance: boolean,
+}
+
 export class WebNoticeRepository implements IWebNoticeRepository {
   database: Db
   base: string
@@ -21,6 +30,13 @@ export class WebNoticeRepository implements IWebNoticeRepository {
       base: this.base,
     };
   }
+
+    fromData(val: WebNoticeDBResult): WebNotice {
+      return {
+        ...val,
+        page: val.page as NoticePage,
+      };
+    }
 
   async insert(val: WebNotice): Promise<boolean> {
     try{
@@ -82,7 +98,10 @@ export class WebNoticeRepository implements IWebNoticeRepository {
         id: id,
       },
     });
-    return res;
+    if(res){
+      return this.fromData(res);
+    }
+    return undefined;
   }
 
   async all(): Promise<WebNotice[]> {
@@ -98,7 +117,10 @@ export class WebNoticeRepository implements IWebNoticeRepository {
         fromDate: "desc",
       }
     });
-    return res;
+    if(res.length > 0){
+      return res.map((n) => this.fromData(n));
+    }
+    return [];
   }
 
   async list(page: NoticePage, date: string): Promise<WebNotice[]> {
@@ -117,6 +139,9 @@ export class WebNoticeRepository implements IWebNoticeRepository {
         fromDate: "desc",
       }
     });
-    return res;
+    if(res.length > 0){
+      return res.map((n) => this.fromData(n));
+    }
+    return [];
   }
 }
