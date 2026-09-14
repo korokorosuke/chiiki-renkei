@@ -25,19 +25,15 @@ export const Route = createRootRouteWithContext()({
     }
     const res = await get();
     if(res.ok){
-      const base = await getSessionBase() ?? initBase();
-      return { ok: true, user: res.data, base };
-    } else {
-      return { ok: false, user: initialize(), base: initBase() };
+      const base = await getSessionBase();
+      if(base){
+        return { ok: true, user: res.data, base };
+      }
     }
-  },
-  loader: ({ context }) => {
-    if(!context.ok){
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login',
-      });
-    }
+    throw redirect({
+      // @ts-ignore: なんかエラーになるため
+      to: '/login',
+    });
   },
   head: () => ({
     meta: [
