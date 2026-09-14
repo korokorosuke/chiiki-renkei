@@ -1,50 +1,24 @@
-import { type ValidationResult, validateNotBlank, validateLength } from "../lib/validation.ts"
+import { validater } from "../lib/validation.ts"
+import { z } from "zod"
 
-export interface Statistics<T>{
-    result: T
-}
+export const conditionSchema = z.object({
+  fromDate: z.iso.date("日付開始を不正です。").min(1, "日付開始を入力してください。"),
+  toDate: z.iso.date("日付終了が不正です。").optional(),
+  facility: z.string("施設IDが不正です。").max(20, "施設IDは20文字までです。").optional(),
+  dept: z.string("診療科が不正です。").max(10).optional(),
+  dr: z.string("医師が不正です。").max(10).optional(),
+});
 
-export interface Condition{
-    id?: string
-    fromDate?: string
-    toDate?: string
-    facility?: string
-    dept?: string
-    dr?: string
-}
+export type Condition = z.infer<typeof conditionSchema>;
 
-function validateDate(date: string): boolean {
-    if(!date){
-        return false;
-    }
-    return !isNaN(new Date(date).getDate());
-}
+export const validate = validater<Condition>(conditionSchema);
 
-export function validate(cond: Condition): ValidationResult {
-    const error: string[] = [];
-    let ok = true;
-    if(!cond.fromDate || !validateNotBlank(cond.fromDate)){
-        error.push("日付開始を入力してください。");
-        ok = false;
-    }if(cond.fromDate && !validateDate(cond.fromDate)){
-        error.push("日付開始が不正です。");
-        ok = false;
-    }
-    if(cond.toDate && !validateDate(cond.toDate)){
-        error.push("日付終了が不正です。");
-        ok = false;
-    }
-    if(cond.facility && validateNotBlank(cond.facility) && !validateLength(cond.facility, 20)){
-        error.push("施設IDが不正です。");
-        ok = false;
-    }
-    if(cond.dept && validateNotBlank(cond.dept) && !validateLength(cond.dept, 10)){
-        error.push("診療科が不正です。");
-        ok = false;
-    }
-    if(cond.dr && validateNotBlank(cond.dr) && !validateLength(cond.dr, 10)){
-        error.push("医師が不正です。");
-        ok = false;
-    }
-    return {ok: ok, errors: error};
+export function initialize(): Condition {
+  return {
+    fromDate: "",
+    toDate: "",
+    facility: "",
+    dept: "",
+    dr: "",
+  }
 }

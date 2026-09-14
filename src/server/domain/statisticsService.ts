@@ -1,4 +1,4 @@
-import type { Statistics, Condition } from "./statistics.ts"
+import type { Condition } from "./statistics.ts"
 import type { Referral } from "./referral.ts"
 import type { Appointment } from "./appointment.ts"
 import type { ReferralTo } from "./referralto.ts"
@@ -9,7 +9,7 @@ export interface IService<T>{
 }
 
 export class StatisticsService{
-    async getReferralList(cond: Condition, i: IService<Appointment>): Promise<Statistics<Referral[]>>{
+    async getReferralList(cond: Condition, i: IService<Appointment>): Promise<Referral[]>{
         let ffac: (r:Appointment)=>boolean;
         let fdept: (r:Appointment)=>boolean;
         let fdr: (r:Appointment)=>boolean;
@@ -31,10 +31,10 @@ export class StatisticsService{
         }else{
             fdr = _=>true;
         }
-        return {result: res.filter(r=>ffac(r)&&fdept(r)&&fdr(r)).map(r=>toReferral(r))};
+        return res.filter(r=>ffac(r)&&fdept(r)&&fdr(r)).map(r=>toReferral(r));
     }
 
-    async getReferralToList(cond: Condition, i: IService<ReferralTo>): Promise<Statistics<ReferralTo[]>>{
+    async getReferralToList(cond: Condition, i: IService<ReferralTo>): Promise<ReferralTo[]>{
         let ffac: (r:ReferralTo)=>boolean;
         let fdept: (r:ReferralTo)=>boolean;
         let fdr: (r:ReferralTo)=>boolean;
@@ -56,10 +56,10 @@ export class StatisticsService{
         }else{
             fdr = _=>true;
         }
-        return {result: res.filter(r=>ffac(r)&&fdept(r)&&fdr(r))};
+        return res.filter(r=>ffac(r)&&fdept(r)&&fdr(r));
     }
 
-    async getReplyList(cond: Condition, i: IService<Referral>): Promise<Statistics<Referral[]>>{
+    async getReplyList(cond: Condition, i: IService<Referral>): Promise<Referral[]>{
         let ffac: (r:Referral)=>boolean;
         let fdept: (r:Referral)=>boolean;
         let fdr: (r:Referral)=>boolean;
@@ -81,7 +81,7 @@ export class StatisticsService{
         }else{
             fdr = _=>true;
         }
-        return {result: res.filter(r=>{
-            return ffac(r)&&fdept(r)&&fdr(r)})};
+        return res.filter(r=>{
+            return ffac(r)&&fdept(r)&&fdr(r)});
     }
 }

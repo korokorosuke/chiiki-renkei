@@ -21,50 +21,6 @@ export function validater<T>(schema: Schema): (val: T) => ValidationResult {
     };
 }
 
-export function validateNotBlank(s: string): boolean {
-    if(s == undefined){
-        return false;
-    }
-    return s.trim() !== "";
-}
-
-export function validateLength(s: string, length: number): boolean{
-    return s.length <= length;
-}
-
-export function validateTel(tel: string): boolean {
-    if(!tel){
-        return false;
-    }
-    tel = tel.trim();
-    if(tel.length > 13){
-        return false;
-    }
-    return /^[0-9]+-?[0-9]+-?[0-9]+$/.test(tel);
-}
-
-export function validateEmail(email: string): boolean {
-    if(!email){
-        return false;
-    }
-    email = email.trim();
-    if(email.length > 50){
-        return false;
-    }
-    return /^[0-9a-zA-Z.+]+@[0-9a-zA-Z]+.[0-9a-zA-Z.]+$/.test(email);
-}
-
-export function validatePostalCode(postal: string): boolean {
-    if(!postal){
-        return false;
-    }
-    postal = postal.trim();
-    if(postal.length > 8){
-        return false;
-    }
-    return /^[0-9]{3}-?[0-9]{4}$/.test(postal);
-}
-
 export function validatePassword(password: string){
     if(!password){
         return false;

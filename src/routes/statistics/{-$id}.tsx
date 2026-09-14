@@ -75,21 +75,21 @@ function App() {
     if(fromdate || todate || facid || dept || dr){
       const params = {dept: dept, dr: dr, facility: facid, fromDate: fromdate, toDate: todate};
       if(id()==="reply"){
-        const res = await getReplies({data: {id: id(), condition: params}});
+        const res = await getReplies({data: {condition: params}});
         if(res){
           setResultRep(res);
         }else{
           setResultRep([]);
         }
       }else if(id()==="referral"){
-        const res = await getReferrals({data: {id: id(), condition: params}});
+        const res = await getReferrals({data: {condition: params}});
         if(res){
           setResult(res);
         }else{
           setResult([]);
         }
       }else if(id()==="referralto"){
-        const res = await getReferralTos({data: {id: id(), condition: params}});
+        const res = await getReferralTos({data: {condition: params}});
         if(res){
           setResult(res);
         }else{
