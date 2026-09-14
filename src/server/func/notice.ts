@@ -4,6 +4,7 @@ import { NoticeRepository } from "../infra/allRepository.ts"
 import type { Notice, NoticePage } from "../domain/notice.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
+import { info } from "./log.ts"
 
 const AUTH_READ = {auth: Auth.MASTER, role: Role.READ};
 const AUTH_WRITE = {auth: Auth.MASTER, role: Role.WRITE};
@@ -49,7 +50,11 @@ export const insert = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const server = new NoticeService(new NoticeRepository(auth.user.base));
-      return await server.insert(data.notice);
+      const res = await server.insert(data.notice);
+      if(res.ok){
+        info({ data: { title: "insert Notice", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -60,7 +65,11 @@ export const update = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const server = new NoticeService(new NoticeRepository(auth.user.base));
-      return await server.update(data.notice);
+      const res = await server.update(data.notice);
+      if(res.ok){
+        info({ data: { title: "update Notice", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -71,7 +80,11 @@ export const del = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const server = new NoticeService(new NoticeRepository(auth.user.base));
-      return await server.delete(data.notice);
+      const res = await server.delete(data.notice);
+      if(res.ok){
+        info({ data: { title: "delete Notice", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });

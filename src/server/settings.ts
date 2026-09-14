@@ -13,3 +13,6 @@ export const DB_TYPE_KEY = "RECO_DB_TYPE";
 export const DB_PG_URL_KEY = "RECO_PG_URL";
 export const DB_SQLITE_URL_KEY = "RECO_SQLITE_URL";
 export const DB_KV_URL_KEY = "RECO_KV_URL";
+
+export const LOG_OPERATION = "RECO_LOG_OPERATION";
+export type LOG_OPE_TYPE = "warn"|"info"|"debug";

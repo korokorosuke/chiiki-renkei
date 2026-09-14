@@ -4,6 +4,7 @@ import { DueRepository } from "../infra/allRepository.ts"
 import type { Due } from "../domain/due.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
+import { info } from "./log.ts"
 
 const AUTH_READ_ALL = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -27,7 +28,11 @@ export const insert = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new DueService(new DueRepository(auth.user.base));
-      return await service.insert(data.due);
+      const res = await service.insert(data.due);
+      if(res.ok){
+        info({ data: { title: "insert Due", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -38,7 +43,11 @@ export const update = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new DueService(new DueRepository(auth.user.base));
-      return await service.update(data.due);
+      const res = await service.update(data.due);
+      if(res.ok){
+        info({ data: { title: "update Due", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 })
@@ -49,7 +58,11 @@ export const del = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new DueService(new DueRepository(auth.user.base));
-      return await service.delete(data.due);
+      const res = await service.delete(data.due);
+      if(res.ok){
+        info({ data: { title: "delete Due", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });

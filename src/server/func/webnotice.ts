@@ -4,6 +4,7 @@ import { WebNoticeRepository } from "../infra/allRepository.ts"
 import type { WebNotice, NoticePage } from "../domain/webNotice.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
+import { info } from "./log.ts"
 
 const AUTH_READ = {auth: Auth.WEB, role: Role.READ};
 const AUTH_READ_ALL = {auth: Auth.MASTER, role: Role.READ};
@@ -45,7 +46,11 @@ export const insert = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new WebNoticeService(new WebNoticeRepository(auth.user.base));
-      return await service.insert(data.notice);
+      const res = await service.insert(data.notice);
+      if(res.ok){
+        info({ data: { title: "insert WebNotice", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -56,7 +61,11 @@ export const update = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new WebNoticeService(new WebNoticeRepository(auth.user.base));
-      return await service.update(data.notice);
+      const res = await service.update(data.notice);
+      if(res.ok){
+        info({ data: { title: "update WebNotice", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -67,7 +76,11 @@ export const del = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new WebNoticeService(new WebNoticeRepository(auth.user.base));
-      return await service.delete(data.notice);
+      const res =  await service.delete(data.notice);
+      if(res.ok){
+        info({ data: { title: "delete WebNotice", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });

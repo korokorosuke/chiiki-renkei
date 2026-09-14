@@ -13,16 +13,31 @@ import { get } from '../server/func/auth.ts'
 import { getSessionBase } from '../server/func/base.ts'
 import { initialize } from '../server/domain/user.ts'
 import { initialize as initBase } from '../server/domain/base.ts'
+import { info, writeLogWithBase } from "../server/func/log.ts"
+import { getBaseFromPath } from "../server/domain/log.ts"
 
 // @ts-ignore: URLをimportするときの型定義がないため
 import styleCss from '../styles.css?url'
+
+function writeLog(path: string) {
+  info({ data: { title: "page load", details: path } }).then(()=>{});
+}
+
+function writeLog2(path: string) {
+  const base = getBaseFromPath(path);
+  writeLogWithBase({ data: { base, level: "info", title: "page load", details: path } }).then(()=>{});
+}
 
 export const Route = createRootRouteWithContext()({
   beforeLoad: async ({ location }) => {
     if(location.pathname.startsWith('/login') ||
         (location.pathname.startsWith('/answer/') && !location.pathname.startsWith('/answer/patient'))){
+      writeLog2(location.pathname);
       return { ok: true, user: initialize(), base: initBase() };
     }
+
+    writeLog(location.pathname);
+
     const res = await get();
     if(res.ok){
       const base = await getSessionBase();

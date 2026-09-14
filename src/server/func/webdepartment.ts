@@ -4,6 +4,7 @@ import { WebDepartmentRepository } from "../infra/allRepository.ts"
 import type { WebDepartment } from "../domain/webDepartment.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
+import { info } from "./log.ts"
 
 const AUTH_READ = [
   {auth: Auth.WEB, role: Role.READ},
@@ -45,7 +46,11 @@ export const insert = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new WebDepartmentService(new WebDepartmentRepository(auth.user.base));
-      return await service.insert(data.department);
+      const res = await service.insert(data.department);
+      if(res.ok){
+        info({ data: { title: "insert WebDepartment", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -56,7 +61,11 @@ export const update = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new WebDepartmentService(new WebDepartmentRepository(auth.user.base));
-      return await service.update(data.department);
+      const res = await service.update(data.department);
+      if(res.ok){
+        info({ data: { title: "update WebDepartment", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -67,7 +76,11 @@ export const del = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new WebDepartmentService(new WebDepartmentRepository(auth.user.base));
-      return await service.delete(data.department);
+      const res = await service.delete(data.department);
+      if(res.ok){
+        info({ data: { title: "delete WebDepartment", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });

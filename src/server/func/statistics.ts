@@ -8,6 +8,7 @@ import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Condition, validate } from "../domain/statistics.ts"
 import type { Referral } from "../domain/referral.ts"
 import type { ReferralTo } from "../domain/referralto.ts"
+import { info } from "./log.ts"
 
 const AUTH_READ = { auth: Auth.STATISTICS, role: Role.READ };
 
@@ -47,6 +48,7 @@ export const getReferrals = createServerFn({ method: "GET" })
     const service = new StatisticsService();
     const refService = new AppointmentService(new AppointmentRepository(auth.user.base));
     const d = await service.getReferralList(cond, refService);
+    info({ data: { title: "statistics referral", details: JSON.stringify(data) } });
     return d.result;
 });
 
@@ -64,6 +66,7 @@ export const getReferralTos = createServerFn({ method: "GET" })
     const service = new StatisticsService();
     const refToService = new ReferralToService(new ReferralToRepository(auth.user.base));
     const d = await service.getReferralToList(cond, refToService);
+    info({ data: { title: "statistics referralTo", details: JSON.stringify(data) } });
     return d.result;
 });
 
@@ -81,5 +84,6 @@ export const getReplies = createServerFn({ method: "GET" })
     const service = new StatisticsService();
     const replyService = new ReplyListService(new ReplyRepository(auth.user.base));
     const d = await service.getReplyList(cond, replyService);
+    info({ data: { title: "statistics reply", details: JSON.stringify(data) } });
     return d.result;
 });

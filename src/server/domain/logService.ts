@@ -15,13 +15,15 @@ export class LogService {
     this.repos.push(i);
   }
 
-  async write(level: LogLevel, title: string, details: string): Promise<boolean>{
+  async write(level: LogLevel, title: string, details: string, userId?: string, patientId?: string): Promise<boolean>{
     let result = true;
     const log = {
       level,
       title,
       details,
       datetime: getNow(),
+      patientId,
+      userId,
     }
     for await(const i of this.repos){
       result = result && await i.write(log);
@@ -41,23 +43,23 @@ export class LogService {
     }
   }
 
-  async fatal(title: string, details: string|Error|unknown): Promise<boolean>{
-    return await this.write("fatal", title, this.convertError(details));
+  async fatal(title: string, details: string|Error|unknown, userId?: string, patientId?: string): Promise<boolean>{
+    return await this.write("fatal", title, this.convertError(details), userId, patientId);
   }
 
-  async error(title: string, details: string): Promise<boolean>{
-    return await this.write("error", title, this.convertError(details));
+  async error(title: string, details: string|Error|unknown, userId?: string, patientId?: string): Promise<boolean>{
+    return await this.write("error", title, this.convertError(details), userId, patientId);
   }
 
-  async warn(title: string, details: string): Promise<boolean>{
-    return await this.write("warn", title, this.convertError(details));
+  async warn(title: string, details: string|Error|unknown, userId?: string, patientId?: string): Promise<boolean>{
+    return await this.write("warn", title, this.convertError(details), userId, patientId);
   }
 
-  async info(title: string, details: string): Promise<boolean>{
-    return await this.write("info", title, this.convertError(details));
+  async info(title: string, details: string|Error|unknown, userId?: string, patientId?: string): Promise<boolean>{
+    return await this.write("info", title, this.convertError(details), userId, patientId);
   }
 
-  async debug(title: string, details: string): Promise<boolean>{
-    return await this.write("debug", title, this.convertError(details));
+  async debug(title: string, details: string|Error|unknown, userId?: string, patientId?: string): Promise<boolean>{
+    return await this.write("debug", title, this.convertError(details), userId, patientId);
   }
 }

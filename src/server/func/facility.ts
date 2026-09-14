@@ -5,6 +5,7 @@ import type { Facility, Fac } from "../domain/facility.ts"
 import { authenticate, Auth, Role, verify } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
 import { toFac } from "../lib/types.ts"
+import { info } from "./log.ts"
 
 const AUTH_READ = {auth: Auth.FACILITY, role: Role.READ};
 const AUTH_WRITE = {auth: Auth.FACILITY, role: Role.WRITE};
@@ -73,7 +74,11 @@ export const insert = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new FacilityService(new FacilityRepository(auth.user.base));
-      return await service.insert(data.facility);
+      const res = await service.insert(data.facility);
+      if(res.ok){
+        info({ data: { title: "insert Facility", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -84,7 +89,11 @@ export const update = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new FacilityService(new FacilityRepository(auth.user.base));
-      return await service.update(data.facility);
+      const res = await service.update(data.facility);
+      if(res.ok){
+        info({ data: { title: "update Facility", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -95,7 +104,11 @@ export const del = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new FacilityService(new FacilityRepository(auth.user.base));
-      return await service.delete(data.facility);
+      const res = await service.delete(data.facility);
+      if(res.ok){
+        info({ data: { title: "delete Facility", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });

@@ -471,6 +471,8 @@ export const log = snakeCase.table("log", {
   level: text().notNull(),
   title: text().notNull(),
   details: text().notNull(),
+  patientId: text(),
+  userId: text(),
 }, (table) => [
   index("idx_log_datetime").on(table.base, table.datetime),
 ]);

@@ -4,6 +4,7 @@ import { WebMasterRepository } from "../infra/allRepository.ts"
 import type { WebMaster } from "../domain/webMaster.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type FetchResult, type Result, ng } from "../lib/response.ts"
+import { info } from "./log.ts"
 
 const AUTH_READ = {auth: Auth.WEB, role: Role.READ};
 const AUTH_WRITE = {auth: Auth.MASTER, role: Role.WRITE};
@@ -31,7 +32,11 @@ export const insert = createServerFn({ method: "POST" })
     if(auth.ok){
       const service = new WebMasterService(new WebMasterRepository(auth.user.base));
       await service.delete(data.master);
-      return await service.insert(data.master);
+      const res = await service.insert(data.master);
+      if(res.ok){
+        info({ data: { title: "insert WebMaster", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -44,7 +49,11 @@ export const del = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new WebMasterService(new WebMasterRepository(auth.user.base));
-      return await service.delete(data.master);
+      const res = await service.delete(data.master);
+      if(res.ok){
+        info({ data: { title: "delete WebMaster", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });

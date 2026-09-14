@@ -5,6 +5,7 @@ import { AnswerRepository, AnswerPasswordRepository, QuestionnaireRepository } f
 import { type Answer, initialize } from "../domain/answer.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, type FetchResult, okWithData, ng } from "../lib/response.ts"
+import { info } from "./log.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -66,7 +67,11 @@ export const resetPassword = createServerFn({ method: "GET" })
     if(auth.ok){
       const service = new AnswerService(new AnswerRepository(auth.user.base),
         new AnswerPasswordRepository(auth.user.base));
-      return await service.getPasswordService().resetPassword(data.appId);
+      const res = await service.getPasswordService().resetPassword(data.appId);
+      if(res.ok){
+        info({ data: { title: "reset Password", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(["パスワードのリセットに失敗しました。"]);
 });
@@ -128,7 +133,11 @@ export const insert = createServerFn({ method: "POST" })
     if(auth.ok){
       const service = new AnswerService(new AnswerRepository(auth.user.base),
         new AnswerPasswordRepository(auth.user.base));
-      return await service.insert(data.answer);
+      const res = await service.insert(data.answer);
+      if(res.ok){
+        info({ data: { title: "insert Answer", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -148,7 +157,11 @@ export const update = createServerFn({ method: "POST" })
     if(data.base){
       const service = new AnswerService(new AnswerRepository(data.base),
         new AnswerPasswordRepository(data.base));
-      return await service.update(data.answer);
+      const res = await service.update(data.answer);
+      if(res.ok){
+        info({ data: { title: "update Answer", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(["登録に失敗しました。"]);
 });
@@ -160,7 +173,11 @@ export const del = createServerFn({ method: "POST" })
     if(auth.ok){
       const service = new AnswerService(new AnswerRepository(auth.user.base),
         new AnswerPasswordRepository(auth.user.base));
-      return await service.delete(data.answer);
+      const res = await service.delete(data.answer);
+      if(res.ok){
+        info({ data: { title: "delete Answer", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });

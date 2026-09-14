@@ -6,6 +6,7 @@ import { AuthService } from "../domain/authService.ts"
 import { BaseService } from "../domain/baseService.ts"
 import { getSessionData, setSessionData, type SessionData } from "../lib/session.ts"
 import { type Result, type FetchResult, ok, ng } from "../lib/response.ts"
+import { info } from "./log.ts"
 import * as base64 from "../../lib/base64.ts"
 
 export const get = createServerFn({ method: "GET" })
@@ -46,6 +47,7 @@ export const create = createServerFn({ method: "POST" })
       const baseData = await (new BaseService(new BaseRepository())).get(base);
       await setSessionData({token: token, base: baseData});
       user.password = "";
+      info({ data: { title: "login", details: "success" } });
       return {ok: true, data: user};
     }else if(user){
       if(user.failCount){
@@ -57,8 +59,10 @@ export const create = createServerFn({ method: "POST" })
         user.failCount = 1;
       }
       await service.update(user);
+      info({ data: { title: "login", details: `fail:${id} count:${user.failCount}${user.locked ? " (locked)" : ""}` } });
       return ng(["ユーザーかパスワードが不正です。"]);
     }else{
+      info({ data: { title: "login", details: "fail:" + id } });
       return ng(["ユーザーかパスワードが不正です。"]);
     }
 });
@@ -66,5 +70,6 @@ export const create = createServerFn({ method: "POST" })
 export const del = createServerFn({ method: "POST" })
   .handler(async (): Promise<Result> => {
     await setSessionData({token: "", base: undefined});
+    info({ data: { title: "logout", details: "" } });
     return ok();
 });

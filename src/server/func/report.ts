@@ -5,6 +5,7 @@ import { AppointmentRepository } from "../infra/allRepository.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Condition, validate } from "../domain/report.ts"
 import type { Appointment } from "../domain/appointment.ts"
+import { info } from "./log.ts"
 
 const AUTH_READ = { auth: Auth.REFERRAL, role: Role.WRITE };
 
@@ -29,5 +30,6 @@ export const getAppointments = createServerFn({ method: "GET" })
     for(const item of d){
       list.push({ ...item, notPrint: false });
     }
+    info({ data: { title: "report", details: JSON.stringify(data) } });
     return list;
 });

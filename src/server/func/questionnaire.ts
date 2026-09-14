@@ -4,6 +4,7 @@ import { QuestionnaireRepository } from "../infra/allRepository.ts"
 import type { Questionnaire } from "../domain/questionnaire.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
+import { info } from "./log.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -42,7 +43,11 @@ export const insert = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new QuestionnaireService(new QuestionnaireRepository(auth.user.base));
-      return await service.insert(data.q);
+      const res = await service.insert(data.q);
+      if(res.ok){
+        info({ data: { title: "insert Questionnaire", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -53,7 +58,11 @@ export const update = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new QuestionnaireService(new QuestionnaireRepository(auth.user.base));
-      return await service.update(data.q);
+      const res = await service.update(data.q);
+      if(res.ok){
+        info({ data: { title: "update Questionnaire", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -64,7 +73,11 @@ export const del = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new QuestionnaireService(new QuestionnaireRepository(auth.user.base));
-      return await service.delete(data.q);
+      const res = await service.delete(data.q);
+      if(res.ok){
+        info({ data: { title: "delete Questionnaire", details: JSON.stringify(data) } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });

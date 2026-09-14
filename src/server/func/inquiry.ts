@@ -4,6 +4,7 @@ import { InquiryRepository } from "../infra/allRepository.ts"
 import type { Inquiry } from "../domain/inquiry.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
+import { info } from "./log.ts"
 
 const AUTH_READ = {auth: Auth.APPOINT, role: Role.READ};
 const AUTH_WRITE = {auth: Auth.APPOINT, role: Role.WRITE};
@@ -28,7 +29,12 @@ export const insert = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new InquiryService(new InquiryRepository(auth.user.base));
-      return await service.insert(data.inquiry);
+      const res = await service.insert(data.inquiry);
+      if(res.ok){
+        info({ data: { title: "insert Inquiry", details: JSON.stringify(data),
+          patientId: data.inquiry.patient.id } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -39,7 +45,12 @@ export const update = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new InquiryService(new InquiryRepository(auth.user.base));
-      return await service.update(data.inquiry);
+      const res = await service.update(data.inquiry);
+      if(res.ok){
+        info({ data: { title: "update Inquiry", details: JSON.stringify(data),
+          patientId: data.inquiry.patient.id } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -50,7 +61,12 @@ export const del = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new InquiryService(new InquiryRepository(auth.user.base));
-      return await service.delete(data.inquiry);
+      const res = await service.delete(data.inquiry);
+      if(res.ok){
+        info({ data: { title: "delete Inquiry", details: JSON.stringify(data),
+          patientId: data.inquiry.patient.id } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });

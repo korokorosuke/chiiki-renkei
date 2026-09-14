@@ -4,6 +4,7 @@ import { ReferralToRepository } from "../infra/allRepository.ts"
 import type { ReferralTo } from "../domain/referralto.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
+import { info } from "./log.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -46,7 +47,12 @@ export const insert = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ReferralToService(new ReferralToRepository(auth.user.base));
-      return await service.insert(data.referral);
+      const res = await service.insert(data.referral);
+      if(res.ok){
+        info({ data: { title: "insert ReferralTo", details: JSON.stringify(data),
+          patientId: data.referral.patient.id } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -57,7 +63,12 @@ export const update = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ReferralToService(new ReferralToRepository(auth.user.base));
-      return await service.update(data.referral);
+      const res = await service.update(data.referral);
+      if(res.ok){
+        info({ data: { title: "update ReferralTo", details: JSON.stringify(data),
+          patientId: data.referral.patient.id } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
@@ -68,7 +79,12 @@ export const del = createServerFn({ method: "POST" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ReferralToService(new ReferralToRepository(auth.user.base));
-      return await service.delete(data.referral);
+      const res = await service.delete(data.referral);
+      if(res.ok){
+        info({ data: { title: "delete ReferralTo", details: JSON.stringify(data),
+          patientId: data.referral.patient.id } });
+      }
+      return res;
     }
     return ng(auth.errors!);
 });
