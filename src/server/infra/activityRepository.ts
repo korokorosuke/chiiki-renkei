@@ -24,14 +24,14 @@ export class ActivityRepository implements IActivityRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+            await fatal(`insert ${this.constructor.name}`, "失敗しました", this.base);
         }
         return res.ok;
     }
     async update(act: Activity): Promise<boolean> {
         const data = await this.read(act.id);
         if(!data){
-            await fatal(`${this.constructor.name} update`, "データが存在しません", this.base);
+            await fatal(`update ${this.constructor.name}`, "データが存在しません", this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -54,14 +54,14 @@ export class ActivityRepository implements IActivityRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+            await fatal(`update ${this.constructor.name}`, "失敗しました", this.base);
         }
         return res.ok;
     }
     async delete(act: Activity): Promise<boolean> {
         const data = await this.read(act.id);
         if(!data){
-            await fatal(`${this.constructor.name} delete`, "データが存在しません", this.base);
+            await fatal(`delete ${this.constructor.name}`, "データが存在しません", this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -72,7 +72,7 @@ export class ActivityRepository implements IActivityRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`${this.constructor.name} delete`, "失敗しました", this.base);
+            await fatal(`delete ${this.constructor.name}`, "失敗しました", this.base);
         }
         return res.ok;
     }

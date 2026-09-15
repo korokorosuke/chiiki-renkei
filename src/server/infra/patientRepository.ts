@@ -19,7 +19,7 @@ export class PatientRepository implements IPatientRepository {
             .set(key, p).commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+            await fatal(`insert ${this.constructor.name}`, "失敗しました", this.base);
         }
         return res.ok;
     }
@@ -28,7 +28,7 @@ export class PatientRepository implements IPatientRepository {
         const res = await kv.set([this.base, this.KEY, p.id], p);
         this.database.close();
         if(!res.ok){
-            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+            await fatal(`update ${this.constructor.name}`, "失敗しました", this.base);
         }
         return res.ok;
     }

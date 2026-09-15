@@ -73,7 +73,7 @@ export class ActivityRepository implements IActivityRepository {
         return true;
       }catch(e){
         tx.rollback()
-        await fatal(`${this.constructor.name} insert`, e, this.base);
+        await fatal(`insert ${this.constructor.name}`, e, this.base);
         return false;
       }
     });
@@ -99,7 +99,7 @@ export class ActivityRepository implements IActivityRepository {
         return true;
       }catch(e){
         tx.rollback()
-        await fatal(`${this.constructor.name} update`, e, this.base);
+        await fatal(`update ${this.constructor.name}`, e, this.base);
         return false;
       }
     });
@@ -121,7 +121,7 @@ export class ActivityRepository implements IActivityRepository {
         return true;
       }catch(e){
         tx.rollback()
-        await fatal(`${this.constructor.name} delete`, e, this.base);
+        await fatal(`delete ${this.constructor.name}`, e, this.base);
         return false;
       }
     });

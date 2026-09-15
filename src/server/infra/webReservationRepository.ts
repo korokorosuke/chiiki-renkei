@@ -24,12 +24,12 @@ export class WebReservationRepository implements IWebReservationRepository {
                 .commit();
             this.database.close();
             if(!res.ok){
-                await fatal(`${this.constructor.name} countUp`, "失敗しました", this.base);
+                await fatal(`countUp ${this.constructor.name}`, "失敗しました", this.base);
             }
             return res.ok;
         }else{
             this.database.close();
-            await fatal(`${this.constructor.name} countUp`, "枠が存在しません", this.base);
+            await fatal(`countUp ${this.constructor.name}`, "枠が存在しません", this.base);
             return false;
         }
     }
@@ -45,12 +45,12 @@ export class WebReservationRepository implements IWebReservationRepository {
                 .commit();
             this.database.close();
             if(!res.ok){
-                await fatal(`${this.constructor.name} countDown`, "失敗しました", this.base);
+                await fatal(`countDown ${this.constructor.name}`, "失敗しました", this.base);
             }
             return res.ok;
         }else{
             this.database.close();
-            await fatal(`${this.constructor.name} countDown`, "枠が存在しません", this.base);
+            await fatal(`countDown ${this.constructor.name}`, "枠が存在しません", this.base);
             return false;
         }
     }
@@ -63,7 +63,7 @@ export class WebReservationRepository implements IWebReservationRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+            await fatal(`insert ${this.constructor.name}`, "失敗しました", this.base);
         }
         return res.ok;
     }
@@ -72,7 +72,7 @@ export class WebReservationRepository implements IWebReservationRepository {
         const res = await kv.set([this.base, this.KEY, r.dept, r.date, r.dr, r.time], r);
         this.database.close();
         if(!res.ok){
-            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+            await fatal(`update ${this.constructor.name}`, "失敗しました", this.base);
         }
         return res.ok;
     }

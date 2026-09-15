@@ -22,7 +22,7 @@ export class AppointmentRepository implements IAppointmentRepository {
     async insert(app: Appointment): Promise<boolean> {
         const key = [this.base, this.KEY, app.id];
         if(!app.patient){
-            await fatal(`${this.constructor.name} insert`, "患者データが存在しません", this.base);
+            await fatal(`insert ${this.constructor.name}`, "患者データが存在しません", this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -33,14 +33,14 @@ export class AppointmentRepository implements IAppointmentRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`${this.constructor.name} insert`, "失敗しました", this.base);
+            await fatal(`insert ${this.constructor.name}`, "失敗しました", this.base);
         }
         return res.ok;
     }
     async update(app: Appointment): Promise<boolean> {
         const data = await this.read(app.id);
         if(!data || !data.patient || !app.patient){
-            await fatal(`${this.constructor.name} update`, "患者データが存在しません", this.base);
+            await fatal(`update ${this.constructor.name}`, "患者データが存在しません", this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -61,18 +61,18 @@ export class AppointmentRepository implements IAppointmentRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`${this.constructor.name} update`, "失敗しました", this.base);
+            await fatal(`update ${this.constructor.name}`, "失敗しました", this.base);
         }
         return res.ok;
     }
     async delete(app: Appointment): Promise<boolean> {
         const data = await this.read(app.id);
         if(!data){
-          await fatal(`${this.constructor.name} delete`, "データが存在しません", this.base);
+          await fatal(`delete ${this.constructor.name}`, "データが存在しません", this.base);
           return false;
         }
         if(!data.patient){
-            await fatal(`${this.constructor.name} delete`, "患者データが存在しません", this.base);
+            await fatal(`delete ${this.constructor.name}`, "患者データが存在しません", this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -83,7 +83,7 @@ export class AppointmentRepository implements IAppointmentRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`${this.constructor.name} delete`, "失敗しました", this.base);
+            await fatal(`delete ${this.constructor.name}`, "失敗しました", this.base);
         }
         return res.ok;
     }

@@ -30,7 +30,7 @@ export class WebDepartmentRepository implements IWebDepartmentRepository {
       await db.insert(webDepartment).values(this.toData(val));
       return true;
     }catch(e){
-      await fatal(`${this.constructor.name} insert`, e, this.base);
+      await fatal(`insert ${this.constructor.name}`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -48,7 +48,7 @@ export class WebDepartmentRepository implements IWebDepartmentRepository {
           ));
       return true;
     }catch(e){
-      await fatal(`${this.constructor.name} update`, e, this.base);
+      await fatal(`update ${this.constructor.name}`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -66,7 +66,7 @@ export class WebDepartmentRepository implements IWebDepartmentRepository {
           ));
       return true;
     }catch(e){
-      await fatal(`${this.constructor.name} delete`, e, this.base);
+      await fatal(`delete ${this.constructor.name}`, e, this.base);
       return false;
     }finally{
       this.database.close();

@@ -16,7 +16,7 @@ export class BaseRepository implements IBaseRepository {
       await db.insert(base).values(val);
       return true;
     }catch(e){
-      await fatal(`${this.constructor.name} insert`, e, val.id);
+      await fatal(`insert ${this.constructor.name}`, e, val.id);
       return false;
     }finally{
       this.database.close();

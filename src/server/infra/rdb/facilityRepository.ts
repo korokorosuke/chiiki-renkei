@@ -106,7 +106,7 @@ export class FacilityRepository implements IFacilityRepository {
         return true;
       }catch(e){
         tx.rollback();
-        await fatal(`${this.constructor.name} insert`, e, this.base);
+        await fatal(`insert ${this.constructor.name}`, e, this.base);
         return false;
       }
     });
@@ -139,7 +139,7 @@ export class FacilityRepository implements IFacilityRepository {
         return true;
       }catch(e){
         tx.rollback();
-        await fatal(`${this.constructor.name} upadte`, e, this.base);
+        await fatal(`update ${this.constructor.name}`, e, this.base);
         return false;
       }
     });
@@ -165,7 +165,7 @@ export class FacilityRepository implements IFacilityRepository {
         return true;
       }catch(e){
         tx.rollback();
-        await fatal(`${this.constructor.name} delete`, e, this.base);
+        await fatal(`delete ${this.constructor.name}`, e, this.base);
         return false;
       }
     });

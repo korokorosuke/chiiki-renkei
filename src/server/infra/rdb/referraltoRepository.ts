@@ -80,7 +80,7 @@ export class ReferralToRepository implements IReferralToRepository {
       await db.insert(referralTo).values(this.toData(val));
       return true;
     }catch(e){
-      await fatal(`${this.constructor.name} insert`, e, this.base);
+      await fatal(`inset ${this.constructor.name}`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -98,7 +98,7 @@ export class ReferralToRepository implements IReferralToRepository {
           ));
       return true;
     }catch(e){
-      await fatal(`${this.constructor.name} update`, e, this.base);
+      await fatal(`update ${this.constructor.name}`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -116,7 +116,7 @@ export class ReferralToRepository implements IReferralToRepository {
           ));
       return true;
     }catch(e){
-      await fatal(`${this.constructor.name} delete`, e, this.base);
+      await fatal(`delete ${this.constructor.name}`, e, this.base);
       return false;
     }finally{
       this.database.close();

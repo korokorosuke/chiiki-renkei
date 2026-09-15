@@ -19,7 +19,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
       await db.insert(answerPassword).values(val);
       return true;
     }catch(e){
-      await fatal(`${this.constructor.name} insert`, e, this.base);
+      await fatal(`insert ${this.constructor.name}`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -33,7 +33,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
         .where(eq(answerPassword.appointmentId, val.appointmentId));
       return true;
     }catch(e){
-      await fatal(`${this.constructor.name} update`, e, this.base);
+      await fatal(`update ${this.constructor.name}`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -47,7 +47,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
         .where(eq(answerPassword.appointmentId, val.appointmentId));
       return true;
     }catch(e){
-      await fatal(`${this.constructor.name} delete`, e, this.base);
+      await fatal(`delete ${this.constructor.name}`, e, this.base);
       return false;
     }finally{
       this.database.close();
@@ -73,7 +73,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
           .where(eq(answerPassword.appointmentId, appId));
         return true;
       }catch(e){
-        await fatal(`${this.constructor.name} countUp`, e, this.base);
+        await fatal(`countUp ${this.constructor.name}`, e, this.base);
         return false;
       }finally{
         this.database.close();

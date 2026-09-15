@@ -50,7 +50,7 @@ export class MasterRepository implements IMasterRepository {
         return true;
       }catch(e){
         tx.rollback();
-        await fatal(`${this.constructor.name} update`, e, this.base);
+        await fatal(`update ${this.constructor.name}`, e, this.base);
         return false;
       }
     });
