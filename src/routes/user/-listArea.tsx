@@ -35,7 +35,7 @@ export function ListArea(props: ViewProps) {
       <table class={ table({ size: "full" }) }>
         <thead>
           <tr>
-            <th>ID</th><th>氏名</th><th>部署</th><th>受付</th><th>紹介</th><th>施設</th><th>統計</th><th>マスター</th><th>Web予約</th><th>施設</th>
+            <th>ID</th><th>氏名</th><th>部署</th><th>受付</th><th>紹介</th><th>施設</th><th>統計</th><th>マスター</th><th>Web予約</th><th>ログ</th><th>施設</th>
           </tr>
         </thead>
         <tbody>
@@ -50,6 +50,7 @@ export function ListArea(props: ViewProps) {
               <td class={ list({ size: "rem3" }) }>{getName(user.authStatistics, names)}</td>
               <td class={ list({ size: "rem3" }) }>{getName(user.authMaster, names)}</td>
               <td class={ list({ size: "rem3" }) }>{getName(user.authWeb, webNames)}</td>
+              <td class={ list({ size: "rem3" }) }>{getName(user.authLog, names)}</td>
               <td class={ list( {size: "rem3", font: "number" }) }>{user.facilityId}</td>
             </tr>
           }</For>

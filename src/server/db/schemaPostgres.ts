@@ -346,6 +346,7 @@ export const user = snakeCase.table("user", {
   authStatistics: smallint().notNull(),
   authMaster: smallint().notNull(),
   authWeb: smallint().notNull(),
+  authLog: smallint().notNull(),
   password: text().notNull(),
   facilityId: text().notNull(),
   locked: boolean().notNull(),
@@ -466,8 +467,9 @@ export const webReservation = snakeCase.table("web_reservation", {
 ]);
 
 export const log = snakeCase.table("log", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
   base: text().notNull(),
-  datetime: text().notNull(),
+  datetime: timestamp({ withTimezone: true, mode: "string" }).notNull(),
   level: text().notNull(),
   title: text().notNull(),
   details: text().notNull(),

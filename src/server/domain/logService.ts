@@ -1,5 +1,5 @@
 import type { Log, LogLevel } from "./log.ts"
-import { getNow } from "../lib/datetime.ts"
+import { getNowWithMS } from "../lib/datetime.ts"
 
 export interface ILogRepository {
   write(log: Log): Promise<boolean>
@@ -21,7 +21,7 @@ export class LogService {
       level,
       title,
       details,
-      datetime: getNow(),
+      datetime: getNowWithMS(),
       patientId,
       userId,
     }

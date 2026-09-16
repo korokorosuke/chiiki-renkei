@@ -31,6 +31,7 @@ export const authUserSchema = userSchema.extend({
     authStatistics: z.number(),
     authMaster: z.number(),
     authWeb: z.number(),
+    authLog: z.number(),
     password: z.string().optional(),
     facilityId: z.string().optional(),
     locked: z.boolean().optional(),
@@ -62,6 +63,7 @@ export function initialize(): AuthUser{
         authStatistics: 0,
         authMaster: 0,
         authWeb: 0,
+        authLog: 0,
         facilityId: "",
     };
 }

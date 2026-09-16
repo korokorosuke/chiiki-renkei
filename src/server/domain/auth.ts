@@ -26,12 +26,13 @@ export class JWTPayload {
     autha: number
     authm: number
     authw: number
+    authl: number
     facid: string
 
     constructor(appid: string, user: string, expire: number,
             base: string, name: string, dept: string,
             authf: number, authr: number, auths: number,
-            autha: number, authm: number, authw: number,
+            autha: number, authm: number, authw: number, authl: number,
             facid: string) {
         this.iss = appid;
         this.sub = user;
@@ -45,6 +46,7 @@ export class JWTPayload {
         this.autha = autha;
         this.authm = authm;
         this.authw = authw;
+        this.authl = authl;
         this.facid = facid
     }
 

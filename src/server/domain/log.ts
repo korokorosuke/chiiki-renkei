@@ -15,6 +15,17 @@ export const logSchema = z.object({
 
 export type Log = z.infer<typeof logSchema>;
 
+export function initialize(): Log {
+  return {
+    datetime: "",
+    level: "info",
+    title: "",
+    details: "",
+    patientId: "",
+    userId: "",
+  };
+}
+
 /**
  * return base from path
  *

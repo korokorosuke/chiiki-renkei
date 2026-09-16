@@ -14,11 +14,11 @@ Deno.test("auth repository", async (t) => {
         const service = new UserService(new UserRepository(BASE));
         const user: AuthUser = {id: "00001", name:"hoge",
             department:"01", base: BASE, authActivity:0,authFacility:1,
-            authMaster:2, authWeb: 0,
+            authMaster:2, authWeb: 0, authLog: 0,
             authReferral:2,authStatistics:1,password:"admin" };
         const user2: AuthUser = {id: "00002", name:"hoge",
             department:"01", base: BASE,authActivity:0,authFacility:1,
-            authMaster:2, authWeb: 0,
+            authMaster:2, authWeb: 0, authLog: 0,
             authReferral:2,authStatistics:1,password:"admin" };
         if(user.password){
             user.password = base64.encode(

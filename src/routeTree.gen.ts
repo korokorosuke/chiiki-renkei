@@ -14,6 +14,7 @@ import { Route as ActivityIndexRouteImport } from './routes/activity/index'
 import { Route as AddressIndexRouteImport } from './routes/address/index'
 import { Route as FacilityChar123IdChar125RouteImport } from './routes/facility/{-$id}'
 import { Route as InquiryIndexRouteImport } from './routes/inquiry/index'
+import { Route as LogIndexRouteImport } from './routes/log/index'
 import { Route as LoginChar123BaseChar125RouteImport } from './routes/login/{-$base}'
 import { Route as MasterIndexRouteImport } from './routes/master/index'
 import { Route as PatientIndexRouteImport } from './routes/patient/index'
@@ -53,6 +54,11 @@ const FacilityChar123IdChar125Route =
 const InquiryIndexRoute = InquiryIndexRouteImport.update({
   id: '/inquiry/',
   path: '/inquiry/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogIndexRoute = LogIndexRouteImport.update({
+  id: '/log/',
+  path: '/log/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginChar123BaseChar125Route = LoginChar123BaseChar125RouteImport.update({
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/activity/': typeof ActivityIndexRoute
   '/address/': typeof AddressIndexRoute
   '/inquiry/': typeof InquiryIndexRoute
+  '/log/': typeof LogIndexRoute
   '/master/': typeof MasterIndexRoute
   '/patient/': typeof PatientIndexRoute
   '/report/': typeof ReportIndexRoute
@@ -162,6 +169,7 @@ export interface FileRoutesByTo {
   '/activity': typeof ActivityIndexRoute
   '/address': typeof AddressIndexRoute
   '/inquiry': typeof InquiryIndexRoute
+  '/log': typeof LogIndexRoute
   '/master': typeof MasterIndexRoute
   '/patient': typeof PatientIndexRoute
   '/report': typeof ReportIndexRoute
@@ -184,6 +192,7 @@ export interface FileRoutesById {
   '/activity/': typeof ActivityIndexRoute
   '/address/': typeof AddressIndexRoute
   '/inquiry/': typeof InquiryIndexRoute
+  '/log/': typeof LogIndexRoute
   '/master/': typeof MasterIndexRoute
   '/patient/': typeof PatientIndexRoute
   '/report/': typeof ReportIndexRoute
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/activity/'
     | '/address/'
     | '/inquiry/'
+    | '/log/'
     | '/master/'
     | '/patient/'
     | '/report/'
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/address'
     | '/inquiry'
+    | '/log'
     | '/master'
     | '/patient'
     | '/report'
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/activity/'
     | '/address/'
     | '/inquiry/'
+    | '/log/'
     | '/master/'
     | '/patient/'
     | '/report/'
@@ -271,6 +283,7 @@ export interface RootRouteChildren {
   ActivityIndexRoute: typeof ActivityIndexRoute
   AddressIndexRoute: typeof AddressIndexRoute
   InquiryIndexRoute: typeof InquiryIndexRoute
+  LogIndexRoute: typeof LogIndexRoute
   MasterIndexRoute: typeof MasterIndexRoute
   PatientIndexRoute: typeof PatientIndexRoute
   ReportIndexRoute: typeof ReportIndexRoute
@@ -319,6 +332,13 @@ declare module '@tanstack/solid-router' {
       path: '/inquiry'
       fullPath: '/inquiry/'
       preLoaderRoute: typeof InquiryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/log/': {
+      id: '/log/'
+      path: '/log'
+      fullPath: '/log/'
+      preLoaderRoute: typeof LogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login/{-$base}': {
@@ -431,6 +451,7 @@ const rootRouteChildren: RootRouteChildren = {
   ActivityIndexRoute: ActivityIndexRoute,
   AddressIndexRoute: AddressIndexRoute,
   InquiryIndexRoute: InquiryIndexRoute,
+  LogIndexRoute: LogIndexRoute,
   MasterIndexRoute: MasterIndexRoute,
   PatientIndexRoute: PatientIndexRoute,
   ReportIndexRoute: ReportIndexRoute,

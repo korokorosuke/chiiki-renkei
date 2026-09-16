@@ -14,6 +14,7 @@ import file from "./assets/file.svg"
 import activity from "./assets/activity.svg"
 import questionnaire from "./assets/questionnaire.svg"
 import printer from "./assets/printer.svg"
+import log from "./assets/log.svg"
 import Header from "./-header.tsx"
 import { Notice } from "./-notice.tsx"
 import { flex } from "../styled-system/patterns/"
@@ -129,13 +130,18 @@ function Home() {
         </div>
       </div>
       </Show>
-      <Show when={user.authMaster >= 2}>
+      <Show when={user.authMaster >= 2 || user.authLog >= 1}>
       <div>
         <h1 class={ h1 }>その他</h1>
         <div class={ flex({ direction: "row" }) }>
-          <MenuBlock title="マスター登録" href="/master" img={master} />
-          <MenuBlock title="患者登録" href="/patient" img={patient} />
-          <MenuBlock title="ユーザー登録" href="/user" img={usericon} />
+          <Show when={user.authMaster >= 2}>
+            <MenuBlock title="マスター登録" href="/master" img={master} />
+            <MenuBlock title="患者登録" href="/patient" img={patient} />
+            <MenuBlock title="ユーザー登録" href="/user" img={usericon} />
+          </Show>
+          <Show when={user.authLog >= 1}>
+            <MenuBlock title="ログ参照" href="/log" img={log} />
+          </Show>
         </div>
       </div>
       </Show>

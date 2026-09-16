@@ -15,6 +15,7 @@ export const user: AuthUser = {
   authMaster: 1,
   authStatistics: 1,
   authWeb: 1,
+  authLog: 1,
   facilityId: "",
   password: "",
   locked: false,
@@ -31,6 +32,7 @@ export const user2: AuthUser = {
   authMaster: 1,
   authStatistics: 1,
   authWeb: 1,
+  authLog: 1,
 }
 export const user3: AuthUser = {
   id: "user1",
@@ -43,6 +45,7 @@ export const user3: AuthUser = {
   authMaster: 2,
   authStatistics: 2,
   authWeb: 2,
+  authLog: 2,
 }
 
 function compare(u1: AuthUser, u2: AuthUser): boolean {
@@ -68,6 +71,12 @@ function compare(u1: AuthUser, u2: AuthUser): boolean {
     return false;
   }
   if(u1.authStatistics !== u2.authStatistics){
+    return false;
+  }
+  if(u1.authWeb !== u2.authWeb){
+    return false;
+  }
+  if(u1.authLog !== u2.authLog){
     return false;
   }
   return true;

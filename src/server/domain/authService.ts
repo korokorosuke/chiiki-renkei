@@ -41,6 +41,10 @@ export class AuthService{
         const payload = AuthService.payload(token)
         return payload.authw >= authority;
     }
+    static authLog(token: string, authority: number): boolean {
+        const payload = AuthService.payload(token)
+        return payload.authl >= authority;
+    }
 
     static toUser(payload: JWTPayload): AuthUser {
         return {
@@ -54,6 +58,7 @@ export class AuthService{
             authReferral: payload.authr,
             authStatistics: payload.auths,
             authWeb: payload.authw,
+            authLog: payload.authl,
             facilityId: payload.facid
         };
     }
@@ -88,7 +93,7 @@ export class AuthService{
             Math.floor(AuthService.getSeconds()) + AuthService.APP_EXPIRE,
             user.base, user.name, user.department,
             user.authFacility, user.authReferral, user.authStatistics,
-            user.authActivity, user.authMaster, user.authWeb,
+            user.authActivity, user.authMaster, user.authWeb, user.authLog,
             user.facilityId ?? "")
             .encode();
 

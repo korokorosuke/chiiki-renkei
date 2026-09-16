@@ -169,17 +169,9 @@ export const tableRecipe = defineRecipe({
     borderLeft: "0",
     borderRight: "0",
     borderCollapse: "collapse",
-    paddingTop: "px.5",
-    paddingBottom: "px.5",
-    paddingRight: "px.10",
-    paddingLeft: "px.10",
 
     "& th, td": {
       textAlign: "left",
-      paddingTop: "px.5",
-      paddingBottom: "px.5",
-      paddingRight: "px.10",
-      paddingLeft: "px.10",
     },
     "& tbody tr": {
       cursor: "pointer",
@@ -211,10 +203,37 @@ export const tableRecipe = defineRecipe({
         width: "100%",
       },
     },
+    padding: {
+      normal: {
+        paddingTop: "px.5",
+        paddingBottom: "px.5",
+        paddingRight: "px.10",
+        paddingLeft: "px.10",
+        "& th, td": {
+          paddingTop: "px.5",
+          paddingBottom: "px.5",
+          paddingRight: "px.10",
+          paddingLeft: "px.10",
+        }
+      },
+      small: {
+        paddingTop: "px.1",
+        paddingBottom: "px.1",
+        paddingRight: "px.1",
+        paddingLeft: "px.1",
+        "& th, td": {
+          paddingTop: "px.1",
+          paddingBottom: "px.1",
+          paddingRight: "px.1",
+          paddingLeft: "px.1",
+        }
+      }
+    }
   },
   defaultVariants: {
     color: "normal",
     size: "full",
+    padding: "normal",
   },
 });
 

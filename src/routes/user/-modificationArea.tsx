@@ -120,9 +120,12 @@ export function ModificationArea(props: ViewProps){
           <option value="2">編集</option>
         </select>
       </Container>
-      <Container title="パスワード" require="*">
-        <input type="password" class={ input({ size: "text" }) }
-          value={user.password} onChange={(e)=>setUser("password", e.target.value)} />
+      <Container title="ログ">
+        <select class={ input({ size: "id" }) } value={user.authLog}
+            onChange={(e)=>setUser("authLog", parseInt(e.target.value))}>
+          <option value="0"></option>
+          <option value="1">閲覧</option>
+        </select>
       </Container>
       <Container title="Web予約">
         <select class={ input({ size: "id" }) } value={user.authWeb}
@@ -139,6 +142,10 @@ export function ModificationArea(props: ViewProps){
             color: "red", marginLeft: "0.5rem", marginTop: "1rem", fontSize: "1rem" }) }>
           ※Web予約用ユーザーは必須
         </span>
+      </Container>
+      <Container title="パスワード" require="*">
+        <input type="password" class={ input({ size: "text" }) }
+          value={user.password} onChange={(e)=>setUser("password", e.target.value)} />
       </Container>
       <Container title="ロック">
         <input type="checkbox" class={ input({ size: "check2", type: "checkbox" }) }

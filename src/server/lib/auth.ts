@@ -83,6 +83,8 @@ function check(auth: Auth, role: Role, user: AuthUser): boolean {
         return user.authWeb >= role;
     }else if(auth === Auth.STATISTICS){
         return user.authStatistics >= role;
+    }else if(auth === Auth.LOG){
+        return user.authLog >= role;
     }
     return false;
 }
@@ -99,5 +101,6 @@ export const enum Auth {
     STATISTICS = "statistics",
     REFERRAL = "referral",
     APPOINT = "appoint",
-    FACILITY = "facility"
+    FACILITY = "facility",
+    LOG = "log"
 }

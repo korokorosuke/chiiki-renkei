@@ -39,6 +39,13 @@ export function getNow(): string{
 }
 
 /**
+ * return date in yyyy-MM-ddTHH:mm:ss.SSS format
+ */
+export function getNowWithMS(): string{
+  return Temporal.Now.plainDateTimeISO().toString({smallestUnit:"millisecond"});
+}
+
+/**
  * return yyyy-MM-dd format date string of the date
  *
  * @param date - Date object

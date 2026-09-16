@@ -128,7 +128,7 @@ const user: AuthUser[] = [
     id: "admin", name: "管理者　ユーザー",
     department: "20", base: BASE,
     authActivity: 2, authFacility: 2, authReferral: 2, authStatistics: 2,
-    authMaster: 2, authWeb: 2,
+    authMaster: 2, authWeb: 2, authLog: 1,
     //Admin1!!!
     password: "TkegoFco96X3Zqg5GGfRt29KflG0eTu6mQuJu2RQGbc=",
     facilityId: "",
@@ -137,7 +137,7 @@ const user: AuthUser[] = [
     id: "user", name: "一般　ユーザー",
     department: "30", base: BASE,
     authActivity: 0, authFacility: 1, authReferral: 2, authStatistics: 1,
-    authMaster: 0, authWeb: 0,
+    authMaster: 0, authWeb: 0, authLog: 0,
     //User2???
     password: "vGqyfSoIP7R5sNBcaPMB5lcMUdQ8fznpPQp5+dgcMsY=",
     facilityId: "",
@@ -146,7 +146,7 @@ const user: AuthUser[] = [
     id: "webuser", name: "Web　ユーザー",
     department: "9999", base: BASE,
     authActivity: 0, authFacility: 0, authReferral: 0, authStatistics: 0,
-    authMaster: 0, authWeb: 1,
+    authMaster: 0, authWeb: 1, authLog: 0,
     //WebApp3###
     password: "xdBNl3nZ44i33qrb04j+Ej7VIU2aPV/+EX89vmZK4/A=",
     facilityId: "001",
@@ -155,7 +155,7 @@ const user: AuthUser[] = [
     id: "webapp", name: "Web　予約",
     department: "9999", base: BASE,
     authActivity: 0, authFacility: 0, authReferral: 0, authStatistics: 0,
-    authMaster: 0, authWeb: 0,
+    authMaster: 0, authWeb: 0, authLog: 0,
     password: "xdBNl3nZ44i33qrb04j+Ej7VIU2A9PV/+EX89vmZK4/A=",
     facilityId: "",
   },

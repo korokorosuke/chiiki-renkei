@@ -1,10 +1,13 @@
 import { createServerFn, createServerOnlyFn } from "@tanstack/solid-start"
 import { LogService } from "../domain/logService.ts"
+import { LogListService } from "../domain/logListService.ts"
 import { LogRepository } from "../infra/allRepository.ts"
-import { verify } from "../lib/auth.ts"
-import { type LogLevel, NO_BASE } from "../domain/log.ts"
+import { verify, authenticate, Auth, Role } from "../lib/auth.ts"
+import { type Log, type LogLevel, NO_BASE } from "../domain/log.ts"
 import { type Result, ok, ng } from "../lib/response.ts"
 import { LOG_OPERATION } from "../settings.ts"
+
+const AUTH_READ = {auth: Auth.LOG, role: Role.READ};
 
 const LOG_ORDER = {"debug":1, "info":2, "warn":3, "error":4, "fatal":5};
 
@@ -72,3 +75,15 @@ export const writeLogWithBase = createServerFn({ method: "POST" })
     const res = await service.write(data.level, data.title, data.details)
     return res ? ok() : ng(["書き込みに失敗しました"]);
 });
+
+export const getList = createServerFn({ method: "GET" })
+  .validator((data : {level: string, fromDate: string, toDate: string, userId: string, patientId: string}) => data)
+  .handler(async ({ data }): Promise<Log[]> => {
+    const auth = await authenticate(AUTH_READ);
+    if(auth.ok){
+      const service = new LogListService(new LogRepository(auth.user.base));
+      const res = await service.list(data.level, data.fromDate, data.toDate, data.userId, data.patientId)
+      return res;
+    }
+    return [];
+  });
