@@ -6,4 +6,4 @@
 - 紹介受け医師
 
 
-[戻る](GettingStarted.html)
+[戻る](doc.html)

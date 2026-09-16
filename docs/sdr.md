@@ -10,4 +10,4 @@
 - 非表示 : 一覧に表示するかどうか
 
 
-[戻る](GettingStarted.html)
+[戻る](doc.html)

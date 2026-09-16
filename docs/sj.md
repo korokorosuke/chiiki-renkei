@@ -2,4 +2,4 @@
 ## 患者ごとの紹介、逆紹介、返事履歴を表示
 
 
-[戻る](GettingStarted.html)
+[戻る](doc.html)

@@ -38,4 +38,4 @@
    ```
 
 
-[戻る](GettingStarted.html)
+[戻る](doc.html)

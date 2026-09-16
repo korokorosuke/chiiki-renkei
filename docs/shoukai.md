@@ -19,4 +19,4 @@
 - 備考
 
 
-[戻る](GettingStarted.html)
+[戻る](doc.html)

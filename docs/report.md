@@ -10,4 +10,4 @@
   ([施設登録](shisetsu.html)の受診報告不要にチェックが入っていると、一覧に表示されない)
 
 
-[戻る](GettingStarted.html)
+[戻る](doc.html)

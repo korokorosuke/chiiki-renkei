@@ -14,6 +14,7 @@
 1. [返事検索](henjikensaku.html)
 1. [受診報告出力](report.html)
 1. [各種マスター登録](masters.html)
+1. [ログ閲覧](log.html)
 
 1. [Web予約](webyoyaku.html)
 1. [Web問診](webmonshin.html)

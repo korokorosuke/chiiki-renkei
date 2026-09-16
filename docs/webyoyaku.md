@@ -30,4 +30,4 @@
 - 患者ID無し予約
 
 
-[戻る](GettingStarted.html)
+[戻る](doc.html)

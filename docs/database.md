@@ -20,4 +20,4 @@
   1. 環境変数「RECO_KV_URL」に、ファイルパスを設定
 
 
-[戻る](GettingStarted.html)
+[戻る](doc.html)

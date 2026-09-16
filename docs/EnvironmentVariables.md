@@ -16,4 +16,4 @@
 - RECO_PG_URL: データベースの接続文字列 (postgres://user:password@hostname/dbname)
 
 
-[戻る](GettingStarted.html)
+[戻る](doc.html)
