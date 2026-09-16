@@ -28,3 +28,6 @@
 - 予約日時 期間
 - 未確定予約
 - 患者ID無し予約
+
+
+[戻る](GettingStarted.html)

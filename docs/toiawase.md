@@ -22,3 +22,6 @@
 - 患者ID
 - 施設ID
 - 問合せ日時 期間
+
+
+[戻る](GettingStarted.html)

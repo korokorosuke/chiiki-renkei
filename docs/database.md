@@ -18,3 +18,6 @@
 ## Deno kv
   1. src\server\infra\allRepository.ts内のインポート元を、「./...Repository.ts」に変更
   1. 環境変数「RECO_KV_URL」に、ファイルパスを設定
+
+
+[戻る](GettingStarted.html)

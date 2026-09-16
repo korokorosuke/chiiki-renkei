@@ -13,6 +13,7 @@
     - RECO_SESSION: セッションキー (windowsは、createsecret.batで設定)
     - RECO_SECRET: シークレット (windowsは、createsecret.batで設定)
     - RECO_PRODUCTION: `production`
+    - RECO_LOG_LEVEL: `info`
     - postgresqlの場合
       - RECO_DB_TYPE: `postgresql`
       - RECO_PG_URL: `postgres://user:password@hostname/dbname`
@@ -35,3 +36,6 @@
    ```bash
    deno run start
    ```
+
+
+[戻る](GettingStarted.html)

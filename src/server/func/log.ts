@@ -5,7 +5,7 @@ import { LogRepository } from "../infra/allRepository.ts"
 import { verify, authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Log, type LogLevel, NO_BASE } from "../domain/log.ts"
 import { type Result, ok, ng } from "../lib/response.ts"
-import { LOG_OPERATION } from "../settings.ts"
+import { LOG_LEVEL } from "../settings.ts"
 
 const AUTH_READ = {auth: Auth.LOG, role: Role.READ};
 
@@ -13,7 +13,7 @@ const LOG_ORDER = {"debug":1, "info":2, "warn":3, "error":4, "fatal":5};
 
 export const write = createServerOnlyFn(
     async (level: LogLevel, title: string, details: string, patientId?: string): Promise<Result> => {
-  const logOperation = Deno.env.get(LOG_OPERATION);
+  const logOperation = Deno.env.get(LOG_LEVEL);
   const logOrder = LOG_ORDER[level];
   if(!logOperation){
     return ok();

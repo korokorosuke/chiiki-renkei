@@ -2,6 +2,7 @@
 - RECO_SESSION: セッションキー (32byteのランダム値をbase64でエンコードした文字列)
 - RECO_SECRET: シークレット (32byteのランダム値をbase64でエンコードした文字列)
 - RECO_PRODUCTION: 本番環境かどうか (production/dev)
+- RECO_LOG_LEVEL: ログレベル (debug/info/warn/error、指定以上のものを出力※info推奨)
 
 ### 外部連携をする場合
 - RECO_ADDRESS_URL: 住所取得用URL
@@ -13,3 +14,6 @@
 ### データベースがpostgresqlの場合
 - RECO_DB_TYPE: データベースの種類 (postgresql)
 - RECO_PG_URL: データベースの接続文字列 (postgres://user:password@hostname/dbname)
+
+
+[戻る](GettingStarted.html)

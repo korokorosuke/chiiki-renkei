@@ -4,3 +4,6 @@
 - 施設ID
 - 診療受け科
 - 紹介受け医師
+
+
+[戻る](GettingStarted.html)

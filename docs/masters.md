@@ -16,3 +16,6 @@
 - Web予約枠
 - Webお知らせ
 - Web問診
+
+
+[戻る](GettingStarted.html)

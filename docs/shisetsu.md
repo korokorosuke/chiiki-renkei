@@ -24,3 +24,6 @@
 ## 検索項目
 - ID
 - 施設名
+
+
+[戻る](GettingStarted.html)

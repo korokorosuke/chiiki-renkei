@@ -12,3 +12,6 @@
 ## 検索項目
 - 施設ID
 - 訪問日時 期間
+
+
+[戻る](GettingStarted.html)
