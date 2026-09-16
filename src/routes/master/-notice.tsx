@@ -3,7 +3,7 @@ import { getTodayString } from "../../lib/datetime.ts"
 import { ErrorArea } from "../../components/ErrorArea.tsx"
 import { getAllNotices, insert, update, del } from "../../server/func/notice.ts"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
-import { type Notice, NOTICE_PAGES } from "../../server/domain/notice.ts"
+import { type Notice, type NoticePage, NOTICE_PAGES } from "../../server/domain/notice.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
 import del_icon from "../assets/del.svg"
 import { modificationAreaStyle, selectedStyle } from "./-css.ts"
@@ -156,7 +156,7 @@ export function Notice(props: Props){
           </div>
           <div>
             <select value={selected().page} class={ input({ size: "id" }) }
-                onChange={(e)=>handleChange({page: e.target.value})}>
+                onChange={(e)=>handleChange({page: e.target.value as NoticePage})}>
               <For each={NOTICE_PAGES}>{(page)=>
                 <option value={page}>{page}</option>
               }</For>

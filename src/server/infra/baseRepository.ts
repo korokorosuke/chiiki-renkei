@@ -17,7 +17,17 @@ export class BaseRepository implements IBaseRepository {
         .set(key, base).commit();
     this.database.close();
     if(!res.ok){
-        await fatal(`insert ${this.constructor.name}`, "失敗しました", base.id);
+      await fatal(`insert ${this.constructor.name}`, "失敗しました", base.id);
+    }
+    return res.ok;
+  }
+  async udpate(base: Base): Promise<boolean> {
+    const kv = await this.database.open();
+    const key = [this.KEY, base.id];
+    const res = await kv.set(key, base);
+    this.database.close();
+    if(!res.ok){
+      await fatal(`update ${this.constructor.name}`, "失敗しました", base.id);
     }
     return res.ok;
   }
@@ -26,7 +36,7 @@ export class BaseRepository implements IBaseRepository {
     const res = await kv.get<Base>([this.KEY, id]);
     this.database.close();
     if(res?.value){
-        return res.value;
+      return res.value;
     }
     return undefined;
   }

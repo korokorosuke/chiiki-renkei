@@ -1,6 +1,7 @@
 import { createSignal, Switch, Match } from "solid-js"
 import Header from "../-header.tsx"
 import { Multi } from "./-multi.tsx"
+import { Base } from "./-base.tsx"
 import { Classification } from "./-classification.tsx"
 import { Dr } from "./-dr.tsx"
 import { Due } from "./-due.tsx"
@@ -22,7 +23,7 @@ function App() {
   const [id, setId] = createSignal<string>("");
 
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   function setMessage(status: MessageStatus): void{
     setStatusMessage(status);
@@ -54,6 +55,7 @@ function App() {
             <option value="webreserv">Web予約枠</option>
             <option value="webnotice">Webお知らせ</option>
             <option value="questionnaire">Web問診</option>
+            <option value="base">施設情報</option>
           </select>
         </label>
       </div>
@@ -95,6 +97,9 @@ function App() {
       </Match>
       <Match when={id() === "questionnaire"}>
         <Questionnaire setMessage={setMessage} />
+      </Match>
+      <Match when={id() === "base"}>
+        <Base setMessage={setMessage} base={base} />
       </Match>
       </Switch>
       <Message />

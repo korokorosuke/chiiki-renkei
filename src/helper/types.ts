@@ -16,11 +16,13 @@ import { toUser, initializeUser, initialize as initAuthUser } from "../server/do
 import { initialize as initNotice } from "../server/domain/notice.ts"
 import { initialize as initQuestionnaire, initializeQuestion as initQuestion } from "../server/domain/questionnaire.ts"
 import { initialize as initAnswer } from "../server/domain/answer.ts"
+import { initialize as initBase } from "../server/domain/base.ts"
 
 export {
     initActivity,
     initAddress,
     initAppointment,
+    initBase,
     initClassification,
     initializeContact as initContact,
     initFacility,

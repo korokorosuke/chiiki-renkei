@@ -2,6 +2,7 @@ import type { Base } from "../../domain/base.ts"
 import type { IBaseRepository } from "../../domain/baseService.ts"
 import { Db } from "./db.ts"
 import { base } from "../../db/schema.ts"
+import { eq } from "drizzle-orm"
 import { fatal } from "../../lib/log.ts"
 
 export class BaseRepository implements IBaseRepository {
@@ -14,6 +15,22 @@ export class BaseRepository implements IBaseRepository {
     try{
       const db = await this.database.open();
       await db.insert(base).values(val);
+      return true;
+    }catch(e){
+      await fatal(`insert ${this.constructor.name}`, e, val.id);
+      return false;
+    }finally{
+      this.database.close();
+    }
+  }
+
+  async update(val: Base): Promise<boolean> {
+    try{
+      const db = await this.database.open();
+      await db.update(base).set(val)
+        .where(
+          eq(base.id, val.id),
+        );
       return true;
     }catch(e){
       await fatal(`insert ${this.constructor.name}`, e, val.id);

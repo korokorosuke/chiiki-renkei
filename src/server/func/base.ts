@@ -3,6 +3,11 @@ import { BaseService } from "../domain/baseService.ts"
 import { BaseRepository } from "../infra/allRepository.ts"
 import type { Base } from "../domain/base.ts"
 import { getBase as getSession } from '../lib/session.ts'
+import { type Result, ng } from "../lib/response.ts"
+import { authenticate, Auth, Role } from "../lib/auth.ts"
+import { info } from "./log.ts"
+
+const AUTH_WRITE =  {auth: Auth.MASTER, role: Role.READ};
 
 export const getBase = createServerFn({ method: "GET" })
   .validator((data : {id: string}) => data)
@@ -17,4 +22,19 @@ export const getBase = createServerFn({ method: "GET" })
 export const getSessionBase = createServerFn({ method: "GET" })
   .handler(async (): Promise<Base|undefined> => {
     return await getSession();
+});
+
+export const update = createServerFn({ method: "POST" })
+  .validator((data: { base: Base }) => data)
+  .handler(async ({ data }): Promise<Result> => {
+    const auth = await authenticate(AUTH_WRITE);
+    if(auth.ok){
+      const service = new BaseService(new BaseRepository());
+      const res = await service.update(data.base);
+      if(res.ok){
+        info({ data: { title: "update Base", details: JSON.stringify(data) } });
+      }
+      return res;
+    }
+    return ng(auth.errors!);
 });

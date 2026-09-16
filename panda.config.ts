@@ -12,7 +12,8 @@ export default defineConfig({
     css: [
       {
         properties: {
-          bg: ["neutral.800", "neutral.700"]
+          bg: ["neutral.800", "red.600", "green.600", "blue.600", "amber.600", "violet.600", "fuchsia.600",
+              "neutral.700", "red.500", "green.500", "blue.500", "amber.500", "violet.500", "fuchsia.500"]
         }
       }
     ]
