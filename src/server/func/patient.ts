@@ -4,7 +4,7 @@ import { PatientRepository } from "../infra/allRepository.ts"
 import type { Patient } from "../domain/patient.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -40,49 +40,37 @@ export const getPatient = createServerFn({ method: "GET" })
 });
 
 export const insert = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {patient: Patient}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new PatientService(new PatientRepository(auth.user.base));
-      const res = await service.insert(data.patient);
-      if(res.ok){
-        info({ data: { title: "insert Patient", details: JSON.stringify(data),
-          patientId: data.patient.id } });
-      }
-      return res;
+      return await service.insert(data.patient);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {patient: Patient}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new PatientService(new PatientRepository(auth.user.base));
-      const res = await service.update(data.patient);
-      if(res.ok){
-        info({ data: { title: "update Patient", details: JSON.stringify(data),
-          patientId: data.patient.id } });
-      }
-      return res;
+      return await service.update(data.patient);
     }
     return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {patient: Patient}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new PatientService(new PatientRepository(auth.user.base));
-      const res = await service.delete(data.patient);
-      if(res.ok){
-        info({ data: { title: "delete Patient", details: JSON.stringify(data),
-          patientId: data.patient.id } });
-      }
-      return res;
+      return await service.delete(data.patient);
     }
     return ng(auth.errors!);
 });

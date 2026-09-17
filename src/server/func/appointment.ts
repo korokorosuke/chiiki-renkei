@@ -10,7 +10,7 @@ import { AnswerRegistration } from "../usecase/answerRegistration.ts"
 import type { Appointment } from "../domain/appointment.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_READ = {auth: Auth.APPOINT, role: Role.READ};
 const AUTH_DATE_READ = {auth: Auth.STATISTICS, role: Role.READ};
@@ -60,6 +60,7 @@ export const getAppointmentsForDate = createServerFn({ method: "GET" })
 });
 
 export const insert = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {appointment: Appointment}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
@@ -73,17 +74,13 @@ export const insert = createServerFn({ method: "POST" })
             new AnswerPasswordRepository(auth.user.base)),
           new QuestionnaireService(
             new QuestionnaireRepository(auth.user.base))));
-      const res = await usecase.insert(data.appointment);
-      if(res.ok){
-        info({ data: { title: "insert Appointment", details: JSON.stringify(data),
-          patientId: data.appointment.patient.id } });
-      }
-      return res;
+      return await usecase.insert(data.appointment);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {appointment: Appointment}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
@@ -97,17 +94,13 @@ export const update = createServerFn({ method: "POST" })
             new AnswerPasswordRepository(auth.user.base)),
           new QuestionnaireService(
             new QuestionnaireRepository(auth.user.base))));
-      const res = await usecase.update(data.appointment);
-      if(res.ok){
-        info({ data: { title: "update Appointment", details: JSON.stringify(data),
-          patientId: data.appointment.patient.id } });
-      }
-      return res;
+      return await usecase.update(data.appointment);
     }
     return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {appointment: Appointment}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
@@ -121,12 +114,7 @@ export const del = createServerFn({ method: "POST" })
             new AnswerPasswordRepository(auth.user.base)),
           new QuestionnaireService(
             new QuestionnaireRepository(auth.user.base))));
-      const res = await usecase.delete(data.appointment);
-      if(res.ok){
-        info({ data: { title: "delete Appointment", details: JSON.stringify(data),
-          patientId: data.appointment.patient.id } });
-      }
-      return res;
+      return await usecase.delete(data.appointment);
     }
     return ng(auth.errors!);
 });

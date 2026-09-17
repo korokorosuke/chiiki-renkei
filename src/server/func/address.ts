@@ -4,7 +4,7 @@ import { AddressRepository } from "../infra/allRepository.ts"
 import type { Address } from "../domain/address.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_WRITE = {auth: Auth.MASTER, role: Role.WRITE};
 
@@ -20,46 +20,37 @@ export const getAddress = createServerFn({ method: "GET" })
 });
 
 export const insert = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data: {address: Address}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new AddressService(new AddressRepository());
-      const res = await service.insert(data.address);
-      if(res.ok){
-        info({ data: { title: "insert Address", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.insert(data.address);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data: {address: Address}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new AddressService(new AddressRepository());
-      const res = await service.update(data.address);
-      if(res.ok){
-        info({ data: { title: "update Address", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.update(data.address);
     }
     return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data: {address: Address}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new AddressService(new AddressRepository());
-      const res = await service.delete(data.address);
-      if(res.ok){
-        info({ data: { title: "delete Address", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.delete(data.address);
     }else{
       return ng(auth.errors!);
     }

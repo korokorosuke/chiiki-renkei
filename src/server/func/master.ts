@@ -4,7 +4,7 @@ import { MasterRepository } from "../infra/allRepository.ts"
 import type { Master } from "../domain/master.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ok, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.WRITE},
@@ -64,13 +64,13 @@ async function getMasterMain(id: string): Promise<string[]> {
 }
 
 export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {master: Master}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new MasterService(new MasterRepository(auth.user.base));
       if(await service.update(data.master)){
-        info({ data: { title: "update Master", details: JSON.stringify(data) } });
         return ok();
       }else{
         return ng(["登録に失敗しました。"]);

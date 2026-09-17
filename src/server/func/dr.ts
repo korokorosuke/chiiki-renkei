@@ -4,7 +4,7 @@ import { DrRepository } from "../infra/allRepository.ts"
 import type { Dr } from "../domain/dr.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_READ = [
     {auth: Auth.APPOINT, role: Role.READ},
@@ -48,46 +48,37 @@ export const getAllDrs = createServerFn({ method: "GET" })
 });
 
 export const insert = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {dr: Dr}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new DrService(new DrRepository(auth.user.base));
-      const res = await service.insert(data.dr);
-      if(res.ok){
-        info({ data: { title: "insert Dr", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.insert(data.dr);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {dr: Dr}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new DrService(new DrRepository(auth.user.base));
-      const res = await service.update(data.dr);
-      if(res.ok){
-        info({ data: { title: "update Dr", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.update(data.dr);
     }
     return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {dr: Dr}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new DrService(new DrRepository(auth.user.base));
-      const res = await service.delete(data.dr);
-      if(res.ok){
-        info({ data: { title: "delete Dr", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.delete(data.dr);
     }
     return ng(auth.errors!);
 });

@@ -4,7 +4,7 @@ import { ActivityRepository } from "../infra/allRepository.ts"
 import type { Activity } from "../domain/activity.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -25,47 +25,38 @@ export const getActivities = createServerFn({ method: "GET" })
 });
 
 export const insert = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data: { activity: Activity }) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
         const service = new ActivityService(new ActivityRepository(auth.user.base));
-        const res = await service.insert(data.activity);
-        if(res.ok){
-          info({ data: { title: "insert Activity", details: JSON.stringify(data) } });
-        }
-        return res;
+        return await service.insert(data.activity);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data: { activity: Activity }) => data)
   .handler(async ({ data }): Promise<Result> => {
 
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ActivityService(new ActivityRepository(auth.user.base));
-      const res = await service.update(data.activity);
-      if(res.ok){
-        info({ data: { title: "upate Activity", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.update(data.activity);
     }
     return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data: { activity: Activity }) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ActivityService(new ActivityRepository(auth.user.base));
-      const res = await service.delete(data.activity);
-      if(res.ok){
-        info({ data: { title: "delete Activity", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.delete(data.activity);
     }
     return ng(auth.errors!);
 });

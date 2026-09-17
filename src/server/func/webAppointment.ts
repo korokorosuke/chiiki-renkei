@@ -13,7 +13,7 @@ import { AnswerRegistration } from "../usecase/answerRegistration.ts"
 import type { WebAppointment } from "../domain/webAppointment.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, type FetchResult, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_READ = {auth: Auth.WEB, role: Role.READ};
 const AUTH_WRITE = {auth: Auth.WEB, role: Role.READ};
@@ -83,6 +83,7 @@ export const getWebAppointments = createServerFn({ method: "GET" })
 });
 
 export const insert = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {appointment: WebAppointment}) => data)
   .handler(async ({ data }): Promise<FetchResult<WebAppointment>> => {
     const auth = await authenticate(AUTH_WRITE);
@@ -99,17 +100,13 @@ export const insert = createServerFn({ method: "POST" })
               new AnswerPasswordRepository(auth.user.base)),
             new QuestionnaireService(
               new QuestionnaireRepository(auth.user.base)))));
-      const res = await usecase.insert(data.appointment);
-      if(res.ok){
-        info({ data: { title: "insert WebAppointment", details: JSON.stringify(data),
-          patientId: data.appointment.patient.id } });
-      }
-      return res;
+      return await usecase.insert(data.appointment);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {appointment: WebAppointment}) => data)
   .handler(async ({ data }): Promise<FetchResult<WebAppointment>> => {
     const auth = await authenticate(AUTH_WRITE);
@@ -126,17 +123,13 @@ export const update = createServerFn({ method: "POST" })
               new AnswerPasswordRepository(auth.user.base)),
             new QuestionnaireService(
               new QuestionnaireRepository(auth.user.base)))));
-      const res = await usecase.update(data.appointment);
-      if(res.ok){
-        info({ data: { title: "udpate WebAppointment", details: JSON.stringify(data),
-          patientId: data.appointment.patient.id } });
-      }
-      return res;
+      return await usecase.update(data.appointment);
     }
     return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {appointment: WebAppointment}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
@@ -153,12 +146,7 @@ export const del = createServerFn({ method: "POST" })
             new AnswerPasswordRepository(auth.user.base)),
           new QuestionnaireService(
               new QuestionnaireRepository(auth.user.base)))));
-      const res = await usecase.delete(data.appointment);
-      if(res.ok){
-        info({ data: { title: "delete WebAppointment", details: JSON.stringify(data),
-          patientId: data.appointment.patient.id } });
-      }
-      return res;
+      return await usecase.delete(data.appointment);
     }
     return ng(auth.errors!);
 });

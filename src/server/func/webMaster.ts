@@ -4,7 +4,7 @@ import { WebMasterRepository } from "../infra/allRepository.ts"
 import type { WebMaster } from "../domain/webMaster.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type FetchResult, type Result, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_READ = {auth: Auth.WEB, role: Role.READ};
 const AUTH_WRITE = {auth: Auth.MASTER, role: Role.WRITE};
@@ -26,17 +26,14 @@ export const getWebMaster = createServerFn({ method: "GET" })
 });
 
 export const insert = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {master: WebMaster}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new WebMasterService(new WebMasterRepository(auth.user.base));
       await service.delete(data.master);
-      const res = await service.insert(data.master);
-      if(res.ok){
-        info({ data: { title: "insert WebMaster", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.insert(data.master);
     }
     return ng(auth.errors!);
 });
@@ -44,16 +41,13 @@ export const insert = createServerFn({ method: "POST" })
 export const update = insert;
 
 export const del = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {master: WebMaster}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new WebMasterService(new WebMasterRepository(auth.user.base));
-      const res = await service.delete(data.master);
-      if(res.ok){
-        info({ data: { title: "delete WebMaster", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.delete(data.master);
     }
     return ng(auth.errors!);
 });

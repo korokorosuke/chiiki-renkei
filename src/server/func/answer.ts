@@ -5,7 +5,7 @@ import { AnswerRepository, AnswerPasswordRepository, QuestionnaireRepository } f
 import { type Answer, initialize } from "../domain/answer.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, type FetchResult, okWithData, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -61,17 +61,14 @@ export const getPassword = createServerFn({ method: "GET" })
 });
 
 export const resetPassword = createServerFn({ method: "GET" })
+  .middleware([LoggingMiddleware])
   .validator((data : {appId: string}) => data)
   .handler(async ({ data }): Promise<FetchResult<string>> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       const service = new AnswerService(new AnswerRepository(auth.user.base),
         new AnswerPasswordRepository(auth.user.base));
-      const res = await service.getPasswordService().resetPassword(data.appId);
-      if(res.ok){
-        info({ data: { title: "reset Password", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.getPasswordService().resetPassword(data.appId);
     }
     return ng(["パスワードのリセットに失敗しました。"]);
 });
@@ -127,22 +124,20 @@ export const create = createServerFn({ method: "POST" })
 });
 
 export const insert = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {answer: Answer}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new AnswerService(new AnswerRepository(auth.user.base),
         new AnswerPasswordRepository(auth.user.base));
-      const res = await service.insert(data.answer);
-      if(res.ok){
-        info({ data: { title: "insert Answer", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.insert(data.answer);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {answer: Answer, base: string}) => data)
   .handler(async ({ data }): Promise<Result> => {
     let auth;
@@ -157,27 +152,20 @@ export const update = createServerFn({ method: "POST" })
     if(data.base){
       const service = new AnswerService(new AnswerRepository(data.base),
         new AnswerPasswordRepository(data.base));
-      const res = await service.update(data.answer);
-      if(res.ok){
-        info({ data: { title: "update Answer", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.update(data.answer);
     }
     return ng(["登録に失敗しました。"]);
 });
 
 export const del = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {answer: Answer}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new AnswerService(new AnswerRepository(auth.user.base),
         new AnswerPasswordRepository(auth.user.base));
-      const res = await service.delete(data.answer);
-      if(res.ok){
-        info({ data: { title: "delete Answer", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.delete(data.answer);
     }
     return ng(auth.errors!);
 });

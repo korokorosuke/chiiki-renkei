@@ -5,7 +5,7 @@ import type { Reply } from "../domain/reply.ts"
 import type { Referral } from "../domain/referral.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_READ = {auth: Auth.REFERRAL, role: Role.READ};
 const AUTH_WRITE = {auth: Auth.REFERRAL, role: Role.WRITE};
@@ -39,46 +39,37 @@ export const getReplies = createServerFn({ method: "GET" })
 });
 
 export const insert = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {reply: Reply}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ReplyService(new ReplyRepository(auth.user.base));
-      const res = await service.insert(data.reply);
-      if(res.ok){
-        info({ data: { title: "insert Reply", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.insert(data.reply);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {reply: Reply}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ReplyService(new ReplyRepository(auth.user.base));
-      const res = await service.update(data.reply);
-      if(res.ok){
-        info({ data: { title: "udpate Reply", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.update(data.reply);
     }
     return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {reply: Reply}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ReplyService(new ReplyRepository(auth.user.base));
-      const res = await service.delete(data.reply);
-      if(res.ok){
-        info({ data: { title: "delete Reply", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.delete(data.reply);
     }
     return ng(auth.errors!);
 });

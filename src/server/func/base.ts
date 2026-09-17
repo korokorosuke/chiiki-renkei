@@ -5,7 +5,7 @@ import type { Base } from "../domain/base.ts"
 import { getBase as getSession } from '../lib/session.ts'
 import { type Result, ng } from "../lib/response.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_WRITE =  {auth: Auth.MASTER, role: Role.READ};
 
@@ -25,6 +25,7 @@ export const getSessionBase = createServerFn({ method: "GET" })
 });
 
 export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data: { base: Base }) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
@@ -32,7 +33,6 @@ export const update = createServerFn({ method: "POST" })
       const service = new BaseService(new BaseRepository());
       const res = await service.update(data.base);
       if(res.ok){
-        info({ data: { title: "update Base", details: JSON.stringify(data) } });
       }
       return res;
     }

@@ -4,7 +4,7 @@ import { ClassificationRepository } from "../infra/allRepository.ts"
 import type { Classification } from "../domain/classification.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_READ_ALL = [
   {auth: Auth.MASTER, role: Role.READ},
@@ -23,46 +23,37 @@ export const getAllClassifications = createServerFn({ method: "GET" })
 });
 
 export const insert = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {Classification: Classification}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ClassificationService(new ClassificationRepository(auth.user.base));
-      const res = await service.insert(data.Classification);
-      if(res.ok){
-        info({ data: { title: "insert Classification", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.insert(data.Classification);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {Classification: Classification}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ClassificationService(new ClassificationRepository(auth.user.base));
-      const res = await service.update(data.Classification);
-      if(res.ok){
-        info({ data: { title: "update Classification", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.update(data.Classification);
     }
     return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {Classification: Classification}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ClassificationService(new ClassificationRepository(auth.user.base));
-      const res = await service.delete(data.Classification);
-      if(res.ok){
-        info({ data: { title: "delete Classification", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.delete(data.Classification);
     }
     return ng(auth.errors!);
 });

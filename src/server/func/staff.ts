@@ -4,7 +4,7 @@ import { StaffRepository } from "../infra/allRepository.ts"
 import type { Staff } from "../domain/staff.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { LoggingMiddleware } from "../middleware/logging.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -40,46 +40,37 @@ export const getStaffs = createServerFn({ method: "GET" })
 });
 
 export const insert = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {staff: Staff}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new StaffService(new StaffRepository(auth.user.base));
-      const res = await service.insert(data.staff);
-      if(res.ok){
-        info({ data: { title: "insert Staff", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.insert(data.staff);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {staff: Staff}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new StaffService(new StaffRepository(auth.user.base));
-      const res = await service.update(data.staff);
-      if(res.ok){
-        info({ data: { title: "udpate Staff", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.update(data.staff);
     }
     return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
   .validator((data : {staff: Staff}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new StaffService(new StaffRepository(auth.user.base));
-      const res = await service.delete(data.staff);
-      if(res.ok){
-        info({ data: { title: "delete Staff", details: JSON.stringify(data) } });
-      }
-      return res;
+      return await service.delete(data.staff);
     }
     return ng(auth.errors!);
 });
