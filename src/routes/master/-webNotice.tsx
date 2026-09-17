@@ -3,7 +3,7 @@ import { initWebNotice } from "../../helper/webtypes.ts"
 import { getAllNotices, insert, update, del } from "../../server/func/webNotice.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
-import { type WebNotice, NOTICE_PAGES } from "../../server/domain/webNotice.ts"
+import { type WebNotice, type NoticePage, NOTICE_PAGES } from "../../server/domain/webNotice.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
 import batsu from "../assets/del.svg"
 import { modificationAreaStyle, selectedStyle } from "./-css.ts"
@@ -141,7 +141,7 @@ export function WebNotice(props: Props){
           </div>
           <div>
             <select value={selected().page} class={ input( { size: "id" }) }
-                onChange={(e)=>handleChange({page: e.target.value})}>
+                onChange={(e)=>handleChange({page: e.target.value as NoticePage})}>
               <For each={NOTICE_PAGES}>{(page)=>
                 <option value={page}>{page}</option>
               }</For>
