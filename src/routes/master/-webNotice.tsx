@@ -1,6 +1,6 @@
 import { createSignal, Show, For, onMount } from "solid-js"
 import { initWebNotice } from "../../helper/webtypes.ts"
-import { getAllNotices, insert, update, del } from "../../server/func/webnotice.ts"
+import { getAllNotices, insert, update, del } from "../../server/func/webNotice.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import { type WebNotice, NOTICE_PAGES } from "../../server/domain/webNotice.ts"

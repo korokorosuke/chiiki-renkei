@@ -3,7 +3,7 @@ import { initAppointment } from "../../helper/types.ts"
 import { AppointmentBase } from "./-appointmentBase.tsx"
 import { toAppointment } from "../../helper/webtypes.ts"
 import { getFac } from "../../server/func/facility.ts"
-import { getWebAppointment } from "../../server/func/webappointment.ts"
+import { getWebAppointment } from "../../server/func/webAppointment.ts"
 import type { Appointment } from "../../server/domain/appointment.ts"
 
 type Props = {

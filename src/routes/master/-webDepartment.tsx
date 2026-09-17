@@ -1,6 +1,6 @@
 import { createSignal, For, Show, Switch, Match, onMount } from "solid-js"
 import { initWebDept } from "../../helper/webtypes.ts"
-import { getWebDepartments, insert, update, del } from "../../server/func/webdepartment.ts"
+import { getWebDepartments, insert, update, del } from "../../server/func/webDepartment.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import type { WebDepartment } from "../../server/domain/webDepartment.ts"

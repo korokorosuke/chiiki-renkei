@@ -1,6 +1,6 @@
 import { createSignal, createEffect, For, Show, onMount } from "solid-js"
 import { toLocalDateString, getWeekName } from "../../lib/datetime.ts"
-import { getNotices } from "../../server/func/webnotice.ts"
+import { getNotices } from "../../server/func/webNotice.ts"
 import type { WebNotice } from "../../server/domain/webNotice.ts"
 import { css } from "../../styled-system/css/"
 

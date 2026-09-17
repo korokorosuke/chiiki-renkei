@@ -1,6 +1,6 @@
 import { createSignal, onMount } from "solid-js"
 import { unwrap, type SetStoreFunction } from "solid-js/store"
-import { getPatient } from "../../server/func/webpatient.ts"
+import { getPatient } from "../../server/func/webPatient.ts"
 import { DateInput } from "../../components/DateInput.tsx"
 import { AddressInput } from "../../components/AddressInput.tsx"
 import { ContainerWeb } from "../../components/Container.tsx"
