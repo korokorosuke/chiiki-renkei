@@ -17,8 +17,8 @@ type Props = {
 
 function App(props: Props){
 
-    function signout(){
-        del().then(()=>{});
+    async function signout(){
+        await del();
         location.href = `/login/${props.auth.base}`;
     }
 

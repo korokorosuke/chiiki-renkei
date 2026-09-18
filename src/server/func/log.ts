@@ -69,10 +69,10 @@ export const debug = createServerFn({ method: "POST" })
 });
 
 export const writeLogWithBase = createServerFn({ method: "POST" })
-  .validator((data : {base: string, level: LogLevel, title: string, details: string}) => data)
+  .validator((data : {base: string, level: LogLevel, title: string, details: string, userId?: string}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const service = new LogService(new LogRepository(data.base));
-    const res = await service.write(data.level, data.title, data.details)
+    const res = await service.write(data.level, data.title, data.details, data.userId);
     return res ? ok() : ng(["書き込みに失敗しました"]);
 });
 
@@ -86,4 +86,4 @@ export const getList = createServerFn({ method: "GET" })
       return res;
     }
     return [];
-  });
+});

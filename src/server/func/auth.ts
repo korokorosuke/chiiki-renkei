@@ -6,7 +6,7 @@ import { AuthService } from "../domain/authService.ts"
 import { BaseService } from "../domain/baseService.ts"
 import { getSessionData, setSessionData, type SessionData } from "../lib/session.ts"
 import { type Result, type FetchResult, ok, ng } from "../lib/response.ts"
-import { info } from "./log.ts"
+import { info, writeLogWithBase } from "./log.ts"
 import * as base64 from "../../lib/base64.ts"
 
 export const get = createServerFn({ method: "GET" })
@@ -59,7 +59,9 @@ export const create = createServerFn({ method: "POST" })
         user.failCount = 1;
       }
       await service.update(user);
-      info({ data: { title: "login", details: `fail:${id} count:${user.failCount}${user.locked ? " (locked)" : ""}` } });
+      writeLogWithBase({ data: { base, level: "info", title: "login",
+        details: `fail:${id} count:${user.failCount}${user.locked ? " (locked)" : ""}`,
+        userId: user.id } });
       return ng(["ユーザーかパスワードが不正です。"]);
     }else{
       info({ data: { title: "login", details: "fail:" + id } });
@@ -69,7 +71,11 @@ export const create = createServerFn({ method: "POST" })
 
 export const del = createServerFn({ method: "POST" })
   .handler(async (): Promise<Result> => {
+    const res = await get();
     await setSessionData({token: "", base: undefined});
-    info({ data: { title: "logout", details: "" } });
+    if(res.ok){
+      writeLogWithBase({ data: { base: res.data.base, level: "info", title: "logout", details: "success",
+        userId: res.ok ? res.data.id : undefined } });
+    }
     return ok();
 });
