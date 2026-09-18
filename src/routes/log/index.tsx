@@ -20,7 +20,7 @@ function App() {
   const [logs, setLogs] = createSignal<Log[]>([]);
 
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -51,7 +51,7 @@ function App() {
 
   return (
     <>
-    <Header title="ログ検索" visible={false} handler={()=>{}} auth={user} />
+    <Header title="ログ検索" visible={false} handler={()=>{}} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" }) }>
         <div>

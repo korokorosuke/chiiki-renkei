@@ -30,7 +30,7 @@ import { BaseRepository as RdbBaseRepository } from "../src/server/infra/rdb/bas
 
 let BASE = "demo";
 let BASE_NAME = "デモ病院";
-let BASE_COLOR = "neutral.800";
+let BASE_COLOR = "stone.800";
 
 const decoder = new TextDecoder();
 console.log("施設IDを入力してください(default:demo):");
@@ -44,7 +44,7 @@ for await (const chunk of Deno.stdin.readable) {
   }
   if(cnt === 2){
     BASE_NAME = decoder.decode(chunk).trim();
-    console.log("色を入力してください(default:neutral.800):");
+    console.log("色を入力してください(default:stone.800):");
     cnt++;
     continue;
   }

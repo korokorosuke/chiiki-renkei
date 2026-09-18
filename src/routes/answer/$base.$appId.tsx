@@ -5,18 +5,22 @@ import { initAnswer } from "../../helper/types.ts"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
 import type { Answer } from "../../server/domain/answer.ts"
 import { exists, getAnswersByPassword } from "../../server/func/answer.ts"
-import { header, button, input } from "../../styled-system/recipes/"
+import { button, input } from "../../styled-system/recipes/"
 import { css } from "../../styled-system/css/"
+import { token } from "../../styled-system/tokens/"
+import { root, menu, item, title } from "../-headerCss.ts"
 import { searchError } from "../../styles/common.ts"
 import { createFileRoute } from "@tanstack/solid-router"
+import { getBase } from "../../server/func/base.ts"
 
 export const Route = createFileRoute("/answer/$base/$appId")({
   component: App,
   loader: async ({ params: { base, appId }}) => {
     if(base && appId){
-      return { base, appId, result: await exists({ data: { appId, base } }) };
+      const baseData = await getBase({ data: { id: base } })
+      return { base, baseData, appId, result: await exists({ data: { appId, base } }) };
     }
-    return { base, appId, result: false };
+    return { base, baseData: undefined, appId, result: false };
   }
 });
 
@@ -31,7 +35,7 @@ function App() {
   const [loading, setLoading] = createSignal(true);
 
   const loaderData = Route.useLoaderData();
-  const { base, appId, result } = loaderData();
+  const { base, appId, baseData, result } = loaderData();
 
   function terminateModification(status: MessageStatus): void{
     setModification(false);
@@ -70,13 +74,16 @@ function App() {
   });
 
 
-  const head = header();
   return (
     <>
-    <header class={ head.root }>
-      <nav class={ head.menu }>
-        <div class={ head.item }>
-          <div class={ head.title }>問診入力</div>
+    <header class={ root }
+        /* @ts-ignore */
+        style={{"--color": "white", "--color-bg": token(`colors.${baseData.color}`),
+        /* @ts-ignore */
+        "--color-bg-hover": token(`colors.${baseData.color.replace("600", "500").replace("800", "700")}`)}}>
+      <nav class={ menu }>
+        <div class={ item }>
+          <div class={ title }>問診入力</div>
         </div>
       </nav>
     </header>

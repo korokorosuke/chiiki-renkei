@@ -26,7 +26,7 @@ function App() {
   const [visible, setVisible] = createSignal(false);
 
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -107,7 +107,7 @@ function App() {
 
   return (
     <>
-    <Header title="施設医師登録" visible={visible()} handler={handleNew} auth={user} />
+    <Header title="施設医師登録" visible={visible()} handler={handleNew} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" })}>
         <label>施設ID<input type="text" class={ input({ size: "first", space: "first" }) }

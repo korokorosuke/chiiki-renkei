@@ -69,7 +69,7 @@ function App() {
 
   const loaderData = Route.useLoaderData();
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   async function terminateModification(status: MessageStatus): Promise<void>{
     setModification(false);
@@ -146,7 +146,7 @@ function App() {
 
   return (
     <>
-    <Header title="返事登録" visible={false} handler={()=>{}} auth={user} />
+    <Header title="返事登録" visible={false} handler={()=>{}} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" })}>
         <label>患者ID<input type="text" class={ input({ size: "first", space: "first" }) }

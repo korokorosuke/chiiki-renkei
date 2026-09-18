@@ -32,7 +32,7 @@ function App() {
 
   return (
     <>
-    <Header title="マスター登録" visible={false} handler={()=>{}} auth={user} />
+    <Header title="マスター登録" visible={false} handler={()=>{}} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" })}>
         <label>種類

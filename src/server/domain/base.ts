@@ -1,7 +1,8 @@
 import { validater } from "../lib/validation.ts"
 import { z } from "zod"
 
-export const BASE_COLORS = ["neutral.800", "red.600", "amber.600", "green.600", "blue.600", "violet.600", "fuchsia.600"];
+export const BASE_COLORS = [
+  "stone.800", "amber.600", "lime.600", "teal.600", "sky.600", "indigo.600", "fuchsia.600", "rose.600"];
 
 export const baseSchema = z.object({
   id: z.string()

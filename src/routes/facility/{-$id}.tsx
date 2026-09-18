@@ -37,7 +37,7 @@ function App() {
 
   const loaderData = Route.useLoaderData();
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   function terminateModification(status: MessageStatus): void{
     setModification(false);
@@ -126,7 +126,7 @@ function App() {
 
   return (
     <>
-    <Header title="施設検索" visible handler={handleNew} auth={user} />
+    <Header title="施設検索" visible handler={handleNew} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" }) }>
         <label>検索(IDまたは名称)<input type="text"

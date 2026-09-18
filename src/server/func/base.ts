@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/solid-start"
 import { BaseService } from "../domain/baseService.ts"
 import { BaseRepository } from "../infra/allRepository.ts"
 import type { Base } from "../domain/base.ts"
-import { getBase as getSession } from '../lib/session.ts'
+import { getBase as getSession, setBase } from '../lib/session.ts'
 import { type Result, ng } from "../lib/response.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { LoggingMiddleware } from "../middleware/logging.ts"
@@ -33,6 +33,7 @@ export const update = createServerFn({ method: "POST" })
       const service = new BaseService(new BaseRepository());
       const res = await service.update(data.base);
       if(res.ok){
+        await setBase(data.base);
       }
       return res;
     }

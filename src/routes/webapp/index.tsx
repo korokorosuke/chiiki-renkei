@@ -48,7 +48,7 @@ function App() {
   const [depts, setDepts] = createSignal<WebDepartment[]>([]);
 
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   const deferment = 1;
   let facility: Fac;
@@ -204,7 +204,7 @@ function App() {
   const progyet = progress({ status: "yet" });
   return (
     <>
-    <Header create={create} history={history} home={toHome} user={user} />
+    <Header create={create} history={history} home={toHome} user={user} color={base.color} />
     <main class={status()===Status.LIST?"main-list-area":"main-area"}>
       <div>
       <Show when={status()>Status.READY}>

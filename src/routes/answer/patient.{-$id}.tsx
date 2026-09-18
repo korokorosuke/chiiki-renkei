@@ -46,7 +46,7 @@ function App() {
 
   const loaderData = Route.useLoaderData();
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   function handleChange(e: KeyboardEvent){
     if(e.key === "Enter"){
@@ -91,7 +91,7 @@ function App() {
 
   return (
     <>
-    <Header title="問診一覧" visible={false} handler={()=>{}} auth={user} />
+    <Header title="問診一覧" visible={false} handler={()=>{}} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" })}>
         <label>患者ID<input type="text" class={ input({ size: "first", space: "first" }) }

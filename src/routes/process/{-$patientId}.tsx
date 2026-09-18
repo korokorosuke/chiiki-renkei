@@ -51,7 +51,7 @@ function App() {
 
   const loaderData = Route.useLoaderData();
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -119,7 +119,7 @@ function App() {
 
   return (
     <>
-    <Header title="紹介状況" visible={false} handler={()=>{}} auth={user} />
+    <Header title="紹介状況" visible={false} handler={()=>{}} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" })}>
         <label>患者ID<input type="text" class={ input({ size: "first", space: "first" }) }

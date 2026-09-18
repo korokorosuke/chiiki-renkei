@@ -29,7 +29,7 @@ function App() {
   const [id, setId] = createSignal("");
 
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -114,7 +114,7 @@ function App() {
 
   return (
     <>
-    <Header title={title()} visible={false} handler={()=>{}} auth={user} />
+    <Header title={title()} visible={false} handler={()=>{}} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" }) }>
         <div>

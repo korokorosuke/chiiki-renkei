@@ -28,7 +28,7 @@ function App() {
   const [appointment, setAppointment] = createSignal<Appointment>(initAppointment());
 
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -88,7 +88,7 @@ function App() {
 
   return (
     <>
-    <Header title="受診報告一覧" visible={false} handler={()=>{}} auth={user} />
+    <Header title="受診報告一覧" visible={false} handler={()=>{}} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" }) }>
         <div>

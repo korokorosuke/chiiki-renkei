@@ -23,7 +23,7 @@ function App() {
   const [newadd, setNewadd] = createSignal<boolean>(false);
 
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   async function terminateModification(status: MessageStatus): Promise<void>{
     setModification(false);
@@ -72,7 +72,7 @@ function App() {
 
   return (
     <>
-    <Header title="活動記録" visible handler={handleNew} auth={user} />
+    <Header title="活動記録" visible handler={handleNew} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" }) }>
         <div>

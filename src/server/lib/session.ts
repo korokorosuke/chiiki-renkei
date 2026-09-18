@@ -54,3 +54,8 @@ export async function getBase(): Promise<Base>{
         throw new Error();
     }
 }
+
+export async function setBase(base: Base): Promise<boolean>{
+    const data = await getSessionData();
+    return await setSessionData({token: data.token, base: base});
+}

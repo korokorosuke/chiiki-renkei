@@ -59,11 +59,11 @@ function MenuBlock(props: Props) {
 
 function Home() {
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   return (
     <>
-    <Header title="地域連携システム" visible={false} handler={()=>{}} auth={user} />
+    <Header title="地域連携システム" visible={false} handler={()=>{}} auth={user} color={base.color} />
     <main class={ flex({ direction: "column" }) }>
       <Notice />
       <Show when={user.authActivity >= 2 || user.authWeb >= 1}>

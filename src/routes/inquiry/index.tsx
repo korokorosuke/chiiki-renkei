@@ -24,7 +24,7 @@ function App() {
   const [newadd, setNewadd] = createSignal<boolean>(false);
 
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -124,7 +124,7 @@ function App() {
 
   return (
     <>
-    <Header title="問い合わせ登録" visible handler={handleNew} auth={user} />
+    <Header title="問い合わせ登録" visible handler={handleNew} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" }) }>
         <div>

@@ -1,5 +1,5 @@
 import { defineConfig } from "@pandacss/dev"
-import { inputRecipe, buttonRecipe, tableRecipe, headerRecipe, alertAreaRecipe,
+import { inputRecipe, buttonRecipe, tableRecipe, alertAreaRecipe,
   webpageRecipe, listRecipe, areaRecipe, etcRecipe, progressRecipe,
   calendarRecipe, timeAreaRecipe } from "./src/styles/recipes.ts"
 import { globalCss } from "./src/styles/global.ts"
@@ -12,8 +12,9 @@ export default defineConfig({
     css: [
       {
         properties: {
-          bg: ["neutral.800", "red.600", "green.600", "blue.600", "amber.600", "violet.600", "fuchsia.600",
-              "neutral.700", "red.500", "green.500", "blue.500", "amber.500", "violet.500", "fuchsia.500"]
+          bg: [
+            "stone.800", "amber.600", "lime.600", "teal.600", "sky.600", "indigo.600", "fuchsia.600", "rose.600"
+          ]
         }
       }
     ]
@@ -39,16 +40,15 @@ export default defineConfig({
         button: buttonRecipe,
         table: tableRecipe,
         alertArea: alertAreaRecipe,
-        web: webpageRecipe,
         list: listRecipe,
         area: areaRecipe,
         etc: etcRecipe,
+      },
+      slotRecipes: {
+        web: webpageRecipe,
         progress: progressRecipe,
         calendar: calendarRecipe,
         timeArea: timeAreaRecipe,
-      },
-      slotRecipes: {
-        header: headerRecipe,
       },
       keyframes: keyframes,
       animationStyles: animationStyles,

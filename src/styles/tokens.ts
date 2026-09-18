@@ -40,15 +40,6 @@ export const baseTokens = defineTokens({
       front: { value: "#383838", description: "button text color" },
     },
 
-    //header colors
-    header: {
-      color: { value: "#ffffff", description: "header text color" },
-      bg: {
-        DEFAULT: { value: "#323232", description: "header background color" },
-        hover: { value: "#424242", description: "header background color" },
-      },
-    },
-
     //table colors
     table: {
       title: { value: "#d5e2ff", description: "table header background color" },

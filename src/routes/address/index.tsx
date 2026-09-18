@@ -20,7 +20,7 @@ function App() {
   const [message, setMessage] = createSignal("");
 
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -89,7 +89,7 @@ function App() {
 
   return (
     <>
-    <Header title="住所登録" visible handler={handleNew} auth={user} />
+    <Header title="住所登録" visible handler={handleNew} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" }) }>
         <label>郵便番号<input type="text" class={ input({ size: "first", space: "first" }) }

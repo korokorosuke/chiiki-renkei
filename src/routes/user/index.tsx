@@ -23,7 +23,7 @@ function App() {
   const [depts, setDepts] = createSignal<Department[]>([]);
 
   const context = Route.useRouteContext();
-  const { user } = context();
+  const { user, base } = context();
 
   let refInput: HTMLInputElement | undefined;
 
@@ -99,7 +99,7 @@ function App() {
 
   return (
     <>
-    <Header title="ユーザー登録" visible handler={handleNew} auth={user} />
+    <Header title="ユーザー登録" visible handler={handleNew} auth={user} color={base.color} />
     <main>
       <div class={ area({ type: "search" })}>
         <label>ユーザー<input type="text" class={ input({ size: "first", space: "first" }) }
