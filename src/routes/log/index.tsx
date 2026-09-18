@@ -1,8 +1,8 @@
-import { createSignal, Show, onMount } from "solid-js"
+import { createSignal, Show, onMount, For } from "solid-js"
 import { ListArea } from "./-listArea.tsx"
 import { getList } from "../../server/func/log.ts"
 import Header from "../-header.tsx"
-import { type Log, initialize } from "../../server/domain/log.ts"
+import { type Log, LOG_LEVEL, initialize } from "../../server/domain/log.ts"
 import { css, cx } from "../../styled-system/css/"
 import { button, input, area, etc } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
@@ -67,10 +67,15 @@ function App() {
             onKeyUp={(e)=>handleSearch(e)} /></label>
         </div>
         <div>
-          <label><div>ログレベル</div><input type="text" value={level()}
-            class={ input({ size: "search" }) }
-            onChange={(e)=>setLevel(e.target.value)}
-            onKeyUp={(e)=>handleSearch(e)} /></label>
+          <label><div>ログレベル</div><select value={level()}
+              class={ input({ size: "search" }) }
+              onChange={(e)=>setLevel(e.target.value)}
+              onKeyUp={(e)=>handleSearch(e)}>
+            <option value=""></option>
+            <For each={LOG_LEVEL}>{(level) =>
+              <option value={level}>{level}</option>
+            }</For>
+          </select></label>
         </div>
         <div>
           <label><div>ユーザーID</div><input type="text" value={userId()}

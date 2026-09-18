@@ -65,6 +65,7 @@ export class LogRepository implements ILogRepository, ILogListRepository {
         }
         list.push(r.value);
       }
+      list.sort((a, b) => b.datetime.localeCompare(a.datetime))
     }
     this.database.close();
     return list;

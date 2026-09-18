@@ -17,13 +17,14 @@ export function ListArea(props: ViewProps) {
       <table class={ table({ size: "full", padding: "small" }) }>
         <thead>
           <tr>
-            <th>日時</th><th>タイトル</th><th>詳細</th><th>ユーザーID</th><th>患者ID</th>
+            <th>日時</th><th>レベル</th><th>タイトル</th><th>詳細</th><th>ユーザーID</th><th>患者ID</th>
           </tr>
         </thead>
         <tbody>
           <For each={props.logs()}>{(log)=>
             <tr onClick={()=>handleClick(log)}>
               <td class={ list({ font: "number", size: "rem11" }) }>{log.datetime}</td>
+              <td class={ list({ font: "number" }) }>{log.level}</td>
               <td class={ list({ size: "rem11" }) }>{log.title}</td>
               <td class={ list() }>{log.details.substring(0, 50)}</td>
               <td class={ list({ font: "number", size: "rem5" }) }>{log.userId}</td>

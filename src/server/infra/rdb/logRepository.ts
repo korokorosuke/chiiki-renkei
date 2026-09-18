@@ -3,7 +3,7 @@ import type { ILogRepository } from "../../domain/logService.ts"
 import type { ILogListRepository } from "../../domain/logListService.ts"
 import { Db } from "./db.ts"
 import { log } from "../../db/schema.ts"
-import { sql, and, eq, gte, lte } from "drizzle-orm"
+import { sql, and, eq, gte, lte, desc } from "drizzle-orm"
 
 type LogData = typeof log.$inferInsert;
 
@@ -52,7 +52,7 @@ export class LogRepository implements ILogRepository, ILogListRepository {
         userId ? eq(log.userId, userId) : undefined,
         patientId ? eq(log.patientId, patientId) : undefined,
       )
-    );
+    ).orderBy(desc(log.datetime));
     return logs.map((log) => ({ ...log, level: log.level as LogLevel,
       userId: log.userId ? log.userId : undefined,
       patientId: log.patientId ? log.patientId : undefined }));

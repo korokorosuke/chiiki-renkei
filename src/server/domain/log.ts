@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-const LOG_LEVEL = ["debug", "info", "warn", "error", "fatal"] as const;
+export const LOG_LEVEL = ["debug", "info", "warn", "error", "fatal"] as const;
 export type LogLevel = typeof LOG_LEVEL[number];
 export const NO_BASE = "nothing";
 
