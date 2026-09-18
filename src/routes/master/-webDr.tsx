@@ -7,7 +7,7 @@ import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDi
 import type { WebDr } from "../../server/domain/webDr.ts"
 import type { WebDepartment } from "../../server/domain/webDepartment.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
-import batsu from "../assets/del.svg"
+import batsu from "../../assets/del.svg"
 import { modificationAreaStyle, selectedStyle } from "./-css.ts"
 import { button, etc, table, input } from "../../styled-system/recipes/"
 import { css } from "../../styled-system/css/"

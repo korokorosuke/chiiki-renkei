@@ -1,7 +1,7 @@
 import { createSignal, Show, For, Index, onMount, batch, type Accessor, type Setter } from "solid-js"
 import { createStore, unwrap } from "solid-js/store"
 import { initInquiry, initPatient, initFac, toFac, initUser, toUser } from "../../helper/types.ts"
-import batsu from "../assets/del.svg"
+import batsu from "../../assets/del.svg"
 import { ResponseModify } from "./-responseModify.tsx"
 import { Container, ContainerImage } from "../../components/Container.tsx"
 import { toDateHHMMString } from "../../lib/datetime.ts"

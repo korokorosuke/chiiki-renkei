@@ -1,5 +1,5 @@
 import { Show } from "solid-js"
-import logout from "../assets/logout.svg"
+import logout from "../../assets/logout.svg"
 import { isUser } from "../../helper/webtypes.ts"
 import { del } from "../../server/func/auth.ts"
 import type { AuthUser } from "../../server/domain/user.ts"

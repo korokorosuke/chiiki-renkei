@@ -4,7 +4,7 @@ import { DoneReport } from "../report/-done.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import type { Appointment } from "../../server/domain/appointment.ts"
 import { initAppointment } from "../../helper/types.ts"
-import pdf from "../assets/pdf.svg"
+import pdf from "../../assets/pdf.svg"
 import { button, area, table, list } from "../../styled-system/recipes/"
 import { css } from "../../styled-system/css/"
 
