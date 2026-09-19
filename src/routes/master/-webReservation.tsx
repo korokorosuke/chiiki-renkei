@@ -95,7 +95,7 @@ export function WebReservation(props: Props) {
 
   async function deploy(): Promise<void>{
     if(!inputToData()){
-      setInputToData(inputFromData);
+      setInputToData(inputFromData());
     }else if(inputFromData() > inputToData()){
       alert("日付が不正です。")
     }
