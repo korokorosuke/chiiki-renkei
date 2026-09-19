@@ -70,9 +70,9 @@ function App() {
     let res;
     if(newadd()){
       setSelected("createdBy", toUser(user));
-      res = await insert({data: {appointment: app}});
+      res = await insert({data: {webAppointment: app}});
     }else{
-      res = await updateData({data: {appointment: app}});
+      res = await updateData({data: {webAppointment: app}});
     }
     if(res.ok){
       if(newadd() && res.data){
@@ -87,7 +87,7 @@ function App() {
   }
 
   async function del(): Promise<boolean>{
-    const res = await deleteData({data: {appointment: unwrap(selected)}});
+    const res = await deleteData({data: {webAppointment: unwrap(selected)}});
     if(res.ok){
       setSelected(reconcile(initWebAppointment()));
       return true;

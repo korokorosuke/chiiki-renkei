@@ -43,36 +43,36 @@ export const getReferralTos = createServerFn({ method: "GET" })
 
 export const insert = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
-  .validator((data : {referral: ReferralTo}) => data)
+  .validator((data : {referralTo: ReferralTo}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ReferralToService(new ReferralToRepository(auth.user.base));
-      return await service.insert(data.referral);
+      return await service.insert(data.referralTo);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
-  .validator((data : {referral: ReferralTo}) => data)
+  .validator((data : {referralTo: ReferralTo}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ReferralToService(new ReferralToRepository(auth.user.base));
-      return await service.update(data.referral);
+      return await service.update(data.referralTo);
     }
     return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
-  .validator((data : {referral: ReferralTo}) => data)
+  .validator((data : {referralTo: ReferralTo}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       const service = new ReferralToService(new ReferralToRepository(auth.user.base));
-      return await service.delete(data.referral);
+      return await service.delete(data.referralTo);
     }
     return ng(auth.errors!);
 });

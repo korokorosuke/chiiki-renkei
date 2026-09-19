@@ -3,10 +3,10 @@ import { info } from '../func/log.ts'
 
 export const LoggingMiddleware = createMiddleware({ type: 'function' }).server(async ({ next }) => {
   const res = await next();
-  // @ts-ignore: 型チェックがおかしい
-  const { result, data, serverFnMeta: { name, filename } } = res;
+  // @ts-ignore: 型チェックできない
+  const { result, data, serverFnMeta: { name } } = res;
   if(result.ok){
-    const className = filename.split("/").pop()?.split(".")[0];
+    const className = Object.keys(data)[0];
     const className2 = className.charAt(0).toUpperCase() + className.slice(1);
     let pid: string|undefined;
     if(className === "patient"){

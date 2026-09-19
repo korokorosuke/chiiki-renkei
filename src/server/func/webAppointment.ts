@@ -84,7 +84,7 @@ export const getWebAppointments = createServerFn({ method: "GET" })
 
 export const insert = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
-  .validator((data : {appointment: WebAppointment}) => data)
+  .validator((data : {webAppointment: WebAppointment}) => data)
   .handler(async ({ data }): Promise<FetchResult<WebAppointment>> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
@@ -100,14 +100,14 @@ export const insert = createServerFn({ method: "POST" })
               new AnswerPasswordRepository(auth.user.base)),
             new QuestionnaireService(
               new QuestionnaireRepository(auth.user.base)))));
-      return await usecase.insert(data.appointment);
+      return await usecase.insert(data.webAppointment);
     }
     return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
-  .validator((data : {appointment: WebAppointment}) => data)
+  .validator((data : {webAppointment: WebAppointment}) => data)
   .handler(async ({ data }): Promise<FetchResult<WebAppointment>> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
@@ -123,14 +123,14 @@ export const update = createServerFn({ method: "POST" })
               new AnswerPasswordRepository(auth.user.base)),
             new QuestionnaireService(
               new QuestionnaireRepository(auth.user.base)))));
-      return await usecase.update(data.appointment);
+      return await usecase.update(data.webAppointment);
     }
     return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
-  .validator((data : {appointment: WebAppointment}) => data)
+  .validator((data : {webAppointment: WebAppointment}) => data)
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
@@ -146,7 +146,7 @@ export const del = createServerFn({ method: "POST" })
             new AnswerPasswordRepository(auth.user.base)),
           new QuestionnaireService(
               new QuestionnaireRepository(auth.user.base)))));
-      return await usecase.delete(data.appointment);
+      return await usecase.delete(data.webAppointment);
     }
     return ng(auth.errors!);
 });

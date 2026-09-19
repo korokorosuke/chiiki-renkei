@@ -26,7 +26,7 @@ export function PatIdInput(props: Props){
     const app = unwrap(props.selected);
     app.patient.id = id();
     app.updatedBy = toUser(props.user);
-    const res = await update({data: {appointment: app}});
+    const res = await update({data: {webAppointment: app}});
     if(res.ok){
       props.setSelected("updatedBy", app.updatedBy);
       props.setSelected("patient", "id", id());

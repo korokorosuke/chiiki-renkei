@@ -50,9 +50,9 @@ export function ModificationArea(props: ViewProps){
     }
     let res;
     if(props.newadd()){
-      res = await insert({data: {referral: r}});
+      res = await insert({data: {referralTo: r}});
     }else{
-      res = await update({data: {referral: r}});
+      res = await update({data: {referralTo: r}});
     }
     if(res.ok){
       props.setReferral(r);
@@ -67,7 +67,7 @@ export function ModificationArea(props: ViewProps){
       return;
     }
 
-    const res = await del({data: {referral: props.referral()}});
+    const res = await del({data: {referralTo: props.referral()}});
     if(res.ok){
       props.setReferral(initReferralTo());
       props.terminateModification("delete");
