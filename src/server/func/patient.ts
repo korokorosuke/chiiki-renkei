@@ -4,7 +4,7 @@ import { PatientRepository } from "../infra/allRepository.ts"
 import type { Patient } from "../domain/patient.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
-import { LoggingMiddleware } from "../middleware/logging.ts"
+import { LoggingMiddleware, LoggingPatientMiddleware } from "../middleware/logging.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -27,6 +27,7 @@ export const getPatients = createServerFn({ method: "GET" })
 });
 
 export const getPatient = createServerFn({ method: "GET" })
+  .middleware([LoggingPatientMiddleware])
   .validator((data : {id: string}) => data)
   .handler(async ({ data }): Promise<Patient|undefined> => {
     const auth = await authenticate(AUTH_READ);

@@ -71,6 +71,19 @@ export const debug = createServerFn({ method: "POST" })
 export const writeLogWithBase = createServerFn({ method: "POST" })
   .validator((data : {base: string, level: LogLevel, title: string, details: string, userId?: string}) => data)
   .handler(async ({ data }): Promise<Result> => {
+    const logOperation = Deno.env.get(LOG_LEVEL);
+    const logOrder = LOG_ORDER[data.level];
+    if(!logOperation){
+      return ok();
+    }
+    const logLevel = LOG_ORDER[logOperation as LogLevel];
+    if(!logLevel){
+      return ok();
+    }
+    if(logOrder < logLevel){
+      return ok();
+    }
+
     const service = new LogService(new LogRepository(data.base));
     const res = await service.write(data.level, data.title, data.details, data.userId);
     return res ? ok() : ng(["書き込みに失敗しました"]);

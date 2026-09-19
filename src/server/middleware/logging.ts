@@ -18,4 +18,22 @@ export const LoggingMiddleware = createMiddleware({ type: 'function' }).server(a
       patientId: pid } });
   }
   return res;
-})
+});
+
+export const LoggingPatientMiddleware = createMiddleware({ type: 'function' })
+    // @ts-ignore: 型チェックできない
+    .server(async ({ next, request: { headers, url } } ) => {
+  const res = await next();
+  // @ts-ignore: 型チェックできない
+  const { result, serverFnMeta: { name } } = res;
+  if(result){
+    const host = headers.get("host");
+    const regex = new RegExp(`http[s]?://${host}`);
+    let path = url.replace(regex, "");
+    if(path.startsWith("/_serverFn")){
+      path = headers.get("referer").replace(regex, "");
+    }
+    info({ data: { title: name, details: path, patientId: result.id } });
+  }
+  return res;
+});

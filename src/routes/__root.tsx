@@ -13,19 +13,19 @@ import { get } from '../server/func/auth.ts'
 import { getSessionBase } from '../server/func/base.ts'
 import { initialize } from '../server/domain/user.ts'
 import { initialize as initBase } from '../server/domain/base.ts'
-import { info, writeLogWithBase } from "../server/func/log.ts"
+import { debug, writeLogWithBase } from "../server/func/log.ts"
 import { getBaseFromPath } from "../server/domain/log.ts"
 
 // @ts-ignore: URLをimportするときの型定義がないため
 import styleCss from '../styles.css?url'
 
-function writeLog(path: string) {
-  info({ data: { title: "page load", details: path } }).then(()=>{});
+function writeLog(path: string, userId?: string) {
+  debug({ data: { title: "page load", details: path, userId } }).then(()=>{});
 }
 
 function writeLog2(path: string) {
   const base = getBaseFromPath(path);
-  writeLogWithBase({ data: { base, level: "info", title: "page load", details: path } }).then(()=>{});
+  writeLogWithBase({ data: { base, level: "debug", title: "page load", details: path } }).then(()=>{});
 }
 
 export const Route = createRootRouteWithContext()({
@@ -36,10 +36,9 @@ export const Route = createRootRouteWithContext()({
       return { ok: true, user: initialize(), base: initBase() };
     }
 
-    writeLog(location.pathname);
-
     const res = await get();
     if(res.ok){
+      writeLog(location.pathname, res.data.id);
       const base = await getSessionBase();
       if(base){
         return { ok: true, user: res.data, base };
