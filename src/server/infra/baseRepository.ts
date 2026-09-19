@@ -21,7 +21,7 @@ export class BaseRepository implements IBaseRepository {
     }
     return res.ok;
   }
-  async udpate(base: Base): Promise<boolean> {
+  async update(base: Base): Promise<boolean> {
     const kv = await this.database.open();
     const key = [this.KEY, base.id];
     const res = await kv.set(key, base);
