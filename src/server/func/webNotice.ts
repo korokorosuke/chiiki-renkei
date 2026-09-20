@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/solid-start"
+import { createServerFn, createServerOnlyFn } from "@tanstack/solid-start"
 import { WebNoticeService } from "../domain/webNoticeService.ts"
 import { WebNoticeRepository } from "../infra/allRepository.ts"
 import type { WebNotice, NoticePage } from "../domain/webNotice.ts"
@@ -21,14 +21,14 @@ export const getAllNotices = createServerFn({ method: "GET" })
     }
 });
 
-async function getList(base: string, page: NoticePage): Promise<WebNotice[]> {
+const getList = createServerOnlyFn(async (base: string, page: NoticePage): Promise<WebNotice[]> => {
   const service = new WebNoticeService(new WebNoticeRepository(base));
   if(base){
     return await service.getList(page);
   }else{
     return [];
   }
-}
+});
 
 export const getNotices = createServerFn({ method: "GET" })
   .handler(async (): Promise<WebNotice[]> => {

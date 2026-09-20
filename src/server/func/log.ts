@@ -11,18 +11,25 @@ const AUTH_READ = {auth: Auth.LOG, role: Role.READ};
 
 const LOG_ORDER = {"debug":1, "info":2, "warn":3, "error":4, "fatal":5};
 
-export const write = createServerOnlyFn(
-    async (level: LogLevel, title: string, details: string, patientId?: string): Promise<Result> => {
+const checkLevel = createServerOnlyFn((level: LogLevel): boolean => {
   const logOperation = Deno.env.get(LOG_LEVEL);
   const logOrder = LOG_ORDER[level];
   if(!logOperation){
-    return ok();
+    return false;
   }
   const logLevel = LOG_ORDER[logOperation as LogLevel];
   if(!logLevel){
-    return ok();
+    return false;
   }
   if(logOrder < logLevel){
+    return false;
+  }
+  return true;
+});
+
+export const write = createServerOnlyFn(
+    async (level: LogLevel, title: string, details: string, patientId?: string): Promise<Result> => {
+  if(!checkLevel(level)){
     return ok();
   }
 
@@ -71,16 +78,7 @@ export const debug = createServerFn({ method: "POST" })
 export const writeLogWithBase = createServerFn({ method: "POST" })
   .validator((data : {base: string, level: LogLevel, title: string, details: string, userId?: string}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    const logOperation = Deno.env.get(LOG_LEVEL);
-    const logOrder = LOG_ORDER[data.level];
-    if(!logOperation){
-      return ok();
-    }
-    const logLevel = LOG_ORDER[logOperation as LogLevel];
-    if(!logLevel){
-      return ok();
-    }
-    if(logOrder < logLevel){
+    if(!checkLevel(data.level)){
       return ok();
     }
 

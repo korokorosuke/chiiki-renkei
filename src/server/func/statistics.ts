@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/solid-start"
+import { createServerFn, createServerOnlyFn } from "@tanstack/solid-start"
 import { StatisticsService } from "../domain/statisticsService.ts"
 import { AppointmentService } from "../domain/appointmentService.ts"
 import { ReferralToService } from "../domain/referraltoService.ts"
@@ -12,7 +12,7 @@ import { info } from "./log.ts"
 
 const AUTH_READ = { auth: Auth.STATISTICS, role: Role.READ };
 
-function getCondition(condition: Condition): Condition{
+const getCondition = createServerOnlyFn((condition: Condition): Condition => {
   const cond: Condition = {fromDate: condition.fromDate};
   if(condition.facility){
     cond.facility = condition.facility;
@@ -27,7 +27,7 @@ function getCondition(condition: Condition): Condition{
     cond.toDate = condition.toDate;
   }
   return cond;
-}
+});
 
 export const getReferrals = createServerFn({ method: "GET" })
   .validator((data : {condition: Condition}) => data)

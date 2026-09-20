@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/solid-start"
+import { createServerFn, createServerOnlyFn } from "@tanstack/solid-start"
 import { DrService } from "../domain/drService.ts"
 import { DrRepository } from "../infra/allRepository.ts"
 import type { Dr } from "../domain/dr.ts"
@@ -14,7 +14,7 @@ const AUTH_READ = [
 const AUTH_READ_ALL = {auth: Auth.MASTER, role: Role.READ};
 const AUTH_WRITE = {auth: Auth.MASTER, role: Role.WRITE};
 
-async function getDrsForDeptMain(dept: string): Promise<Dr[]> {
+const getDrsForDeptMain = createServerOnlyFn(async (dept: string): Promise<Dr[]> => {
   const auth = await authenticate(AUTH_READ);
   if(auth.ok){
     if(dept){
@@ -23,7 +23,7 @@ async function getDrsForDeptMain(dept: string): Promise<Dr[]> {
     }
   }
   return [];
-}
+});
 
 export const getDrsForDept = createServerFn({ method: "GET" })
   .validator((data : {dept: string}) => data)

@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/solid-start"
+import { createServerFn, createServerOnlyFn } from "@tanstack/solid-start"
 import { NoticeService } from "../domain/noticeService.ts"
 import { NoticeRepository } from "../infra/allRepository.ts"
 import type { Notice, NoticePage } from "../domain/notice.ts"
@@ -20,14 +20,14 @@ export const getAllNotices = createServerFn({ method: "GET" })
     }
 });
 
-async function getList(base: string, page: NoticePage): Promise<Notice[]> {
+const getList = createServerOnlyFn(async (base: string, page: NoticePage): Promise<Notice[]> => {
   const service = new NoticeService(new NoticeRepository(base));
   if(base){
     return await service.getList(page);
   }else{
     return [];
   }
-}
+});
 
 export const getLoginNotices = createServerFn({ method: "GET" })
   .validator((data : {base: string}) => data)
