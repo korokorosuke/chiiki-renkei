@@ -19,7 +19,7 @@ export class DueRepository implements IDueRepository {
             .set(key, d).commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
         }
         return res.ok;
     }
@@ -28,7 +28,7 @@ export class DueRepository implements IDueRepository {
         const res = await kv.set([this.base, this.KEY, d.id], d);
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
         }
         return res.ok;
     }

@@ -26,7 +26,7 @@ export class AnswerRepository implements IAnswerRepository {
     async insert(a: Answer): Promise<boolean> {
         const patId = await this.getPatientId(a);
         if(!patId){
-            await fatal(`insert ${this.constructor.name}`, "患者IDを取得できませんでした", this.base);
+            await fatal(`insert ${this.constructor.name}`, "患者IDを取得できませんでした。\n" + JSON.stringify(a), this.base, undefined, patId);
             return false;
         }
         const kv = await this.database.open();
@@ -38,14 +38,14 @@ export class AnswerRepository implements IAnswerRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base, undefined, patId);
         }
         return res.ok;
     }
     async update(a: Answer): Promise<boolean> {
         const patId = await this.getPatientId(a);
         if(!patId){
-            await fatal(`update ${this.constructor.name}`, "患者IDを取得できませんでした", this.base);
+            await fatal(`update ${this.constructor.name}`, "患者IDを取得できませんでした。\n" + JSON.stringify(a), this.base, undefined, patId);
             return false;
         }
         const kv = await this.database.open();
@@ -56,7 +56,7 @@ export class AnswerRepository implements IAnswerRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base, undefined, patId);
         }
         return res.ok;
     }
@@ -78,7 +78,7 @@ export class AnswerRepository implements IAnswerRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`delete ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base, undefined, patId);
         }
         return res.ok;
     }

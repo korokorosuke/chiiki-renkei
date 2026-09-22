@@ -18,7 +18,7 @@ export class ReplyRepository implements IReplyRepository {
     }
     async insert(r: Reply): Promise<boolean> {
         if(!r.refId){
-            await fatal(`insert ${this.constructor.name}`, "refIdが指定されていません", this.base);
+            await fatal(`insert ${this.constructor.name}`, "refIdが指定されていません。\n" + JSON.stringify(r), this.base);
             return false;
         }
         const key = [this.base, this.KEY, r.id];
@@ -29,13 +29,13 @@ export class ReplyRepository implements IReplyRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
         }
         return res.ok;
     }
     async update(r: Reply): Promise<boolean> {
         if(!r.refId){
-            await fatal(`update ${this.constructor.name}`, "refIdが指定されていません", this.base);
+            await fatal(`update ${this.constructor.name}`, "refIdが指定されていません。\n" + JSON.stringify(r), this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -45,13 +45,13 @@ export class ReplyRepository implements IReplyRepository {
                 .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
         }
         return res.ok;
     }
     async delete(r: Reply): Promise<boolean> {
         if(!r.refId){
-            await fatal(`delete ${this.constructor.name}`, "refIdが指定されていません", this.base);
+            await fatal(`delete ${this.constructor.name}`, "refIdが指定されていません。\n" + JSON.stringify(r), this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -61,7 +61,7 @@ export class ReplyRepository implements IReplyRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`delete ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
         }
         return res.ok;
     }

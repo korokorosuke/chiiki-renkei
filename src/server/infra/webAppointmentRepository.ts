@@ -20,7 +20,7 @@ export class WebAppRepository implements IWebAppRepository {
     }
     async insert(app: WebAppointment): Promise<boolean> {
         if(!app.facility.id){
-            await fatal(`insert ${this.constructor.name}`, "施設が存在しません", this.base);
+            await fatal(`insert ${this.constructor.name}`, "施設が存在しません。\n" + JSON.stringify(app), this.base);
             return false;
         }
         const repo = new WebReservationRepository(this.base);
@@ -36,18 +36,18 @@ export class WebAppRepository implements IWebAppRepository {
             this.database.close();
             if(!res.ok){
                 await repo.countDown(app.department.id, app.date, app.dr.id, app.time);
-                await fatal(`insert ${this.constructor.name}`, "失敗しました", this.base);
+                await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base);
             }
             return res.ok;
         }else{
-            await fatal(`insert ${this.constructor.name}`, "枠数の更新に失敗しました", this.base);
+            await fatal(`insert ${this.constructor.name}`, "枠数の更新に失敗しました。\n" + JSON.stringify(app), this.base);
             return false;
         }
     }
     async update(app: WebAppointment): Promise<boolean> {
         const data = await this.read(app.id);
         if(!data || !data.facility.id || !app.facility.id){
-            await fatal(`update ${this.constructor.name}`, "データまたは施設が存在しません", this.base);
+            await fatal(`update ${this.constructor.name}`, "データまたは施設が存在しません。\n" + JSON.stringify(app), this.base);
             return false;
         }
 
@@ -58,23 +58,23 @@ export class WebAppRepository implements IWebAppRepository {
             //continue
         }else if(app.date === DATE_EMPTY && data.date !== DATE_EMPTY){
             if(!await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
-                await fatal(`update ${this.constructor.name}`, "枠数の更新に失敗しました", this.base);
+                await fatal(`update ${this.constructor.name}`, "枠数の更新に失敗しました。\n" + JSON.stringify(app), this.base);
                 return false;
             }
         }else if(data.date === DATE_EMPTY && app.date !== DATE_EMPTY){
             if(!await repo.countUp(app.department.id, app.date, app.dr.id, app.time, app.force)){
-                await fatal(`update ${this.constructor.name}`, "枠数の更新に失敗しました", this.base);
+                await fatal(`update ${this.constructor.name}`, "枠数の更新に失敗しました。\n" + JSON.stringify(app), this.base);
                 return false;
             }
         }else if(data.department.id != app.department.id || data.date != app.date ||
             data.dr.id != app.dr.id || data.time != app.time){
             if(!await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
-                await fatal(`update ${this.constructor.name}`, "枠数の更新に失敗しました", this.base);
+                await fatal(`update ${this.constructor.name}`, "枠数の更新に失敗しました。\n" + JSON.stringify(app), this.base);
                 return false;
             }
             if(!await repo.countUp(app.department.id, app.date, app.dr.id, app.time, app.force)){
                 await repo.countUp(data.department.id, data.date, data.dr.id, data.time, data.force);
-                await fatal(`update ${this.constructor.name}`, "枠数の更新に失敗しました", this.base);
+                await fatal(`update ${this.constructor.name}`, "枠数の更新に失敗しました。\n" + JSON.stringify(app), this.base);
                 return false;
             }
         }
@@ -101,20 +101,20 @@ export class WebAppRepository implements IWebAppRepository {
         this.database.close();
         if(!res.ok){
             await repo.countDown(app.department.id, app.date, app.dr.id, app.time);
-            await fatal(`update ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base);
         }
         return res.ok;
     }
     async delete(app: WebAppointment): Promise<boolean> {
         const data = await this.read(app.id);
         if(!data){
-            await fatal(`delete ${this.constructor.name}`, "データが存在しません", this.base);
+            await fatal(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(app), this.base);
             return false;
         }
         if(!data.cancel && data.date !== DATE_EMPTY && data.dr.id){
             const repo = new WebReservationRepository(this.base);
             if(!await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
-                await fatal(`delete ${this.constructor.name}`, "枠数の更新に失敗しました", this.base);
+                await fatal(`delete ${this.constructor.name}`, "枠数の更新に失敗しました。\n" + JSON.stringify(data), this.base);
                 return false;
             }
         }
@@ -127,7 +127,7 @@ export class WebAppRepository implements IWebAppRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`delete ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base);
         }
         return res.ok;
     }

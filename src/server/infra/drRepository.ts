@@ -22,14 +22,14 @@ export class DrRepository implements IDrRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
         }
         return res.ok;
     }
     async update(d: Dr): Promise<boolean> {
         const data = await this.read(d.id);
         if(!data){
-            await fatal(`update ${this.constructor.name}`, "データが存在しません", this.base);
+            await fatal(`update ${this.constructor.name}`, "データが存在しません。" + JSON.stringify(d), this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -48,14 +48,14 @@ export class DrRepository implements IDrRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
         }
         return res.ok;
     }
     async delete(d: Dr): Promise<boolean> {
         const data = await this.read(d.id);
         if(!data){
-            await fatal(`delete ${this.constructor.name}`, "データが存在しません", this.base);
+            await fatal(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(d), this.base);
             return false;
         }
         const kv = await this.database.open();
@@ -65,7 +65,7 @@ export class DrRepository implements IDrRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`delete ${this.constructor.name}`, "失敗しました", this.base);
+            await fatal(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
         }
         return res.ok;
     }
