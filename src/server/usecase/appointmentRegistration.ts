@@ -23,7 +23,7 @@ export class AppointmentRegistration{
         if(res.ok){
             return await this.answercase.insert(app);
         }else{
-            return ng(["予約の連携に失敗しました。管理者にお問い合わせください。"]);
+            return ng(res.errors);
         }
     }
 
@@ -32,16 +32,16 @@ export class AppointmentRegistration{
         if(res.ok){
             return await this.answercase.update(app);
         }else{
-            return ng(["予約の連携に失敗しました。管理者にお問い合わせください。"]);
+            return ng(res.errors);
         }
     }
 
     async delete(app: Appointment): Promise<Result>{
         const res = await this.service.delete(app);
-        if(!res.ok){
+        if(res.ok){
             return await this.answercase.delete(app);
         }else{
-            return ng(["予約の連携に失敗しました。管理者にお問い合わせください。"]);
+            return ng(res.errors);
         }
     }
 }
