@@ -19,8 +19,8 @@ import { getBaseFromPath } from "../server/domain/log.ts"
 // @ts-ignore: URLをimportするときの型定義がないため
 import styleCss from '../styles.css?url'
 
-function writeLog(path: string, userId?: string) {
-  debug({ data: { title: "page load", details: path, userId } }).then(()=>{});
+function writeLog(path: string) {
+  debug({ data: { title: "page load", details: path } }).then(()=>{});
 }
 
 function writeLog2(path: string) {
@@ -38,7 +38,7 @@ export const Route = createRootRouteWithContext()({
 
     const res = await get();
     if(res.ok){
-      writeLog(location.pathname, res.data.id);
+      writeLog(location.pathname);
       const base = await getSessionBase();
       if(base){
         return { ok: true, user: res.data, base };

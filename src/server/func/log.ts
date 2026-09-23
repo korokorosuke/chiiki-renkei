@@ -1,78 +1,41 @@
-import { createServerFn, createServerOnlyFn } from "@tanstack/solid-start"
-import { LogService } from "../domain/logService.ts"
+import { createServerFn } from "@tanstack/solid-start"
 import { LogListService } from "../domain/logListService.ts"
 import { LogRepository } from "../infra/allRepository.ts"
-import { verify, authenticate, Auth, Role } from "../lib/auth.ts"
-import { type Log, type LogLevel, NO_BASE } from "../domain/log.ts"
+import { authenticate, Auth, Role } from "../lib/auth.ts"
+import type { Log, LogLevel } from "../domain/log.ts"
 import { type Result, ok, ng } from "../lib/response.ts"
-import { LOG_LEVEL } from "../settings.ts"
+import { checkAndWrite, writeLogWithBase as writeLog, checkLevel } from "../lib/log.ts"
 
 const AUTH_READ = {auth: Auth.LOG, role: Role.READ};
-
-const LOG_ORDER = {"debug":1, "info":2, "warn":3, "error":4, "fatal":5};
-
-const checkLevel = createServerOnlyFn((level: LogLevel): boolean => {
-  const logOperation = Deno.env.get(LOG_LEVEL);
-  const logOrder = LOG_ORDER[level];
-  if(!logOperation){
-    return false;
-  }
-  const logLevel = LOG_ORDER[logOperation as LogLevel];
-  if(!logLevel){
-    return false;
-  }
-  if(logOrder < logLevel){
-    return false;
-  }
-  return true;
-});
-
-export const write = createServerOnlyFn(
-    async (level: LogLevel, title: string, details: string, patientId?: string): Promise<Result> => {
-  if(!checkLevel(level)){
-    return ok();
-  }
-
-  const auth = await verify();
-  if(auth.ok){
-    const service = new LogService(new LogRepository(auth.user.base));
-    const res = await service.write(level, title, details, auth.user.id, patientId);
-    return res ? ok() : ng(["書き込みに失敗しました"]);
-  }else{
-    const service = new LogService(new LogRepository(NO_BASE));
-    const res = await service.write(level, title, details);
-    return res ? ok() : ng(["書き込みに失敗しました"]);
-  }
-});
 
 export const fatal = createServerFn({ method: "POST" })
   .validator((data : {title: string, details: string, patientId?: string}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    return await write("fatal", data.title, data.details, data.patientId);
+    return await checkAndWrite("fatal", data.title, data.details, data.patientId);
 });
 
 export const error = createServerFn({ method: "POST" })
   .validator((data : {title: string, details: string, patientId?: string}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    return await write("error", data.title, data.details, data.patientId);
+    return await checkAndWrite("error", data.title, data.details, data.patientId);
 });
 
 export const warn = createServerFn({ method: "POST" })
   .validator((data : {title: string, details: string, patientId?: string}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    return await write("warn", data.title, data.details, data.patientId);
+    return await checkAndWrite("warn", data.title, data.details, data.patientId);
 });
 
 export const info = createServerFn({ method: "POST" })
   .validator((data : {title: string, details: string, patientId?: string}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    return await write("info", data.title, data.details, data.patientId);
+    return await checkAndWrite("info", data.title, data.details, data.patientId);
 });
 
 export const debug = createServerFn({ method: "POST" })
   .validator((data : {title: string, details: string, patientId?: string}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    return await write("debug", data.title, data.details, data.patientId);
+    return await checkAndWrite("debug", data.title, data.details, data.patientId);
 });
 
 export const writeLogWithBase = createServerFn({ method: "POST" })
@@ -82,8 +45,7 @@ export const writeLogWithBase = createServerFn({ method: "POST" })
       return ok();
     }
 
-    const service = new LogService(new LogRepository(data.base));
-    const res = await service.write(data.level, data.title, data.details, data.userId);
+    const res = await writeLog(data.base, data.level, data.title, data.details, data.userId);
     return res ? ok() : ng(["書き込みに失敗しました"]);
 });
 

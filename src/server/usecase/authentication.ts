@@ -50,9 +50,8 @@ export class Authentication{
       }
       await this.userService.update(user);
 
-      writeLogWithBase("info", "login",
-        `fail:${id} count:${user.failCount}${user.locked ? " (locked)" : ""}`,
-        base, user.id);
+      writeLogWithBase(base, "info", "login",
+        `fail:${id} count:${user.failCount}${user.locked ? " (locked)" : ""}`, user.id);
 
       return ng(["ユーザーかパスワードが不正です。"]);
     }else{
