@@ -13,7 +13,7 @@ export const appointmentSchema = z.object({
         .min(1, "予約日を入力してください。"),
     time: z.union([z.literal(""), z.iso.time("予約時間が不正です。")]),
     facility: facBaseSchema.refine((val: Fac) => val && val.id && val.name, "施設を入力してください。"),
-    facilityDr: z.string()
+    facilityDr: z.string().min(1, "施設医師を入力してください。")
         .max(50, "施設医師は、５０文字までです。"),
     facilityDept: z.string()
         .max(30, "施設診療科は、３０文字までです。"),

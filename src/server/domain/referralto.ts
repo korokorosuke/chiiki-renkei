@@ -12,7 +12,7 @@ export const referralToSchema = z.object({
     date: z.iso.date("紹介日が不正です。")
         .min(1, "紹介日を入力してください。"),
     facility: facBaseSchema.refine((val) => val && val.id && val.name, "施設を入力してください。"),
-    facilityDr: z.string()
+    facilityDr: z.string().min(1, "施設医師を入力してください。")
         .max(50, "施設医師は、５０文字までです。"),
     facilityDept: z.string()
         .max(30, "施設診療科は、３０文字までです。"),
