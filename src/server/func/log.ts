@@ -55,7 +55,8 @@ export const getList = createServerFn({ method: "GET" })
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       const service = new LogListService(new LogRepository(auth.user.base));
-      const res = await service.list(data.level, data.fromDate, data.toDate, data.userId, data.patientId)
+      const res = await service.list(data.level, data.fromDate, data.toDate, data.userId, data.patientId,
+        auth.user.authLog === 2);
       return res;
     }
     return [];

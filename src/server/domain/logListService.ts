@@ -1,7 +1,7 @@
 import type { Log } from "./log.ts"
 
 export interface ILogListRepository {
-  list(level: string, fromDate: string, toDate: string, userId: string, patientId: string): Promise<Log[]>
+  list(level: string, fromDate: string, toDate: string, userId: string, patientId: string, isAdmin: boolean): Promise<Log[]>
 }
 
 export class LogListService {
@@ -10,7 +10,7 @@ export class LogListService {
     this.repos = i;
   }
 
-  async list(level: string, fromDate: string, toDate: string, userId: string, patientId: string): Promise<Log[]>{
-    return await this.repos.list(level, fromDate, toDate, userId, patientId);
+  async list(level: string, fromDate: string, toDate: string, userId: string, patientId: string, isAdmin: boolean): Promise<Log[]>{
+    return await this.repos.list(level, fromDate, toDate, userId, patientId, isAdmin);
   }
 }

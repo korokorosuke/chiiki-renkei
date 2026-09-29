@@ -1,9 +1,9 @@
-import type { Log, LogLevel } from "../../domain/log.ts"
+import { type Log, type LogLevel, FATAL } from "../../domain/log.ts"
 import type { ILogRepository } from "../../domain/logService.ts"
 import type { ILogListRepository } from "../../domain/logListService.ts"
 import { Db } from "./db.ts"
 import { log } from "../../db/schema.ts"
-import { sql, and, eq, gte, lte, desc } from "drizzle-orm"
+import { sql, and, eq, ne, gte, lte, desc } from "drizzle-orm"
 
 type LogData = typeof log.$inferInsert;
 
@@ -35,7 +35,8 @@ export class LogRepository implements ILogRepository, ILogListRepository {
     }
   }
 
-  async list(level: string, fromDate: string, toDate: string, userId: string, patientId: string): Promise<Log[]> {
+  async list(level: string, fromDate: string, toDate: string, userId: string, patientId: string,
+      isAdmin: boolean): Promise<Log[]> {
     const db = await this.database.open();
     const logs = await db.select({
       level: log.level,
@@ -51,6 +52,7 @@ export class LogRepository implements ILogRepository, ILogListRepository {
         toDate ? lte(log.datetime, toDate) : undefined,
         userId ? eq(log.userId, userId) : undefined,
         patientId ? eq(log.patientId, patientId) : undefined,
+        !isAdmin ? ne(log.level, FATAL) : undefined,
       )
     ).orderBy(desc(log.datetime));
     return logs.map((log) => ({ ...log, level: log.level as LogLevel,

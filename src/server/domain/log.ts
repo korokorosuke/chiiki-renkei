@@ -3,6 +3,7 @@ import { z } from "zod"
 export const LOG_LEVEL = ["debug", "info", "warn", "error", "fatal"] as const;
 export type LogLevel = typeof LOG_LEVEL[number];
 export const NO_BASE = "nothing";
+export const FATAL = "fatal";
 
 export const logSchema = z.object({
   datetime: z.iso.datetime({local: true}),

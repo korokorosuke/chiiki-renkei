@@ -1,5 +1,5 @@
 /// <reference lib="deno.unstable" />
-import type { Log } from "../domain/log.ts"
+import { type Log, FATAL } from "../domain/log.ts"
 import type { ILogRepository } from "../domain/logService.ts"
 import type { ILogListRepository } from "../domain/logListService.ts"
 import { Kv } from "./kv.ts"
@@ -47,7 +47,8 @@ export class LogRepository implements ILogRepository, ILogListRepository {
     return {start: [this.base, this.KEY, fDate], end: [this.base, this.KEY, tDate]};
   }
 
-  async list(level: string, fromDate: string, toDate: string, userId: string, patientId: string): Promise<Log[]>{
+  async list(level: string, fromDate: string, toDate: string, userId: string, patientId: string,
+      isAdmin: boolean): Promise<Log[]>{
     const key = this.buildCondition(fromDate, toDate);
     const kv = await this.database.open();
     const list: Log[] = [];
@@ -61,6 +62,9 @@ export class LogRepository implements ILogRepository, ILogListRepository {
           continue;
         }
         if(patientId && r.value.patientId !== patientId){
+          continue;
+        }
+        if(!isAdmin && r.value.level === FATAL){
           continue;
         }
         list.push(r.value);

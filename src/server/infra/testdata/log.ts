@@ -57,16 +57,18 @@ export async function write(repo: ILogRepository){
   assert(res);
 }
 export async function list(repo: ILogListRepository){
-  const res = await repo.list("", BASE_DATETIME, "", "", "");
+  const res = await repo.list("", BASE_DATETIME, "", "", "", true);
   assert(res.length === 4);
-  const res1 = await repo.list("info", BASE_DATETIME, "", "", "");
+  const res0 = await repo.list("", BASE_DATETIME, "", "", "", false);
+  assert(res0.length === 3);
+  const res1 = await repo.list("info", BASE_DATETIME, "", "", "", true);
   assert(res1.length === 2);
-  const res2 = await repo.list("", BASE_DATETIME, "", "0001", "");
+  const res2 = await repo.list("", BASE_DATETIME, "", "0001", "", true);
   assert(res2.length === 2);
-  const res3 = await repo.list("", BASE_DATETIME, "", "", "A");
+  const res3 = await repo.list("", BASE_DATETIME, "", "", "A", true);
   assert(res3.length === 2);
-  const res4 = await repo.list("fatal", BASE_DATETIME, "", "", "A");
+  const res4 = await repo.list("fatal", BASE_DATETIME, "", "", "A", true);
   assert(res4.length === 1);
-  const res5 = await repo.list("error", BASE_DATETIME, getNowWithMS(), "0001", "B");
+  const res5 = await repo.list("error", BASE_DATETIME, getNowWithMS(), "0001", "B", true);
   assert(res5.length === 1);
 }

@@ -11,6 +11,7 @@ type ViewProps = {
 
 export function ListArea(props: ViewProps) {
   const names = ["", "閲覧", "編集"];
+  const logNames = ["", "閲覧", "管理者"];
   const webNames = ["", "利用者", "管理者"];
 
   function handleClick(user: AuthUser){
@@ -50,7 +51,7 @@ export function ListArea(props: ViewProps) {
               <td class={ list({ size: "rem3" }) }>{getName(user.authStatistics, names)}</td>
               <td class={ list({ size: "rem3" }) }>{getName(user.authMaster, names)}</td>
               <td class={ list({ size: "rem3" }) }>{getName(user.authWeb, webNames)}</td>
-              <td class={ list({ size: "rem3" }) }>{getName(user.authLog, names)}</td>
+              <td class={ list({ size: "rem3" }) }>{getName(user.authLog, logNames)}</td>
               <td class={ list( {size: "rem3", font: "number" }) }>{user.facilityId}</td>
             </tr>
           }</For>

@@ -125,6 +125,7 @@ export function ModificationArea(props: ViewProps){
             onChange={(e)=>setUser("authLog", parseInt(e.target.value))}>
           <option value="0"></option>
           <option value="1">閲覧</option>
+          <option value="2">管理者</option>
         </select>
       </Container>
       <Container title="Web予約">
