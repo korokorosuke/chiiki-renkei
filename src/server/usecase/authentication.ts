@@ -13,7 +13,7 @@ interface IUserService {
 }
 
 interface IBaseService {
-  get(base: string): Promise<Base>
+  get(base: string): Promise<Base|undefined>
 }
 
 export class Authentication{
