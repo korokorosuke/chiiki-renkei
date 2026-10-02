@@ -3,7 +3,7 @@ import type { IWebMasterRepository } from "../../domain/webMasterService.ts"
 import { Db } from "./db.ts"
 import { webMaster, webReserv } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 type WebMasterData = typeof webMaster.$inferInsert;
 type WebReservData = typeof webReserv.$inferInsert;
@@ -67,8 +67,8 @@ export class WebMasterRepository implements IWebMasterRepository {
         }
         return true;
       }catch(e){
-        await fatal(`insert ${this.constructor.name}`, e, this.base);
-        return false;
+        tx.rollback();
+        throw new FatalError(`insert ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();
@@ -92,8 +92,8 @@ export class WebMasterRepository implements IWebMasterRepository {
         }
         return true;
       }catch(e){
-        await fatal(`update ${this.constructor.name}`, e, this.base);
-        return false;
+        tx.rollback();
+        throw new FatalError(`update ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();
@@ -121,8 +121,8 @@ export class WebMasterRepository implements IWebMasterRepository {
             ));
         return true;
       }catch(e){
-        await fatal(`delete ${this.constructor.name}`, e, this.base);
-        return false;
+        tx.rollback();
+        throw new FatalError(`delete ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();

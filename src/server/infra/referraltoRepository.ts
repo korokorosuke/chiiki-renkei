@@ -7,7 +7,7 @@ import { PatientRepository } from "./patientRepository.ts"
 import { FacilityService } from "../domain/facilityService.ts"
 import { toFac } from "../lib/types.ts"
 import { addDay } from "../lib/datetime.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class ReferralToRepository implements IReferralToRepository {
     database: Kv
@@ -22,8 +22,7 @@ export class ReferralToRepository implements IReferralToRepository {
     async insert(r: ReferralTo): Promise<boolean> {
         const key = [this.base, this.KEY, r.id];
         if(!r.patient){
-            await fatal(`insert ${this.constructor.name}`, "患者データが存在しません。\n" + JSON.stringify(r), this.base);
-            return false;
+            throw new FatalError(`insert ${this.constructor.name}`, "患者データが存在しません。\n" + JSON.stringify(r), this.base);
         }
         const kv = await this.database.open();
         const res = await kv.atomic().check({key, versionstamp: null})
@@ -33,15 +32,14 @@ export class ReferralToRepository implements IReferralToRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
         }
         return res.ok;
     }
     async update(r: ReferralTo): Promise<boolean> {
         const data = await this.read(r.id);
         if(!data || !data.patient || !r.patient){
-            await fatal(`update ${this.constructor.name}`, "データまたは患者データが存在しません。\n" + JSON.stringify(r), this.base);
-            return false;
+            throw new FatalError(`update ${this.constructor.name}`, "データまたは患者データが存在しません。\n" + JSON.stringify(r), this.base);
         }
         const kv = await this.database.open();
         let res;
@@ -61,19 +59,17 @@ export class ReferralToRepository implements IReferralToRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
         }
         return res.ok;
     }
     async delete(r: ReferralTo): Promise<boolean> {
         const data = await this.read(r.id);
         if(!data){
-            await fatal(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(r), this.base);
-            return false;
+            throw new FatalError(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(r), this.base);
         }
         if(!data.patient){
-            await fatal(`delete ${this.constructor.name}`, "患者データが存在しません。\n" + JSON.stringify(data), this.base);
-            return false;
+            throw new FatalError(`delete ${this.constructor.name}`, "患者データが存在しません。\n" + JSON.stringify(data), this.base);
         }
 
         const kv = await this.database.open();
@@ -84,7 +80,7 @@ export class ReferralToRepository implements IReferralToRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
+            throw new FatalError(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
         }
         return res.ok;
     }

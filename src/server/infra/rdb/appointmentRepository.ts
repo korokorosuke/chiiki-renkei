@@ -8,7 +8,7 @@ import { type PatientDBResult, type FacilityDBResult, type UserDBResult, type De
   toFacility, toUser, toPatient } from "./types.ts"
 import { and, eq } from "drizzle-orm"
 import { addDay } from "../../lib/datetime.ts"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 type AppointmentData = typeof appointment.$inferInsert;
 
@@ -89,8 +89,7 @@ export class AppointmentRepository implements IAppointmentRepository {
       await db.insert(appointment).values(this.toData(val));
       return true;
     }catch(e){
-      await fatal(`insert ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`insert ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }
@@ -111,8 +110,7 @@ export class AppointmentRepository implements IAppointmentRepository {
           ));
       return true;
     }catch(e){
-      await fatal(`update ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`update ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }
@@ -129,8 +127,7 @@ export class AppointmentRepository implements IAppointmentRepository {
           ));
       return true;
     }catch(e){
-      await fatal(`delete ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`delete ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }

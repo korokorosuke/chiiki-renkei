@@ -2,7 +2,7 @@
 import type { WebMaster } from "../domain/webMaster.ts"
 import type { IWebMasterRepository } from "../domain/webMasterService.ts"
 import { Kv } from "./kv.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class WebMasterRepository implements IWebMasterRepository {
     database: Kv
@@ -20,7 +20,7 @@ export class WebMasterRepository implements IWebMasterRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(wr), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(wr), this.base);
         }
         return res.ok;
     }
@@ -29,7 +29,7 @@ export class WebMasterRepository implements IWebMasterRepository {
         const res = await kv.set([this.base, this.KEY, wr.dept, wr.dr, wr.week], wr);
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(wr), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(wr), this.base);
         }
         return res.ok;
     }

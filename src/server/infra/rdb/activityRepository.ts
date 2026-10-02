@@ -5,7 +5,7 @@ import { activity, activityPurpose } from "../../db/schema.ts"
 import { type UserDBResult, type FacilityDBResult, toFacility, toUser } from "./types.ts"
 import { and, eq } from "drizzle-orm"
 import { addDay } from "../../lib/datetime.ts"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 type ActivityData = typeof activity.$inferInsert;
 
@@ -73,8 +73,7 @@ export class ActivityRepository implements IActivityRepository {
         return true;
       }catch(e){
         tx.rollback()
-        await fatal(`insert ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`insert ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();
@@ -99,8 +98,7 @@ export class ActivityRepository implements IActivityRepository {
         return true;
       }catch(e){
         tx.rollback()
-        await fatal(`update ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`update ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();
@@ -121,8 +119,7 @@ export class ActivityRepository implements IActivityRepository {
         return true;
       }catch(e){
         tx.rollback()
-        await fatal(`delete ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`delete ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();

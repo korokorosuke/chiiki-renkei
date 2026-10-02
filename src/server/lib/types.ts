@@ -32,3 +32,20 @@ export function toReferralTo(app: Appointment): ReferralTo{
         updatedAt: app.updatedAt
     };
 }
+
+export class FatalError extends Error {
+    public title: string;
+    public details: string|Error|unknown;
+    public base?: string;
+    public userId?: string;
+    public patientId?: string;
+    constructor(message: string, details: string|Error|unknown, base?: string, userId?: string, patientId?: string) {
+        super(message);
+        this.name = "FatalError";
+        this.title = message;
+        this.details = details;
+        this.base = base;
+        this.userId = userId;
+        this.patientId = patientId;
+    }
+}

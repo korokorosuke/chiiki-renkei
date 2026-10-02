@@ -11,6 +11,8 @@ import type { Appointment } from "../domain/appointment.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
 import { LoggingMiddleware } from "../middleware/logging.ts"
+import { FatalError } from "../lib/types.ts"
+import { fatal } from "../lib/log.ts"
 
 const AUTH_READ = {auth: Auth.APPOINT, role: Role.READ};
 const AUTH_DATE_READ = {auth: Auth.STATISTICS, role: Role.READ};
@@ -65,16 +67,23 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const usecase = new AppointmentRegistration(
-        new AppointmentService(
-          new AppointmentRepository(auth.user.base)),
-        new AnswerRegistration(
-          new AnswerService(
-            new AnswerRepository(auth.user.base),
-            new AnswerPasswordRepository(auth.user.base)),
-          new QuestionnaireService(
-            new QuestionnaireRepository(auth.user.base))));
-      return await usecase.insert(data.appointment);
+      try{
+        const usecase = new AppointmentRegistration(
+          new AppointmentService(
+            new AppointmentRepository(auth.user.base)),
+          new AnswerRegistration(
+            new AnswerService(
+              new AnswerRepository(auth.user.base),
+              new AnswerPasswordRepository(auth.user.base)),
+            new QuestionnaireService(
+              new QuestionnaireRepository(auth.user.base))));
+        return await usecase.insert(data.appointment);
+      }catch(e){
+        if(e instanceof FatalError){
+          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
+        }
+        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+      }
     }
     return ng(auth.errors!);
 });
@@ -85,16 +94,23 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const usecase = new AppointmentRegistration(
-        new AppointmentService(
-          new AppointmentRepository(auth.user.base)),
-        new AnswerRegistration(
-          new AnswerService(
-            new AnswerRepository(auth.user.base),
-            new AnswerPasswordRepository(auth.user.base)),
-          new QuestionnaireService(
-            new QuestionnaireRepository(auth.user.base))));
-      return await usecase.update(data.appointment);
+      try{
+        const usecase = new AppointmentRegistration(
+          new AppointmentService(
+            new AppointmentRepository(auth.user.base)),
+          new AnswerRegistration(
+            new AnswerService(
+              new AnswerRepository(auth.user.base),
+              new AnswerPasswordRepository(auth.user.base)),
+            new QuestionnaireService(
+              new QuestionnaireRepository(auth.user.base))));
+        return await usecase.update(data.appointment);
+      }catch(e){
+        if(e instanceof FatalError){
+          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
+        }
+        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+      }
     }
     return ng(auth.errors!);
 });
@@ -105,16 +121,23 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const usecase = new AppointmentRegistration(
-        new AppointmentService(
-          new AppointmentRepository(auth.user.base)),
-        new AnswerRegistration(
-          new AnswerService(
-            new AnswerRepository(auth.user.base),
-            new AnswerPasswordRepository(auth.user.base)),
-          new QuestionnaireService(
-            new QuestionnaireRepository(auth.user.base))));
-      return await usecase.delete(data.appointment);
+      try{
+        const usecase = new AppointmentRegistration(
+          new AppointmentService(
+            new AppointmentRepository(auth.user.base)),
+          new AnswerRegistration(
+            new AnswerService(
+              new AnswerRepository(auth.user.base),
+              new AnswerPasswordRepository(auth.user.base)),
+            new QuestionnaireService(
+              new QuestionnaireRepository(auth.user.base))));
+        return await usecase.delete(data.appointment);
+      }catch(e){
+        if(e instanceof FatalError){
+          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
+        }
+        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+      }
     }
     return ng(auth.errors!);
 });

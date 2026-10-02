@@ -6,6 +6,8 @@ import { type Answer, initialize } from "../domain/answer.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, type FetchResult, okWithData, ng } from "../lib/response.ts"
 import { LoggingMiddleware } from "../middleware/logging.ts"
+import { FatalError } from "../lib/types.ts"
+import { fatal } from "../lib/log.ts"
 
 const AUTH_READ = [
   {auth: Auth.APPOINT, role: Role.READ},
@@ -66,9 +68,16 @@ export const resetPassword = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<FetchResult<string>> => {
     const auth = await authenticate(AUTH_READ);
     if(auth.ok){
-      const service = new AnswerService(new AnswerRepository(auth.user.base),
-        new AnswerPasswordRepository(auth.user.base));
-      return await service.getPasswordService().resetPassword(data.appId);
+      try{
+        const service = new AnswerService(new AnswerRepository(auth.user.base),
+          new AnswerPasswordRepository(auth.user.base));
+        return await service.getPasswordService().resetPassword(data.appId);
+      }catch(e){
+        if(e instanceof FatalError){
+          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
+        }
+        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+      }
     }
     return ng(["パスワードのリセットに失敗しました。"]);
 });
@@ -129,9 +138,16 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new AnswerService(new AnswerRepository(auth.user.base),
-        new AnswerPasswordRepository(auth.user.base));
-      return await service.insert(data.answer);
+      try{
+        const service = new AnswerService(new AnswerRepository(auth.user.base),
+          new AnswerPasswordRepository(auth.user.base));
+        return await service.insert(data.answer);
+      }catch(e){
+        if(e instanceof FatalError){
+          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
+        }
+        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+      }
     }
     return ng(auth.errors!);
 });
@@ -150,9 +166,16 @@ export const update = createServerFn({ method: "POST" })
       }
     }
     if(data.base){
-      const service = new AnswerService(new AnswerRepository(data.base),
-        new AnswerPasswordRepository(data.base));
-      return await service.update(data.answer);
+      try{
+        const service = new AnswerService(new AnswerRepository(data.base),
+          new AnswerPasswordRepository(data.base));
+        return await service.update(data.answer);
+      }catch(e){
+        if(e instanceof FatalError){
+          await fatal(e.title, e.details, data.base, auth ? auth.user.id : undefined, e.patientId);
+        }
+        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+      }
     }
     return ng(["登録に失敗しました。"]);
 });
@@ -163,9 +186,16 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const service = new AnswerService(new AnswerRepository(auth.user.base),
-        new AnswerPasswordRepository(auth.user.base));
-      return await service.delete(data.answer);
+      try{
+        const service = new AnswerService(new AnswerRepository(auth.user.base),
+          new AnswerPasswordRepository(auth.user.base));
+        return await service.delete(data.answer);
+      }catch(e){
+        if(e instanceof FatalError){
+          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
+        }
+        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+      }
     }
     return ng(auth.errors!);
 });

@@ -3,7 +3,7 @@ import type { IDepartmentRepository } from "../../domain/departmentService.ts"
 import { Db } from "./db.ts"
 import { department } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 type DepartmentData = typeof department.$inferInsert;
 
@@ -37,8 +37,7 @@ export class DepartmentRepository implements IDepartmentRepository {
       await db.insert(department).values(this.toData(val));
       return true;
     }catch(e){
-      await fatal(`insert ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`insert ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }
@@ -55,8 +54,7 @@ export class DepartmentRepository implements IDepartmentRepository {
           ));
       return true;
     }catch(e){
-      await fatal(`update ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`update ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }
@@ -73,8 +71,7 @@ export class DepartmentRepository implements IDepartmentRepository {
           ));
       return true;
     }catch(e){
-      await fatal(`delete ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`delete ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }

@@ -4,7 +4,7 @@ import { Db } from "./db.ts"
 import { facility, facilityContact } from "../../db/schema.ts"
 import { type UserDBResult, toUser } from "./types.ts"
 import { and, eq } from "drizzle-orm"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 type FacilityData = typeof facility.$inferInsert;
 
@@ -106,8 +106,7 @@ export class FacilityRepository implements IFacilityRepository {
         return true;
       }catch(e){
         tx.rollback();
-        await fatal(`insert ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`insert ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();
@@ -139,8 +138,7 @@ export class FacilityRepository implements IFacilityRepository {
         return true;
       }catch(e){
         tx.rollback();
-        await fatal(`update ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`update ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();
@@ -165,8 +163,7 @@ export class FacilityRepository implements IFacilityRepository {
         return true;
       }catch(e){
         tx.rollback();
-        await fatal(`delete ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`delete ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();

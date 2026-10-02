@@ -2,7 +2,7 @@
 import type { Facility } from "../domain/facility.ts"
 import type { IFacilityRepository } from "../domain/facilityService.ts"
 import { Kv } from "./kv.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class FacilityRepository implements IFacilityRepository {
     database: Kv
@@ -19,7 +19,7 @@ export class FacilityRepository implements IFacilityRepository {
             .set(key, f).commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(f), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(f), this.base);
         }
         return res.ok;
     }
@@ -28,7 +28,7 @@ export class FacilityRepository implements IFacilityRepository {
         const res = await kv.set([this.base, this.KEY, f.id], f);
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(f), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(f), this.base);
         }
         return res.ok;
     }

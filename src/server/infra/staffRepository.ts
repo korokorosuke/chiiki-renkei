@@ -2,7 +2,7 @@
 import type { Staff, Condition } from "../domain/staff.ts"
 import type { IStaffRepository } from "../domain/staffService.ts"
 import { Kv } from "./kv.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class StaffRepository implements IStaffRepository {
     database: Kv
@@ -22,15 +22,14 @@ export class StaffRepository implements IStaffRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(s), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(s), this.base);
         }
         return res.ok;
     }
     async update(s: Staff): Promise<boolean> {
         const data = await this.read(s.id);
         if(!data){
-            await fatal(`update ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(s), this.base);
-            return false;
+            throw new FatalError(`update ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(s), this.base);
         }
         let res;
         const kv = await this.database.open();
@@ -48,15 +47,14 @@ export class StaffRepository implements IStaffRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(s), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(s), this.base);
         }
         return res.ok;
     }
     async delete(s: Staff): Promise<boolean> {
         const data = await this.read(s.id);
         if(!data){
-            await fatal(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(s), this.base);
-            return false;
+            throw new FatalError(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(s), this.base);
         }
         const kv = await this.database.open();
         const res = await kv.atomic()
@@ -65,7 +63,7 @@ export class StaffRepository implements IStaffRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(s), this.base);
+            throw new FatalError(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(s), this.base);
         }
         return res.ok;
     }

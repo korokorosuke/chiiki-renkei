@@ -2,7 +2,7 @@
 import type { Activity, Condition } from "../domain/activity.ts"
 import type { IActivityRepository } from "../domain/activityService.ts"
 import { Kv } from "./kv.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class ActivityRepository implements IActivityRepository {
     database: Kv
@@ -24,15 +24,14 @@ export class ActivityRepository implements IActivityRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(act), this.base, act.updatedBy.id);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(act), this.base, act.updatedBy.id);
         }
         return res.ok;
     }
     async update(act: Activity): Promise<boolean> {
         const data = await this.read(act.id);
         if(!data){
-            await fatal(`update ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(act), this.base, act.updatedBy.id);
-            return false;
+            throw new FatalError(`update ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(act), this.base, act.updatedBy.id);
         }
         const kv = await this.database.open();
         let res;
@@ -54,15 +53,14 @@ export class ActivityRepository implements IActivityRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(act), this.base, act.updatedBy.id);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(act), this.base, act.updatedBy.id);
         }
         return res.ok;
     }
     async delete(act: Activity): Promise<boolean> {
         const data = await this.read(act.id);
         if(!data){
-            await fatal(`delete ${this.constructor.name}`, "データが存在しません。id:" + act.id, this.base, act.updatedBy.id);
-            return false;
+            throw new FatalError(`delete ${this.constructor.name}`, "データが存在しません。id:" + act.id, this.base, act.updatedBy.id);
         }
         const kv = await this.database.open();
         const res = await kv.atomic()
@@ -72,7 +70,7 @@ export class ActivityRepository implements IActivityRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`delete ${this.constructor.name}`, "失敗しました。id:" + act.id, this.base, act.updatedBy.id);
+            throw new FatalError(`delete ${this.constructor.name}`, "失敗しました。id:" + act.id, this.base, act.updatedBy.id);
         }
         return res.ok;
     }

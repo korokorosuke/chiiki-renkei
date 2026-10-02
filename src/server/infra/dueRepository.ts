@@ -2,7 +2,7 @@
 import type { Due } from "../domain/due.ts"
 import type { IDueRepository } from "../domain/dueService.ts"
 import { Kv } from "./kv.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class DueRepository implements IDueRepository {
     database: Kv
@@ -19,7 +19,7 @@ export class DueRepository implements IDueRepository {
             .set(key, d).commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
         }
         return res.ok;
     }
@@ -28,7 +28,7 @@ export class DueRepository implements IDueRepository {
         const res = await kv.set([this.base, this.KEY, d.id], d);
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
         }
         return res.ok;
     }

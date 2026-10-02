@@ -2,7 +2,7 @@
 import type { AnswerPassword } from "../domain/answer.ts"
 import type { IAnswerPasswordRepository } from "../domain/answerService.ts"
 import { Kv } from "./kv.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class AnswerPasswordRepository implements IAnswerPasswordRepository {
     database: Kv
@@ -20,7 +20,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base);
         }
         return res.ok;
     }
@@ -29,7 +29,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
         const res = await kv.set([this.base, this.KEY, a.appointmentId], a);
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base);
         }
         return res.ok;
     }

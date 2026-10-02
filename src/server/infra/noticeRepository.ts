@@ -2,7 +2,7 @@
 import type { Notice, NoticePage } from "../domain/notice.ts"
 import type { INoticeRepository } from "../domain/noticeService.ts"
 import { Kv } from "./kv.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class NoticeRepository implements INoticeRepository {
     database: Kv
@@ -20,7 +20,7 @@ export class NoticeRepository implements INoticeRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
         }
         return res.ok;
     }
@@ -29,7 +29,7 @@ export class NoticeRepository implements INoticeRepository {
         const res = await kv.set([this.base, this.KEY, val.id], val);
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
         }
         return res.ok;
     }

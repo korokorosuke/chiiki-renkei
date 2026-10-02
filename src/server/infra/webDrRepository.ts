@@ -2,7 +2,7 @@
 import type { WebDr } from "../domain/webDr.ts"
 import type { IWebDrRepository } from "../domain/webDrService.ts"
 import { Kv } from "./kv.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class WebDrRepository implements IWebDrRepository {
     database: Kv
@@ -22,15 +22,14 @@ export class WebDrRepository implements IWebDrRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
         }
         return res.ok;
     }
     async update(d: WebDr): Promise<boolean> {
         const data = await this.read(d.id);
         if(!data){
-            await fatal(`update ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(d), this.base);
-            return false;
+            throw new FatalError(`update ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(d), this.base);
         }
         const kv = await this.database.open();
         let res = {ok: false};
@@ -48,15 +47,14 @@ export class WebDrRepository implements IWebDrRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
         }
         return res.ok;
     }
     async delete(d: WebDr): Promise<boolean> {
         const data = await this.read(d.id);
         if(!data){
-            await fatal(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(d), this.base);
-            return false;
+            throw new FatalError(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(d), this.base);
         }
         const kv = await this.database.open();
         const res = await kv.atomic()
@@ -65,7 +63,7 @@ export class WebDrRepository implements IWebDrRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
+            throw new FatalError(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
         }
         return res.ok;
     }

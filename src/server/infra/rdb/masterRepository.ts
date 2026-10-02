@@ -2,7 +2,7 @@ import type { IMasterRepository } from "../../domain/masterService.ts"
 import { Db } from "./db.ts"
 import { master } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 type MasterData = typeof master.$inferInsert;
 
@@ -50,8 +50,7 @@ export class MasterRepository implements IMasterRepository {
         return true;
       }catch(e){
         tx.rollback();
-        await fatal(`update ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`update ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();

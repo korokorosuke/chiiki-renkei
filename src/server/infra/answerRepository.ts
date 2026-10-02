@@ -3,7 +3,7 @@ import type { Answer } from "../domain/answer.ts"
 import type { IAnswerRepository } from "../domain/answerService.ts"
 import { Kv } from "./kv.ts"
 import { AppointmentRepository } from "./appointmentRepository.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class AnswerRepository implements IAnswerRepository {
     database: Kv
@@ -26,8 +26,7 @@ export class AnswerRepository implements IAnswerRepository {
     async insert(a: Answer): Promise<boolean> {
         const patId = await this.getPatientId(a);
         if(!patId){
-            await fatal(`insert ${this.constructor.name}`, "患者IDを取得できませんでした。\n" + JSON.stringify(a), this.base, undefined, patId);
-            return false;
+            throw new FatalError(`insert ${this.constructor.name}`, "患者IDを取得できませんでした。\n" + JSON.stringify(a), this.base, undefined, patId);
         }
         const kv = await this.database.open();
         const key = [this.base, this.KEY, a.id];
@@ -38,15 +37,14 @@ export class AnswerRepository implements IAnswerRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base, undefined, patId);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base, undefined, patId);
         }
         return res.ok;
     }
     async update(a: Answer): Promise<boolean> {
         const patId = await this.getPatientId(a);
         if(!patId){
-            await fatal(`update ${this.constructor.name}`, "患者IDを取得できませんでした。\n" + JSON.stringify(a), this.base, undefined, patId);
-            return false;
+            throw new FatalError(`update ${this.constructor.name}`, "患者IDを取得できませんでした。\n" + JSON.stringify(a), this.base, undefined, patId);
         }
         const kv = await this.database.open();
         const res = await kv.atomic()
@@ -56,7 +54,7 @@ export class AnswerRepository implements IAnswerRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base, undefined, patId);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base, undefined, patId);
         }
         return res.ok;
     }
@@ -78,7 +76,7 @@ export class AnswerRepository implements IAnswerRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base, undefined, patId);
+            throw new FatalError(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(a), this.base, undefined, patId);
         }
         return res.ok;
     }

@@ -3,7 +3,7 @@ import type { IDueRepository } from "../../domain/dueService.ts"
 import { Db } from "./db.ts"
 import { due } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 type DueData = typeof due.$inferInsert;
 
@@ -30,8 +30,7 @@ export class DueRepository implements IDueRepository {
       await db.insert(due).values(this.toData(val));
       return true;
     }catch(e){
-      await fatal(`insert ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`insert ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }
@@ -48,8 +47,7 @@ export class DueRepository implements IDueRepository {
           ));
       return true;
     }catch(e){
-      await fatal(`udpate ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`udpate ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }
@@ -66,8 +64,7 @@ export class DueRepository implements IDueRepository {
           ));
       return true;
     }catch(e){
-      await fatal(`delete ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`delete ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }

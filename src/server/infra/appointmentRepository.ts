@@ -7,7 +7,7 @@ import { PatientRepository } from "./patientRepository.ts"
 import { FacilityService } from "../domain/facilityService.ts"
 import { toFac } from "../lib/types.ts"
 import { addDay } from "../lib/datetime.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class AppointmentRepository implements IAppointmentRepository {
     database: Kv
@@ -22,8 +22,7 @@ export class AppointmentRepository implements IAppointmentRepository {
     async insert(app: Appointment): Promise<boolean> {
         const key = [this.base, this.KEY, app.id];
         if(!app.patient){
-            await fatal(`insert ${this.constructor.name}`, "患者データが存在しません。\n" + JSON.stringify(app), this.base, app.updatedBy.id);
-            return false;
+            throw new FatalError(`insert ${this.constructor.name}`, "患者データが存在しません。\n" + JSON.stringify(app), this.base, app.updatedBy.id);
         }
         const kv = await this.database.open();
         const res = await kv.atomic().check({key, versionstamp: null})
@@ -33,15 +32,14 @@ export class AppointmentRepository implements IAppointmentRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base, app.updatedBy.id, app.patient.id);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base, app.updatedBy.id, app.patient.id);
         }
         return res.ok;
     }
     async update(app: Appointment): Promise<boolean> {
         const data = await this.read(app.id);
         if(!data || !data.patient || !app.patient){
-            await fatal(`update ${this.constructor.name}`, "患者データが存在しません。\n" + JSON.stringify(app), this.base, app.updatedBy.id);
-            return false;
+            throw new FatalError(`update ${this.constructor.name}`, "患者データが存在しません。\n" + JSON.stringify(app), this.base, app.updatedBy.id);
         }
         const kv = await this.database.open();
         let res;
@@ -61,19 +59,17 @@ export class AppointmentRepository implements IAppointmentRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base, app.updatedBy.id, app.patient.id);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base, app.updatedBy.id, app.patient.id);
         }
         return res.ok;
     }
     async delete(app: Appointment): Promise<boolean> {
         const data = await this.read(app.id);
         if(!data){
-          await fatal(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(app), this.base, app.updatedBy.id);
-          return false;
+          throw new FatalError(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(app), this.base, app.updatedBy.id);
         }
         if(!data.patient){
-            await fatal(`delete ${this.constructor.name}`, "患者データが存在しません。\n" + JSON.stringify(app), this.base, app.updatedBy.id);
-            return false;
+            throw new FatalError(`delete ${this.constructor.name}`, "患者データが存在しません。\n" + JSON.stringify(app), this.base, app.updatedBy.id);
         }
         const kv = await this.database.open();
         const res = await kv.atomic()
@@ -83,7 +79,7 @@ export class AppointmentRepository implements IAppointmentRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base, app.updatedBy.id, app.patient.id);
+            throw new FatalError(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base, app.updatedBy.id, app.patient.id);
         }
         return res.ok;
     }

@@ -2,7 +2,7 @@
 import type { WebNotice, NoticePage } from "../domain/webNotice.ts"
 import type { IWebNoticeRepository } from "../domain/webNoticeService.ts"
 import { Kv } from "./kv.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class WebNoticeRepository implements IWebNoticeRepository {
     database: Kv
@@ -20,7 +20,7 @@ export class WebNoticeRepository implements IWebNoticeRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
         }
         return res.ok;
     }
@@ -29,7 +29,7 @@ export class WebNoticeRepository implements IWebNoticeRepository {
         const res = await kv.set([this.base, this.KEY, val.id], val);
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
         }
         return res.ok;
     }

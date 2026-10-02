@@ -2,7 +2,7 @@
 import type { WebReservation } from "../domain/webReservation.ts"
 import type { IWebReservationRepository } from "../domain/webReservationService.ts"
 import { Kv } from "./kv.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class WebReservationRepository implements IWebReservationRepository {
     database: Kv
@@ -24,12 +24,11 @@ export class WebReservationRepository implements IWebReservationRepository {
                 .commit();
             this.database.close();
             if(!res.ok){
-                await fatal(`countUp ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(data), this.base);
+                throw new FatalError(`countUp ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(data), this.base);
             }
             return res.ok;
         }else{
             this.database.close();
-            await fatal(`countUp ${this.constructor.name}`, "枠が存在しません。\n" + JSON.stringify(data), this.base);
             return false;
         }
     }
@@ -45,12 +44,11 @@ export class WebReservationRepository implements IWebReservationRepository {
                 .commit();
             this.database.close();
             if(!res.ok){
-                await fatal(`countDown ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(data), this.base);
+                throw new FatalError(`countDown ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(data), this.base);
             }
             return res.ok;
         }else{
             this.database.close();
-            await fatal(`countDown ${this.constructor.name}`, "枠が存在しません。\n" + JSON.stringify(data), this.base);
             return false;
         }
     }
@@ -63,7 +61,7 @@ export class WebReservationRepository implements IWebReservationRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
         }
         return res.ok;
     }
@@ -72,7 +70,7 @@ export class WebReservationRepository implements IWebReservationRepository {
         const res = await kv.set([this.base, this.KEY, r.dept, r.date, r.dr, r.time], r);
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(r), this.base);
         }
         return res.ok;
     }

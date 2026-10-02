@@ -3,7 +3,7 @@ import type { IAnswerPasswordRepository } from "../../domain/answerService.ts"
 import { Db } from "./db.ts"
 import { answerPassword } from "../../db/schema.ts"
 import { eq } from "drizzle-orm"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 export class AnswerPasswordRepository implements IAnswerPasswordRepository {
   database: Db
@@ -19,8 +19,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
       await db.insert(answerPassword).values(val);
       return true;
     }catch(e){
-      await fatal(`insert ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`insert ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }
@@ -33,8 +32,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
         .where(eq(answerPassword.appointmentId, val.appointmentId));
       return true;
     }catch(e){
-      await fatal(`update ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`update ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }
@@ -47,8 +45,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
         .where(eq(answerPassword.appointmentId, val.appointmentId));
       return true;
     }catch(e){
-      await fatal(`delete ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`delete ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }
@@ -73,8 +70,7 @@ export class AnswerPasswordRepository implements IAnswerPasswordRepository {
           .where(eq(answerPassword.appointmentId, appId));
         return true;
       }catch(e){
-        await fatal(`countUp ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`countUp ${this.constructor.name}`, e, this.base);
       }finally{
         this.database.close();
       }

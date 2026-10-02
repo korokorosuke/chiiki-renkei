@@ -3,7 +3,7 @@ import type { IBaseRepository } from "../../domain/baseService.ts"
 import { Db } from "./db.ts"
 import { base } from "../../db/schema.ts"
 import { eq } from "drizzle-orm"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 export class BaseRepository implements IBaseRepository {
   database: Db
@@ -17,8 +17,7 @@ export class BaseRepository implements IBaseRepository {
       await db.insert(base).values(val);
       return true;
     }catch(e){
-      await fatal(`insert ${this.constructor.name}`, e, val.id);
-      return false;
+      throw new FatalError(`insert ${this.constructor.name}`, e, val.id);
     }finally{
       this.database.close();
     }
@@ -33,8 +32,7 @@ export class BaseRepository implements IBaseRepository {
         );
       return true;
     }catch(e){
-      await fatal(`insert ${this.constructor.name}`, e, val.id);
-      return false;
+      throw new FatalError(`insert ${this.constructor.name}`, e, val.id);
     }finally{
       this.database.close();
     }

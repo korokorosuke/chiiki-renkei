@@ -4,7 +4,7 @@ import { Db } from "./db.ts"
 import { webReservation } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
 import { getNextMonth } from "../../lib/datetime.ts"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 type WebReservationData = typeof webReservation.$inferInsert;
 
@@ -61,8 +61,7 @@ export class WebReservationRepository implements IWebReservationRepository {
             ));
         return true;
       }catch(e){
-        await fatal(`countUp ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`countUp ${this.constructor.name}`, e, this.base);
       }finally{
         this.database.close();
       }
@@ -88,8 +87,7 @@ export class WebReservationRepository implements IWebReservationRepository {
             ));
         return true;
       }catch(e){
-        await fatal(`countDown ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`countDown ${this.constructor.name}`, e, this.base);
       }finally{
         this.database.close();
       }
@@ -105,8 +103,7 @@ export class WebReservationRepository implements IWebReservationRepository {
         .values(this.toData(val));
       return true;
     }catch(e){
-      await fatal(`insert ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`insert ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }
@@ -126,8 +123,7 @@ export class WebReservationRepository implements IWebReservationRepository {
           ));
       return true;
     }catch(e){
-      await fatal(`update ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`update ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }
@@ -147,8 +143,7 @@ export class WebReservationRepository implements IWebReservationRepository {
           ));
       return true;
     }catch(e){
-      await fatal(`delete ${this.constructor.name}`, e, this.base);
-      return false;
+      throw new FatalError(`delete ${this.constructor.name}`, e, this.base);
     }finally{
       this.database.close();
     }

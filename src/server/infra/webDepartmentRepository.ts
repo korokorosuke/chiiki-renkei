@@ -2,7 +2,7 @@
 import type { WebDepartment } from "../domain/webDepartment.ts"
 import type { IWebDepartmentRepository } from "../domain/webDepartmentService.ts"
 import { Kv } from "./kv.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class WebDepartmentRepository implements IWebDepartmentRepository {
     database: Kv
@@ -19,7 +19,7 @@ export class WebDepartmentRepository implements IWebDepartmentRepository {
             .set(key, d).commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
         }
         return res.ok;
     }
@@ -28,7 +28,7 @@ export class WebDepartmentRepository implements IWebDepartmentRepository {
         const res = await kv.set([this.base, this.KEY, d.id], d);
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(d), this.base);
         }
         return res.ok;
     }

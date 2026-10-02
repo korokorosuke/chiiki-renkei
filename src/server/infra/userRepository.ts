@@ -2,7 +2,7 @@
 import type { AuthUser, Condition } from "../domain/user.ts"
 import type { IUserRepository } from "../domain/userService.ts"
 import { Kv } from "./kv.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class UserRepository implements IUserRepository {
     database: Kv
@@ -20,7 +20,7 @@ export class UserRepository implements IUserRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(u), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(u), this.base);
         }
         return res.ok;
     }
@@ -29,7 +29,7 @@ export class UserRepository implements IUserRepository {
         const res = await kv.set([this.base, this.KEY, u.id], u);
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(u), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(u), this.base);
         }
         return res.ok;
     }

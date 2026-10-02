@@ -8,7 +8,7 @@ import { PatientRepository } from "./patientRepository.ts"
 import { FacilityService } from "../domain/facilityService.ts"
 import { toFac } from "../lib/types.ts"
 import { addDay } from "../lib/datetime.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class InquiryRepository implements IInquiryRepository {
     database: Kv
@@ -41,15 +41,14 @@ export class InquiryRepository implements IInquiryRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
         }
         return res.ok;
     }
     async update(val: Inquiry): Promise<boolean> {
         const data = await this.read(val.id);
         if(!data){
-            await fatal(`update ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(val), this.base);
-            return false;
+            throw new FatalError(`update ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(val), this.base);
         }
         const kv = await this.database.open();
         let res;
@@ -96,15 +95,14 @@ export class InquiryRepository implements IInquiryRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
         }
         return res.ok;
     }
     async delete(val: Inquiry): Promise<boolean> {
         const data = await this.read(val.id);
         if(!data){
-          await fatal(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(val), this.base);
-          return false;
+          throw new FatalError(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(val), this.base);
         }
         let res;
         const kv = await this.database.open();
@@ -124,7 +122,7 @@ export class InquiryRepository implements IInquiryRepository {
         }
         this.database.close();
         if(!res.ok){
-            await fatal(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
+            throw new FatalError(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(val), this.base);
         }
         return res.ok;
     }

@@ -6,7 +6,7 @@ import { type QuestionnaireDBResult, toQuestionnaire } from "./questionnaireRepo
 import { Db } from "./db.ts"
 import { answer, answerItem } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 type AnswerData = typeof answer.$inferInsert;
 
@@ -78,8 +78,7 @@ export class AnswerRepository implements IAnswerRepository {
         return true;
       }catch(e){
         tx.rollback();
-        await fatal(`insert ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`insert ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();
@@ -109,8 +108,7 @@ export class AnswerRepository implements IAnswerRepository {
         return true;
       }catch(e){
         tx.rollback();
-        await fatal(`update ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`update ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();
@@ -131,8 +129,7 @@ export class AnswerRepository implements IAnswerRepository {
         return true;
       }catch(e){
         tx.rollback();
-        await fatal(`delete ${this.constructor.name}`, e, this.base);
-        return false;
+        throw new FatalError(`delete ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();

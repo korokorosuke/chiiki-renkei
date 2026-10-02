@@ -3,7 +3,7 @@ import type { IQuestionnaireRepository } from "../../domain/questionnaireService
 import { Db } from "./db.ts"
 import { questionnaire, question, questionChoice, questionCondition, questionnaireDept } from "../../db/schema.ts"
 import { and, eq } from "drizzle-orm"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 type QuestionnaireData = typeof questionnaire.$inferInsert;
 type QuestionData = typeof question.$inferInsert;
@@ -133,9 +133,9 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
         }
         return true;
       }catch(e){
-        await fatal(`insert ${this.constructor.name}`, e, this.base);
         tx.rollback();
-        return false;
+        throw new FatalError(`insert ${this.constructor.name}`, e, this.base);
+
       }
     });
     this.database.close();
@@ -198,9 +198,9 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
         }
         return true;
       }catch(e){
-        await fatal(`update ${this.constructor.name}`, e, this.base);
         tx.rollback();
-        return false;
+        throw new FatalError(`update ${this.constructor.name}`, e, this.base);
+
       }
     });
     this.database.close();
@@ -228,9 +228,9 @@ export class QuestionnaireRepository implements IQuestionnaireRepository {
             eq(questionChoice.questionnaireId, val.id));
         return true;
       }catch(e){
-        await fatal(`delete ${this.constructor.name}`, e, this.base);
         tx.rollback();
-        return false;
+        throw new FatalError(`delete ${this.constructor.name}`, e, this.base);
+
       }
     });
     this.database.close();
