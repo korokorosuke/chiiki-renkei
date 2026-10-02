@@ -3,6 +3,7 @@ import { userBaseSchema, initializeUser } from "./user.ts"
 import { facSchema, initializeFac } from "./facility.ts"
 import { webDrBaseSchema, initialize as initializeWebDr } from "./webDr.ts"
 import { type WebDepartment, webDepartmentSchema, initialize as initializeWebDept } from "./webDepartment.ts"
+import { DATE_EMPTY } from "./webAppointmentService.ts"
 import { validater } from "../lib/validation.ts"
 import { z } from "zod"
 
@@ -54,7 +55,7 @@ export const webAppointmentSchema = z.object({
     return true;
 }, "予約日を入力してください。")
 .refine((val) => {
-    if(val.date){
+    if(val.date && val.date !== DATE_EMPTY){
         if(!val.time){
             return false;
         }

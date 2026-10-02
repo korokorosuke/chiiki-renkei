@@ -1,13 +1,11 @@
 import { assert, assertFalse, fail } from "@std/assert"
 import type { IWebAppRepository } from "../../domain/webAppointmentService.ts"
-import type { IWebReservationRepository } from "../../domain/webReservationService.ts"
 import type { IPatientRepository } from "../../domain/patientService.ts"
 import type { IWebDepartmentRepository } from "../../domain/webDepartmentService.ts"
 import type { IWebDrRepository } from "../../domain/webDrService.ts"
 import type { IFacilityRepository } from "../../domain/facilityService.ts"
 import type { IUserRepository } from "../../domain/userService.ts"
 import type { WebAppointment } from "../../domain/webAppointment.ts"
-import type { WebReservation } from "../../domain/webReservation.ts"
 import { facility, toFac } from "./facility.ts"
 import { patient, patient2 } from "./patient.ts"
 import { dr, dr2, dr4 } from "./webDr.ts"
@@ -21,62 +19,6 @@ import { insert as insertDr, del as delDr } from "./webDr.ts"
 import { insert as insertUser, del as delUser } from "./user.ts"
 import { DATE_EMPTY } from "../../domain/webAppointmentService.ts"
 
-const reservation: WebReservation = {
-  dept: "01",
-  dr: "00001",
-  date: "2024-06-07",
-  time: "09:00",
-  max: 3,
-  cnt: 2
-}
-const reservation2: WebReservation = {
-  dept: "02",
-  dr: "00001",
-  date: "2024-06-08",
-  time: "14:30",
-  max: 3,
-  cnt: 1
-}
-const reservation3: WebReservation = {
-  dept: "01",
-  dr: "00002",
-  date: "2024-06-07",
-  time: "09:30",
-  max: 3,
-  cnt: 0
-}
-const reservation4: WebReservation = {
-  dept: "02",
-  dr: "00001",
-  date: "2024-06-20",
-  time: "09:30",
-  max: 3,
-  cnt: 3
-}
-const reservation5: WebReservation = {
-  dept: "02",
-  dr: "00003",
-  date: "2024-06-25",
-  time: "09:30",
-  max: 3,
-  cnt: 2
-}
-const appointment0: WebAppointment = {
-  id: "0001-00001",
-  patient: patient2,
-  date: "2024-06-07",
-  time: "09:00",
-  facility: toFac(facility),
-  department: department,
-  dr: dr,
-  facPatientId: "",
-  mainComplaint: "",
-  cancel: false,
-  createdBy: user,
-  createdAt: "2024-06-07 12:34:56",
-  updatedBy: user,
-  updatedAt: "2024-06-07 12:34:56",
-}
 const appointment: WebAppointment = {
   id: "0001-00001",
   patient: patient,
@@ -278,7 +220,7 @@ function compare(app1: WebAppointment, app2: WebAppointment): boolean {
   return true;
 }
 
-export async function prepare(repoRes: IWebReservationRepository,
+export async function prepare(
     repoUser?: IUserRepository, repoPat?: IPatientRepository,
     repoDept?: IWebDepartmentRepository, repoDr?: IWebDrRepository, repoFac?: IFacilityRepository) {
   if(repoFac){
@@ -296,11 +238,6 @@ export async function prepare(repoRes: IWebReservationRepository,
   if(repoUser){
     await insertUser(repoUser);
   }
-  await repoRes.insert(reservation);
-  await repoRes.insert(reservation2);
-  await repoRes.insert(reservation3);
-  await repoRes.insert(reservation4);
-  await repoRes.insert(reservation5);
 }
 
 export async function insert(repo: IWebAppRepository){
@@ -312,38 +249,6 @@ export async function insert(repo: IWebAppRepository){
   assert(res);
   res = await repo.insert(appointment7);
   assert(res);
-  res = await repo.insert(appointment0);
-  assert(!res);
-}
-export async function checkCount(repo: IWebReservationRepository){
-  let res = await repo.read(reservation.dept, reservation.dr, reservation.date, reservation.time);
-  if(res){
-    assert(res.cnt === 2);
-  }else{
-    console.log("res1");
-    fail();
-  }
-  res = await repo.read(reservation2.dept, reservation2.dr, reservation2.date, reservation2.time);
-  if(res){
-    assert(res.cnt === 2);
-  }else{
-    console.log("res2");
-    fail();
-  }
-  res = await repo.read(reservation3.dept, reservation3.dr, reservation3.date, reservation3.time);
-  if(res){
-    assert(res.cnt === 1);
-  }else{
-    console.log("res3");
-    fail();
-  }
-  res = await repo.read(reservation4.dept, reservation4.dr, reservation4.date, reservation4.time);
-  if(res){
-    assert(res.cnt === 4);
-  }else{
-    console.log("res4");
-    fail();
-  }
 }
 export async function update(repo: IWebAppRepository){
   let res = await repo.update(appointment3);
@@ -426,7 +331,7 @@ export async function del(repo: IWebAppRepository){
   res = await repo.read(appointment8.id);
   assertFalse(res);
 }
-export async function cleanUp(repoRes: IWebReservationRepository,
+export async function cleanUp(
     repoUser?: IUserRepository, repoPat?: IPatientRepository,
     repoDept?: IWebDepartmentRepository, repoDr?: IWebDrRepository, repoFac?: IFacilityRepository) {
   if(repoFac){
@@ -444,9 +349,4 @@ export async function cleanUp(repoRes: IWebReservationRepository,
   if(repoUser){
     await delUser(repoUser);
   }
-  await repoRes.delete(reservation);
-  await repoRes.delete(reservation2);
-  await repoRes.delete(reservation3);
-  await repoRes.delete(reservation4);
-  await repoRes.delete(reservation5);
 }

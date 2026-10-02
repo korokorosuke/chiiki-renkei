@@ -4,13 +4,11 @@ import { initialize as initializePatient } from "../../domain/patient.ts"
 import { initialize as initializeDept } from "../../domain/webDepartment.ts"
 import { initialize as initializeDr } from "../../domain/webDr.ts"
 import { Db } from "./db.ts"
-import { WebReservationRepository } from "./webReservationRepository.ts"
-import { DATE_EMPTY } from "../../domain/webAppointmentService.ts"
 import { webAppointment, webConsultation, webPatient } from "../../db/schema.ts"
 import { type FacilityDBResult, type UserDBResult, toFacility, toUser } from "./types.ts"
 import { and, eq } from "drizzle-orm"
 import { addDay } from "../../lib/datetime.ts"
-import { fatal } from "../../lib/log.ts"
+import { FatalError } from "../../lib/types.ts"
 
 type WebAppointmentData = typeof webAppointment.$inferInsert;
 type WebPatientData = typeof webPatient.$inferInsert;
@@ -150,71 +148,31 @@ export class WebAppRepository implements IWebAppRepository {
   }
 
   async insert(val: WebAppointment): Promise<boolean> {
-    if(!val.facility.id){
-      return false;
-    }
-    const repo = new WebReservationRepository(this.base);
-    if(val.date === DATE_EMPTY || await repo.countUp(val.department.id, val.date, val.dr.id, val.time, false)){
-      const db = await this.database.open();
-      const res = await db.transaction(async (tx) => {
-        try{
-          await tx.insert(webAppointment).values(this.toData(val));
-          await tx.insert(webPatient).values(this.toPatientData(val));
-          if(val.consultation){
-            await tx.insert(webConsultation)
-              .values({
-                appointmentId: val.id,
-                first: val.consultation.first,
-                second: val.consultation.second,
-                etc: val.consultation.etc,
-              });
-          }
-          return true;
-        }catch(e){
-          await fatal(`insert ${this.constructor.name}`, e, this.base);
-          return false;
+    const db = await this.database.open();
+    const res = await db.transaction(async (tx) => {
+      try{
+        await tx.insert(webAppointment).values(this.toData(val));
+        await tx.insert(webPatient).values(this.toPatientData(val));
+        if(val.consultation){
+          await tx.insert(webConsultation)
+            .values({
+              appointmentId: val.id,
+              first: val.consultation.first,
+              second: val.consultation.second,
+              etc: val.consultation.etc,
+            });
         }
-      });
-      this.database.close();
-      if(res){
         return true;
-      }else {
-        if(val.date !== DATE_EMPTY){
-          await repo.countDown(val.department.id, val.date, val.dr.id, val.time);
-        }
-        return false;
+      }catch(e){
+        tx.rollback();
+        throw new FatalError(`insert ${this.constructor.name}`, e, this.base);
       }
-    }
-    return false;
+    });
+    this.database.close();
+    return res;
   }
 
   async update(val: WebAppointment): Promise<boolean> {
-    const data = await this.read(val.id);
-    if(!data || !data.facility.id || !val.facility.id){
-      return false;
-    }
-
-    let countDownResult = false;
-    if(data.department.id != val.department.id || data.date != val.date ||
-        data.dr.id != val.dr.id || data.time != val.time){
-      const repo = new WebReservationRepository(this.base);
-      if(data.date !== DATE_EMPTY){
-        if(await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
-          countDownResult = true;
-        }else{
-          return false;
-        }
-      }
-      if(val.date !== DATE_EMPTY){
-        if(!await repo.countUp(val.department.id, val.date, val.dr.id, val.time, val.force)){
-          if(countDownResult){
-            await repo.countUp(data.department.id, data.date, data.dr.id, data.time, true);
-          }
-          return false;
-        }
-      }
-    }
-
     const db = await this.database.open();
     const res = await db.transaction(async (tx) => {
       try{
@@ -243,8 +201,8 @@ export class WebAppRepository implements IWebAppRepository {
         }
         return true;
       }catch(e){
-        await fatal(`update ${this.constructor.name}`, e, this.base);
-        return false;
+        tx.rollback();
+        throw new FatalError(`update ${this.constructor.name}`, e, this.base);
       }
     });
     this.database.close();
@@ -252,39 +210,28 @@ export class WebAppRepository implements IWebAppRepository {
   }
 
   async delete(val: WebAppointment): Promise<boolean> {
-    const data = await this.read(val.id);
-    if(data){
-      if(!data.cancel && data.date !== DATE_EMPTY && data.dr.id){
-        const repo = new WebReservationRepository(this.base);
-        if(!await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
-          return false;
-        }
+    const db = await this.database.open();
+    const res = await db.transaction(async (tx) => {
+      try{
+        await tx.delete(webPatient)
+          .where(
+            eq(webPatient.appointmentId, val.id));
+        await tx.delete(webConsultation)
+          .where(
+            eq(webConsultation.appointmentId, val.id));
+        await tx.delete(webAppointment).where(
+          and(
+            eq(webAppointment.base, this.base),
+            eq(webAppointment.id, val.id),
+          ));
+        return true;
+      }catch(e){
+        tx.rollback();
+        throw new FatalError(`delete ${this.constructor.name}`, e, this.base);
       }
-
-      const db = await this.database.open();
-      const res = await db.transaction(async (tx) => {
-        try{
-          await tx.delete(webPatient)
-            .where(
-              eq(webPatient.appointmentId, val.id));
-          await tx.delete(webConsultation)
-            .where(
-              eq(webConsultation.appointmentId, val.id));
-          await tx.delete(webAppointment).where(
-            and(
-              eq(webAppointment.base, this.base),
-              eq(webAppointment.id, val.id),
-            ));
-          return true;
-        }catch(e){
-          await fatal(`delete ${this.constructor.name}`, e, this.base);
-          return false;
-        }
-      });
-      this.database.close();
-      return res;
-    }
-    return false;
+    });
+    this.database.close();
+    return res;
   }
 
   private async select(cond: object): Promise<WebAppointmentDBResult[]> {

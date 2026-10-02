@@ -1,7 +1,6 @@
 import { assert, assertFalse, fail } from "@std/assert"
 import { WebAppRepository } from "../infra/webAppointmentRepository.ts"
 import type { WebAppointment } from "./webAppointment.ts"
-import type { WebReservation } from "./webReservation.ts"
 import { facility, facility2, toFac } from "../infra/testdata/facility.ts"
 import { patient, patient2, patient6, patient4, patientNoId } from "../infra/testdata/patient.ts"
 import { dr, dr2 } from "../infra/testdata/webDr.ts"
@@ -11,57 +10,6 @@ import { initWebDr } from "../lib/types.ts"
 import { BASE } from "../infra/testdata/settings.ts"
 import { Kv } from "../infra/kv.ts"
 import { WebAppService } from "./webAppointmentService.ts"
-import { WebReservationRepository } from "../infra/webReservationRepository.ts"
-
-const reservation: WebReservation = {
-    dept: "01",
-    dr: "00001",
-    date: "2024-06-07",
-    time: "09:00",
-    max: 3,
-    cnt: 0
-}
-const reservation2: WebReservation = {
-    dept: "02",
-    dr: "00001",
-    date: "2024-06-08",
-    time: "14:30",
-    max: 3,
-    cnt: 0
-}
-const reservation3: WebReservation = {
-    dept: "01",
-    dr: "00002",
-    date: "2024-06-07",
-    time: "09:30",
-    max: 3,
-    cnt: 0
-}
-const reservation4: WebReservation = {
-    dept: "02",
-    dr: "00001",
-    date: "2024-06-09",
-    time: "14:30",
-    max: 3,
-    cnt: 0
-}
-const reservation5: WebReservation = {
-    dept: "02",
-    dr: "00001",
-    date: "2024-06-10",
-    time: "14:30",
-    max: 3,
-    cnt: 2
-}
-const reservation6: WebReservation = {
-    dept: "02",
-    dr: "00001",
-    date: "2024-06-15",
-    time: "14:30",
-    max: 3,
-    cnt: 3
-}
-
 
 const appointment: WebAppointment = {
     id: "0001-00001",
@@ -131,22 +79,6 @@ const appointment5: WebAppointment = {
     id: "0003-11111",
     patient: patient2,
     date: "2024-06-10",
-    time: "14:30",
-    facility: toFac(facility2),
-    department: department2,
-    dr: dr,
-    facPatientId: "",
-    mainComplaint: "風邪",
-    cancel: false,
-    createdBy: user,
-    createdAt: "2024-06-07T12:34:56Z",
-    updatedBy: user,
-    updatedAt: "2024-06-07T12:34:56Z",
-}
-const appointment6: WebAppointment = {
-    id: "0006-11111",
-    patient: patient2,
-    date: "2024-06-15",
     time: "14:30",
     facility: toFac(facility2),
     department: department2,
@@ -299,25 +231,6 @@ const appointment_nodate3: WebAppointment = {
     updatedBy: user,
     updatedAt: "2024-06-07T12:34:56Z",
 }
-const appointment_required: WebAppointment = {
-    id: "0001-00001",
-    patient: patient6,
-    date: "2024-06-09",
-    time: "14:30",
-    facility: toFac(facility),
-    department: department2,
-    dr: dr,
-    facPatientId: "",
-    mainComplaint: "",
-    cancel: false,
-    consultation: {
-        first: "2024-06-10", second: "", etc: "hoge"
-    },
-    createdBy: user,
-    createdAt: "2024-06-07T12:34:56Z",
-    updatedBy: user,
-    updatedAt: "2024-06-07T12:34:56Z",
-}
 
 function compare(app1: WebAppointment, app2: WebAppointment): boolean {
     if(app1.id !== app2.id){
@@ -390,67 +303,43 @@ function compare(app1: WebAppointment, app2: WebAppointment): boolean {
 Kv.test = true;
 
 Deno.test("webappointment service", async (t) => {
-    await t.step("prepare", async () => {
-        const repo = new WebReservationRepository(BASE);
-        await repo.insert(reservation);
-        await repo.insert(reservation2);
-        await repo.insert(reservation3);
-        await repo.insert(reservation4);
-        await repo.insert(reservation5);
-        await repo.insert(reservation6);
-    });
     await t.step("insert", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         let res = await service.insert(appointment);
         assert(res.ok);
-        let list = await service.getList({fromDate:"2024-06-01", toDate: "2999-12-31"});
-        appointment3.id = list[0].id;
+        if(res.ok){
+            appointment3.id = res.data.id;
+        }
         res = await service.insert(appointment2);
         assert(res.ok);
-        list = await service.getList({fromDate:"2024-06-01", toDate: "2999-12-31"});
-        for(const a of list){
-            if(appointment3.id !== a.id){
-                appointment4.id = a.id;
-            }
+        if(res.ok){
+            appointment4.id = res.data.id;
         }
         res = await service.insert(appointment5);
         assert(res.ok);
-        list = await service.getList({fromDate:"2024-06-01", toDate: "2999-12-31"});
-        for(const a of list){
-            if(appointment3.id !== a.id && appointment4.id != a.id){
-                appointment5.id = a.id;
-            }
+        if(res.ok){
+            appointment5.id = res.data.id;
         }
-        res = await service.insert(appointment6);
-        assertFalse(res.ok);
-        res = await service.insert(appointment_required);
-        assertFalse(res.ok);
         res = await service.insert(structuredClone(appointment_nodate));
-        list = await service.getConsultation();
-        for(const a of list){
-            appointment_nodate.id = a.id;
-            appointment_nodate2.id = a.id;
+        assert(res.ok);
+        if(res.ok){
+            appointment_nodate2.id = res.data.id;
         }
         res = await service.insert(structuredClone(appointment_nodate1));
-        list = await service.getConsultation();
-        for(const a of list){
-            if(appointment_nodate.id !== a.id){
-                appointment_nodate3.id = a.id;
-            }
+        assert(res.ok);
+        if(res.ok){
+            appointment_nodate3.id = res.data.id;
         }
         res = await service.insert(structuredClone(appointment_noid));
-        list = await service.getNoID();
-        for(const a of list){
-            appointment_noid.id = a.id;
-            appointment_noid2.id = a.id;
+        assert(res.ok);
+        if(res.ok){
+            appointment_noid2.id = res.data.id;
         }
         res = await service.insert(structuredClone(appointment_noid1));
-        list = await service.getNoID();
-        for(const a of list){
-            if(appointment_noid.id !== a.id){
-                appointment_noid3.id = a.id;
-            }
+        assert(res.ok);
+        if(res.ok){
+            appointment_noid3.id = res.data.id;
         }
     });
 
@@ -469,51 +358,6 @@ Deno.test("webappointment service", async (t) => {
         assert(res.ok);
         res = await service.update(structuredClone(appointment_noid3));
         assert(res.ok);
-    });
-
-    await t.step("count check", async () => {
-        const repo = new WebReservationRepository(BASE);
-        let res = await repo.read(reservation.dept, reservation.dr, reservation.date, reservation.time);
-        if(res){
-            assert(res.cnt === 1);
-        }else{
-            console.log("res1");
-            fail();
-        }
-        res = await repo.read(reservation2.dept, reservation2.dr, reservation2.date, reservation2.time);
-        if(res){
-            assert(res.cnt === 0);
-        }else{
-            console.log("res2");
-            fail();
-        }
-        res = await repo.read(reservation3.dept, reservation3.dr, reservation3.date, reservation3.time);
-        if(res){
-            assert(res.cnt === 1);
-        }else{
-            console.log("res3");
-            fail();
-        }
-        res = await repo.read(reservation4.dept, reservation4.dr, reservation4.date, reservation4.time);
-        if(res){
-            assert(res.cnt === 3);
-        }else{
-            console.log("res4");
-            fail();
-        }
-        res = await repo.read(reservation5.dept, reservation5.dr, reservation5.date, reservation5.time); if(res){
-            assert(res.cnt === 3);
-        }else{
-            console.log("res5");
-            fail();
-        }
-        res = await repo.read(reservation6.dept, reservation6.dr, reservation6.date, reservation6.time);
-        if(res){
-            assert(res.cnt === 3);
-        }else{
-            console.log("res6");
-            fail();
-        }
     });
 
     await t.step("list", async () => {
@@ -654,14 +498,5 @@ Deno.test("webappointment service", async (t) => {
         assertFalse(res2);
         await service.delete(appointment_noid3);
         res = await repo.read(appointment_noid3.id);
-    });
-
-    await t.step("cleanup", async () => {
-        const repo = new WebReservationRepository(BASE);
-        await repo.delete(reservation);
-        await repo.delete(reservation2);
-        await repo.delete(reservation3);
-        await repo.delete(reservation4);
-        await repo.delete(reservation5);
     });
 });

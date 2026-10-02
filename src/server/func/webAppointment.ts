@@ -3,8 +3,9 @@ import { WebAppService } from "../domain/webAppointmentService.ts"
 import { AppointmentService } from "../domain/appointmentService.ts"
 import { AnswerService } from "../domain/answerService.ts"
 import { QuestionnaireService } from "../domain/questionnaireService.ts"
+import { WebReservationService } from "../domain/webReservationService.ts"
 import {
-  WebAppRepository, AppointmentRepository,
+  WebAppRepository, AppointmentRepository, WebReservationRepository,
   AnswerRepository, AnswerPasswordRepository, QuestionnaireRepository
 } from "../infra/allRepository.ts"
 import { WebAppointmentRegistration } from "../usecase/webAppointmentRegistration.ts"
@@ -14,6 +15,8 @@ import type { WebAppointment } from "../domain/webAppointment.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
 import { type Result, type FetchResult, ng } from "../lib/response.ts"
 import { LoggingMiddleware } from "../middleware/logging.ts"
+import { FatalError } from "../lib/types.ts"
+import { fatal } from "../lib/log.ts"
 
 const AUTH_READ = {auth: Auth.WEB, role: Role.READ};
 const AUTH_WRITE = {auth: Auth.WEB, role: Role.READ};
@@ -88,19 +91,29 @@ export const insert = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<FetchResult<WebAppointment>> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const usecase = new WebAppointmentRegistration(
-        new WebAppService(
-          new WebAppRepository(auth.user.base)),
-        new AppointmentRegistration(
-          new AppointmentService(
-            new AppointmentRepository(auth.user.base)),
-          new AnswerRegistration(
-            new AnswerService(
-              new AnswerRepository(auth.user.base),
-              new AnswerPasswordRepository(auth.user.base)),
-            new QuestionnaireService(
-              new QuestionnaireRepository(auth.user.base)))));
-      return await usecase.insert(data.webAppointment);
+      try{
+        const usecase = new WebAppointmentRegistration(
+          new WebAppService(
+            new WebAppRepository(auth.user.base)),
+          new AppointmentRegistration(
+            new AppointmentService(
+              new AppointmentRepository(auth.user.base)),
+            new AnswerRegistration(
+              new AnswerService(
+                new AnswerRepository(auth.user.base),
+                new AnswerPasswordRepository(auth.user.base)),
+              new QuestionnaireService(
+                new QuestionnaireRepository(auth.user.base)))),
+          new WebReservationService(
+            new WebReservationRepository(auth.user.base)),
+        );
+        return await usecase.insert(data.webAppointment);
+      }catch(e){
+        if(e instanceof FatalError){
+          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
+        }
+        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+      }
     }
     return ng(auth.errors!);
 });
@@ -111,19 +124,29 @@ export const update = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<FetchResult<WebAppointment>> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const usecase = new WebAppointmentRegistration(
-        new WebAppService(
-          new WebAppRepository(auth.user.base)),
-        new AppointmentRegistration(
-          new AppointmentService(
-            new AppointmentRepository(auth.user.base)),
-          new AnswerRegistration(
-            new AnswerService(
-              new AnswerRepository(auth.user.base),
-              new AnswerPasswordRepository(auth.user.base)),
-            new QuestionnaireService(
-              new QuestionnaireRepository(auth.user.base)))));
-      return await usecase.update(data.webAppointment);
+      try{
+        const usecase = new WebAppointmentRegistration(
+          new WebAppService(
+            new WebAppRepository(auth.user.base)),
+          new AppointmentRegistration(
+            new AppointmentService(
+              new AppointmentRepository(auth.user.base)),
+            new AnswerRegistration(
+              new AnswerService(
+                new AnswerRepository(auth.user.base),
+                new AnswerPasswordRepository(auth.user.base)),
+              new QuestionnaireService(
+                new QuestionnaireRepository(auth.user.base)))),
+          new WebReservationService(
+            new WebReservationRepository(auth.user.base)),
+        );
+        return await usecase.update(data.webAppointment);
+      }catch(e){
+        if(e instanceof FatalError){
+          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
+        }
+        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+      }
     }
     return ng(auth.errors!);
 });
@@ -134,19 +157,29 @@ export const del = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
-      const usecase = new WebAppointmentRegistration(
-        new WebAppService(
-          new WebAppRepository(auth.user.base)),
-        new AppointmentRegistration(
-          new AppointmentService(
-            new AppointmentRepository(auth.user.base)),
-        new AnswerRegistration(
-          new AnswerService(
-            new AnswerRepository(auth.user.base),
-            new AnswerPasswordRepository(auth.user.base)),
-          new QuestionnaireService(
-              new QuestionnaireRepository(auth.user.base)))));
-      return await usecase.delete(data.webAppointment);
+      try{
+        const usecase = new WebAppointmentRegistration(
+          new WebAppService(
+            new WebAppRepository(auth.user.base)),
+          new AppointmentRegistration(
+            new AppointmentService(
+              new AppointmentRepository(auth.user.base)),
+          new AnswerRegistration(
+            new AnswerService(
+              new AnswerRepository(auth.user.base),
+              new AnswerPasswordRepository(auth.user.base)),
+            new QuestionnaireService(
+              new QuestionnaireRepository(auth.user.base)))),
+          new WebReservationService(
+            new WebReservationRepository(auth.user.base)),
+        );
+        return await usecase.delete(data.webAppointment);
+      }catch(e){
+        if(e instanceof FatalError){
+          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
+        }
+        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+      }
     }
     return ng(auth.errors!);
 });

@@ -2,10 +2,8 @@
 import type { WebAppointment, Condition } from "../domain/webAppointment.ts"
 import type { IWebAppRepository } from "../domain/webAppointmentService.ts"
 import { Kv } from "./kv.ts"
-import { WebReservationRepository } from "./webReservationRepository.ts"
-import { DATE_EMPTY } from "../domain/webAppointmentService.ts"
 import { addDay } from "../lib/datetime.ts"
-import { fatal } from "../lib/log.ts"
+import { FatalError } from "../lib/types.ts"
 
 export class WebAppRepository implements IWebAppRepository {
     database: Kv
@@ -19,105 +17,47 @@ export class WebAppRepository implements IWebAppRepository {
         this.base = base;
     }
     async insert(app: WebAppointment): Promise<boolean> {
-        if(!app.facility.id){
-            await fatal(`insert ${this.constructor.name}`, "施設が存在しません。\n" + JSON.stringify(app), this.base);
-            return false;
+        const key = [this.base, this.KEY, app.id];
+        const kv = await this.database.open();
+        const res = await kv.atomic().check({key, versionstamp: null})
+            .set(key, app)
+            .set([this.base, this.KEY2, app.date, app.id], app)
+            .set([this.base, this.KEY3, app.facility.id, app.id], app)
+            .set([this.base, this.KEY4, app.patient.id, app.id], app)
+            .commit();
+        this.database.close();
+        if(!res.ok){
+            throw new FatalError(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base);
         }
-        const repo = new WebReservationRepository(this.base);
-        if(app.date === DATE_EMPTY || await repo.countUp(app.department.id, app.date, app.dr.id, app.time, false)){
-            const key = [this.base, this.KEY, app.id];
-            const kv = await this.database.open();
-            const res = await kv.atomic().check({key, versionstamp: null})
-                .set(key, app)
-                .set([this.base, this.KEY2, app.date, app.id], app)
-                .set([this.base, this.KEY3, app.facility.id, app.id], app)
-                .set([this.base, this.KEY4, app.patient.id, app.id], app)
-                .commit();
-            this.database.close();
-            if(!res.ok){
-                await repo.countDown(app.department.id, app.date, app.dr.id, app.time);
-                await fatal(`insert ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base);
-            }
-            return res.ok;
-        }else{
-            await fatal(`insert ${this.constructor.name}`, "枠数の更新に失敗しました。\n" + JSON.stringify(app), this.base);
-            return false;
-        }
+        return res.ok;
     }
     async update(app: WebAppointment): Promise<boolean> {
         const data = await this.read(app.id);
-        if(!data || !data.facility.id || !app.facility.id){
-            await fatal(`update ${this.constructor.name}`, "データまたは施設が存在しません。\n" + JSON.stringify(app), this.base);
-            return false;
+        if(!data){
+            throw new FatalError(`update ${this.constructor.name}`, "対象のデータが存在しません。\n" + JSON.stringify(app), this.base);
         }
 
-        const repo = new WebReservationRepository(this.base);
-        if(app.date === DATE_EMPTY && data.date === DATE_EMPTY){
-            //continue
-        }else if(!app.dr.id){
-            //continue
-        }else if(app.date === DATE_EMPTY && data.date !== DATE_EMPTY){
-            if(!await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
-                await fatal(`update ${this.constructor.name}`, "枠数の更新に失敗しました。\n" + JSON.stringify(app), this.base);
-                return false;
-            }
-        }else if(data.date === DATE_EMPTY && app.date !== DATE_EMPTY){
-            if(!await repo.countUp(app.department.id, app.date, app.dr.id, app.time, app.force)){
-                await fatal(`update ${this.constructor.name}`, "枠数の更新に失敗しました。\n" + JSON.stringify(app), this.base);
-                return false;
-            }
-        }else if(data.department.id != app.department.id || data.date != app.date ||
-            data.dr.id != app.dr.id || data.time != app.time){
-            if(!await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
-                await fatal(`update ${this.constructor.name}`, "枠数の更新に失敗しました。\n" + JSON.stringify(app), this.base);
-                return false;
-            }
-            if(!await repo.countUp(app.department.id, app.date, app.dr.id, app.time, app.force)){
-                await repo.countUp(data.department.id, data.date, data.dr.id, data.time, data.force);
-                await fatal(`update ${this.constructor.name}`, "枠数の更新に失敗しました。\n" + JSON.stringify(app), this.base);
-                return false;
-            }
-        }
         const kv = await this.database.open();
-        let res;
-        if(data.date === app.date){
-            res = await kv.atomic()
-                .set([this.base, this.KEY, app.id], app)
-                .set([this.base, this.KEY2, app.date, app.id], app)
-                .set([this.base, this.KEY3, app.facility.id, app.id], app)
-                .delete([this.base, this.KEY4, data.patient.id, data.id])
-                .set([this.base, this.KEY4, app.patient.id, app.id], app)
-                .commit();
-        }else{
-            res = await kv.atomic()
-                .set([this.base, this.KEY, app.id], app)
-                .delete([this.base, this.KEY2, data.date, data.id])
-                .set([this.base, this.KEY2, app.date, app.id], app)
-                .set([this.base, this.KEY3, app.facility.id, app.id], app)
-                .delete([this.base, this.KEY4, data.patient.id, data.id])
-                .set([this.base, this.KEY4, app.patient.id, app.id], app)
-                .commit();
-        }
+        const res = await kv.atomic()
+            .set([this.base, this.KEY, app.id], app)
+            .delete([this.base, this.KEY2, data.date, data.id])
+            .set([this.base, this.KEY2, app.date, app.id], app)
+            .set([this.base, this.KEY3, app.facility.id, app.id], app)
+            .delete([this.base, this.KEY4, data.patient.id, data.id])
+            .set([this.base, this.KEY4, app.patient.id, app.id], app)
+            .commit();
         this.database.close();
         if(!res.ok){
-            await repo.countDown(app.department.id, app.date, app.dr.id, app.time);
-            await fatal(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base);
+            throw new FatalError(`update ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base);
         }
         return res.ok;
     }
     async delete(app: WebAppointment): Promise<boolean> {
         const data = await this.read(app.id);
         if(!data){
-            await fatal(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(app), this.base);
-            return false;
+            throw new FatalError(`delete ${this.constructor.name}`, "データが存在しません。\n" + JSON.stringify(app), this.base);
         }
-        if(!data.cancel && data.date !== DATE_EMPTY && data.dr.id){
-            const repo = new WebReservationRepository(this.base);
-            if(!await repo.countDown(data.department.id, data.date, data.dr.id, data.time)){
-                await fatal(`delete ${this.constructor.name}`, "枠数の更新に失敗しました。\n" + JSON.stringify(data), this.base);
-                return false;
-            }
-        }
+
         const kv = await this.database.open();
         const res = await kv.atomic()
             .delete([this.base, this.KEY, app.id])
@@ -127,7 +67,7 @@ export class WebAppRepository implements IWebAppRepository {
             .commit();
         this.database.close();
         if(!res.ok){
-            await fatal(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base);
+            throw new FatalError(`delete ${this.constructor.name}`, "失敗しました。\n" + JSON.stringify(app), this.base);
         }
         return res.ok;
     }

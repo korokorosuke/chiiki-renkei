@@ -13,7 +13,8 @@ import { department, department2 } from "../infra/testdata/webDept.ts"
 import { user } from "../infra/testdata/user.ts"
 import { initWebDr } from "../lib/types.ts"
 import { Kv } from "../infra/kv.ts"
-import { WebAppService } from "../domain/webAppointmentService.ts"
+import { WebAppService, ID_EMPTY, DATE_EMPTY } from "../domain/webAppointmentService.ts"
+import { WebReservationService } from "../domain/webReservationService.ts"
 import { WebReservationRepository } from "../infra/webReservationRepository.ts"
 import { WebAppointmentRegistration } from "./webAppointmentRegistration.ts"
 import { AppointmentRegistration } from "./appointmentRegistration.ts"
@@ -336,7 +337,7 @@ function compare(app1: WebAppointment, app2: WebAppointment): boolean {
     //    console.log(`id: ${app1.id} : ${app2.id}`)
     //    return false;
     //}
-    if(app1.date !== app2.date){
+    if(app1.date !== app2.date && (app1.date !== DATE_EMPTY && app2.date !== "")){
         console.log(`date: ${app1.date} : ${app2.date}`)
         return false;
     }
@@ -351,7 +352,7 @@ function compare(app1: WebAppointment, app2: WebAppointment): boolean {
     if(app1.patient && app2.patient){
         const p1 = app1.patient;
         const p2 = app2.patient;
-        if(p1.id !== p2.id){
+        if(p1.id !== p2.id && (p1.id !== ID_EMPTY && p2.id !== "")){
             console.log(`patient_id: ${p1.id} : ${p2.id}`)
             return false;
         }
@@ -523,67 +524,63 @@ Deno.test("webappointment registration", async (t) => {
                 service,
                 new AppointmentRegistration(
                     appservice,
-                new AnswerRegistration(
-                    new AnswerService(new AnswerRepository(BASE),
-                    new AnswerPasswordRepository(BASE)),
-                    new QuestionnaireService(new QuestionnaireRepository(BASE))
-            )));
+                    new AnswerRegistration(
+                        new AnswerService(new AnswerRepository(BASE),
+                        new AnswerPasswordRepository(BASE)),
+                        new QuestionnaireService(new QuestionnaireRepository(BASE)))),
+                new WebReservationService(new WebReservationRepository(BASE)),
+            );
         let res = await usecase.insert(appointment);
         if(res.ok){
-            appointment3.id = res.data!.id;
+            appointment3.id = res.data.id;
         }else{
             fail();
         }
         res = await usecase.insert(appointment2);
         if(res.ok){
-            appointment4.id = res.data!.id;
+            appointment4.id = res.data.id;
         }else{
             fail();
         }
         res = await usecase.insert(appointment5);
         if(res.ok){
-            appointment5.id = res.data!.id;
+            appointment5.id = res.data.id;
         }else{
             fail();
         }
         res = await usecase.insert(appointment6);
+        if(!res.ok){
+          console.log(res.errors);
+        }
         assertFalse(res.ok);
         res = await usecase.insert(appointment_required);
+        if(!res.ok){
+          console.log(res.errors);
+        }
         assertFalse(res.ok);
-        res = await usecase.insert(structuredClone(appointment_nodate));
+        res = await usecase.insert(appointment_nodate);
         if(res.ok){
-            appointment_nodate.id = res.data!.id;
-            appointment_nodate2.id = res.data!.id;
+            appointment_nodate2.id = res.data.id;
         }else{
             fail();
         }
-        res = await usecase.insert(structuredClone(appointment_nodate1));
+        res = await usecase.insert(appointment_nodate1);
         if(res.ok){
-            appointment_nodate3.id = res.data!.id;
+            appointment_nodate3.id = res.data.id;
         }else{
             fail();
         }
-        res = await usecase.insert(structuredClone(appointment_noid));
+        res = await usecase.insert(appointment_noid);
         if(res.ok){
-            appointment_noid.id = res.data!.id;
-            appointment_noid2.id = res.data!.id;
+            appointment_noid.id = res.data.id;
+            appointment_noid2.id = res.data.id;
         }else{
             fail();
         }
-        let resapp = await appservice.get(appointment_noid.id);
-        if(resapp){
-            console.log("should not be here, but data found");
-            fail();
-        }
-        res = await usecase.insert(structuredClone(appointment_noid1));
+        res = await usecase.insert(appointment_noid1);
         if(res.ok){
-            appointment_noid3.id = res.data!.id;
+            appointment_noid3.id = res.data.id;
         }else{
-            fail();
-        }
-        resapp = await appservice.get(appointment_noid3.id);
-        if(resapp){
-            console.log("should not be here, but data found");
             fail();
         }
     });
@@ -596,11 +593,12 @@ Deno.test("webappointment registration", async (t) => {
                 service,
                 new AppointmentRegistration(
                     new AppointmentService(new AppointmentRepository(BASE)),
-                new AnswerRegistration(
-                    new AnswerService(new AnswerRepository(BASE),
-                    new AnswerPasswordRepository(BASE)),
-                    new QuestionnaireService(new QuestionnaireRepository(BASE))
-            )));
+                    new AnswerRegistration(
+                        new AnswerService(new AnswerRepository(BASE),
+                        new AnswerPasswordRepository(BASE)),
+                        new QuestionnaireService(new QuestionnaireRepository(BASE)))),
+                new WebReservationService(new WebReservationRepository(BASE)),
+            );
         let res = await usecase.update(appointment3);
         if(!res.ok){
             console.log(res.errors!);
@@ -611,26 +609,27 @@ Deno.test("webappointment registration", async (t) => {
             console.log(res.errors!);
         }
         assert(res.ok);
-        res = await usecase.update(structuredClone(appointment_nodate2));
+        res = await usecase.update(appointment_nodate2);
         if(!res.ok){
             console.log(res.errors!);
         }
         assert(res.ok);
-        res = await usecase.update(structuredClone(appointment_nodate3));
+        res = await usecase.update(appointment_nodate3);
         if(!res.ok){
             console.log(res.errors!);
         }
         assert(res.ok);
-        res = await usecase.update(structuredClone(appointment_noid2));
+        res = await usecase.update(appointment_noid2);
         if(!res.ok){
             console.log(res.errors!);
         }
         assert(res.ok);
-        res = await usecase.update(structuredClone(appointment_noid3));
+        //枠無しのため失敗する
+        res = await usecase.update(appointment_noid3);
         if(!res.ok){
             console.log(res.errors!);
         }
-        assert(res.ok);
+        assertFalse(res.ok);
     });
 
     await t.step("count check", async () => {
@@ -644,7 +643,7 @@ Deno.test("webappointment registration", async (t) => {
         }
         res = await repo.read(reservation2.dept, reservation2.dr, reservation2.date, reservation2.time);
         if(res){
-            assert(res.cnt === 0);
+            assert(res.cnt === 1);
         }else{
             console.log("res2");
             fail();
@@ -663,7 +662,8 @@ Deno.test("webappointment registration", async (t) => {
             console.log("res4");
             fail();
         }
-        res = await repo.read(reservation5.dept, reservation5.dr, reservation5.date, reservation5.time); if(res){
+        res = await repo.read(reservation5.dept, reservation5.dr, reservation5.date, reservation5.time);
+        if(res){
             assert(res.cnt === 3);
         }else{
             console.log("res5");
@@ -705,8 +705,8 @@ Deno.test("webappointment registration", async (t) => {
                     assert(compare(appointment4, a));
                 }else if(a.id === appointment5.id){
                     assert(compare(appointment5, a));
-                }else if(a.id === appointment_noid3.id){
-                    assert(compare(appointment_noid3, a));
+                }else if(a.id === appointment_noid1.id){
+                    assert(compare(appointment_noid1, a));
                 }else if(a.id === appointment_noid2.id){
                     assert(compare(appointment_noid2, a));
                 }else if(a.id === appointment_nodate3.id){
@@ -816,12 +816,12 @@ Deno.test("webappointment registration", async (t) => {
             assert(compare2(toAppointment(appointment_noid2), res2[0]));
         }
         const res3 = await service.getList({patientId: patient6.id});
-        if(res.length === 2){
+        if(res3.length === 1){
             for(const a of res3){
                 assert(compare(appointment_nodate3, a));
             }
         }else{
-            console.log(`list2: ${res.length}`)
+            console.log(`list2: ${res3.length}`)
             fail();
         }
     })
@@ -861,7 +861,7 @@ Deno.test("webappointment registration", async (t) => {
         const service = new WebAppService(repo);
         const res = await service.getNoID();
         if(res.length === 1){
-            assert(compare(appointment_noid3, res[0]));
+            assert(compare(appointment_noid1, res[0]));
         }else{
             console.log(`list1: ${res.length}`)
             fail();
@@ -876,11 +876,12 @@ Deno.test("webappointment registration", async (t) => {
                 service,
                 new AppointmentRegistration(
                     new AppointmentService(new AppointmentRepository(BASE)),
-                new AnswerRegistration(
-                    new AnswerService(new AnswerRepository(BASE),
-                        new AnswerPasswordRepository(BASE)),
-                    new QuestionnaireService(new QuestionnaireRepository(BASE))
-            )));
+                    new AnswerRegistration(
+                        new AnswerService(new AnswerRepository(BASE),
+                            new AnswerPasswordRepository(BASE)),
+                        new QuestionnaireService(new QuestionnaireRepository(BASE)))),
+                new WebReservationService(new WebReservationRepository(BASE)),
+            );
         await usecase.delete(appointment3);
         let res = await repo.read(appointment3.id);
         assertFalse(res);
@@ -921,5 +922,6 @@ Deno.test("webappointment registration", async (t) => {
         await repo.delete(reservation3);
         await repo.delete(reservation4);
         await repo.delete(reservation5);
+        await repo.delete(reservation6);
     });
 });

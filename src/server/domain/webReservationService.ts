@@ -5,6 +5,8 @@ export interface IWebReservationRepository extends IWriteRepository<WebReservati
     read(dept: string, dr: string, date: string, time: string): Promise<WebReservation|undefined>
     list(dept: string, dr: string, yyyymm: string): Promise<WebReservation[]>
     listByDate(dept: string, yyyymm: string): Promise<WebReservation[]>
+    countUp(dept: string, date: string, dr: string, time: string, force: boolean|undefined): Promise<boolean>
+    countDown(dept: string, date: string, dr: string, time: string, force: boolean|undefined): Promise<boolean>
 }
 
 export class WebReservationService extends MainWriteService<WebReservation, IWebReservationRepository>{
@@ -22,5 +24,13 @@ export class WebReservationService extends MainWriteService<WebReservation, IWeb
 
     async getListByDate(dept: string, yyyymm: string): Promise<WebReservation[]>{
         return await super.getRepository().listByDate(dept, yyyymm);
+    }
+
+    async countUp(dept: string, date: string, dr: string, time: string, force: boolean|undefined): Promise<boolean>{
+        return await super.getRepository().countUp(dept, date, dr, time, force);
+    }
+
+    async countDown(dept: string, date: string, dr: string, time: string, force: boolean|undefined): Promise<boolean>{
+        return await super.getRepository().countDown(dept, date, dr, time, force);
     }
 }
