@@ -41,7 +41,7 @@ export function Notice(){
                 <div class={ css({ marginTop: "1.2rem" }) }></div>
               </Show>
               <div>{toLocalDateString(new Date(notice.fromDate))}（{getWeekName(notice.fromDate)}）</div>
-              <div>{notice.message}</div>
+              <div class={ message }>{notice.message}</div>
             </div>
           }</For>
         </div>
@@ -55,7 +55,7 @@ export function Notice(){
                 <div class={ css({ marginTop: "1.2rem" }) }></div>
               </Show>
               <div>{toLocalDateString(new Date(notice.fromDate))}（{getWeekName(notice.fromDate)}）</div>
-              <div>{notice.message}</div>
+              <div class={ message }>{notice.message}</div>
             </div>
           }</For>
         </div>
@@ -77,4 +77,9 @@ const normal = css({
   border: "1px solid #5f5f5f",
   borderRadius: "10px",
   padding: "1rem",
+});
+
+const message = css({
+  whiteSpace: "pre-wrap",
+  marginLeft: "1rem"
 });
