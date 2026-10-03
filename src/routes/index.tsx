@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/solid-router"
+import { QueryClient, QueryClientProvider } from "@tanstack/solid-query"
 import { type JSXElement, Show, children } from "solid-js"
 import hosp from "../assets/hospital.svg"
 import walkr from "../assets/walkright.svg"
@@ -21,6 +22,8 @@ import { flex } from "../styled-system/patterns/"
 import { css } from "../styled-system/css/"
 
 export const Route = createFileRoute('/')({ component: Home });
+
+const queryClient = new QueryClient();
 
 type Props = {
   title: string
@@ -65,7 +68,9 @@ function Home() {
     <>
     <Header title="地域連携システム" visible={false} handler={()=>{}} auth={user} color={base.color} />
     <main class={ flex({ direction: "column" }) }>
-      <Notice />
+      <QueryClientProvider client={queryClient}>
+        <Notice />
+      </QueryClientProvider>
       <Show when={user.authActivity >= 2 || user.authWeb >= 1}>
       <div>
         <Show when={user.authActivity >= 2}>

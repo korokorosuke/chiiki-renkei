@@ -10,11 +10,52 @@ import type { Base } from "../../server/domain/base.ts"
 import { getLocalStorage, setLocalStorage } from "../../lib/storage.ts"
 import { getBase } from "../../server/func/base.ts"
 import { css } from "../../styled-system/css/"
+import { useQuery } from "@tanstack/solid-query"
+import { QueryClient, QueryClientProvider } from "@tanstack/solid-query"
 import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/login/{-$base}")({ component: App });
 
+const queryClient = new QueryClient();
+
 const STORAGE_KEY = "reco_base";
+
+function Notice(props: {base: Accessor<string>}){
+  const noticesQuery = useQuery(() => ({
+    queryKey: ['login-notices', props.base()],
+    queryFn: ()=>getLoginNotices({data: {base: props.base()}}),
+  }));
+
+  function NoticeMessage(props: {notice: Notice, i: Accessor<number>}): JSXElement{
+    return (
+      <div>
+        <Show when={props.i()>=1}>
+          <div></div>
+        </Show>
+        <div>{props.notice.message}</div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div class={ css(messageStyle, { color: "red", }) }>
+        <Suspense fallback={<div></div>}>
+          <For each={noticesQuery.data}>{(notice, i)=>
+            notice.importance ? <NoticeMessage notice={notice} i={i} /> : null
+          }</For>
+        </Suspense>
+      </div>
+      <div class={ css(messageStyle) }>
+        <Suspense fallback={<div>読み込み中...</div>}>
+          <For each={noticesQuery.data}>{(notice, i)=>
+            !notice.importance ? <NoticeMessage notice={notice} i={i} /> : null
+          }</For>
+        </Suspense>
+      </div>
+    </>
+  );
+}
 
 function App() {
   const [user, setUser] = createSignal("");
@@ -23,7 +64,6 @@ function App() {
   const [base, setBase] = createSignal("");
   const [baseInfo, setBaseInfo] = createSignal<Base|undefined>();
   const [visible, setVisible] = createSignal(true);
-  const [notices, setNotices] = createSignal<Notice[]>([]);
   const [disabled, setDisabled] = createSignal(false);
 
   let input: HTMLInputElement | undefined;
@@ -82,23 +122,12 @@ function App() {
   }
 
   onMount(()=>{
-    getLoginNotices({data: {base: base()}}).then(setNotices);
     getBase({data: {id: base()}}).then(setBaseInfo);
     if(input){
       input.focus();
     }
   });
 
-  function NoticeMessage(props: {notice: Notice, i: Accessor<number>}): JSXElement{
-    return (
-      <div>
-        <Show when={props.i()>=1}>
-          <div></div>
-        </Show>
-        <div>{props.notice.message}</div>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -123,20 +152,9 @@ function App() {
       }) }>
         <div>
           <label class={ css({ width: "20rem", fontSize: "2.5rem" }) }>地域連携システム</label>
-          <div class={ css(messageStyle, { color: "red", }) }>
-            <Suspense fallback={<div>loading</div>}>
-              <For each={notices()}>{(notice, i)=>
-                notice.importance ? <NoticeMessage notice={notice} i={i} /> : null
-              }</For>
-            </Suspense>
-          </div>
-          <div class={ css(messageStyle) }>
-            <Suspense fallback={<div>loading</div>}>
-              <For each={notices()}>{(notice, i)=>
-                !notice.importance ? <NoticeMessage notice={notice} i={i} /> : null
-              }</For>
-            </Suspense>
-          </div>
+          <QueryClientProvider client={queryClient}>
+            <Notice base={base} />
+          </QueryClientProvider>
         </div>
       </div>
 

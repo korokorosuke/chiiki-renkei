@@ -1,4 +1,5 @@
-import { createSignal, createEffect, For, Show, onMount } from "solid-js"
+import { createSignal, createEffect, For, Show } from "solid-js"
+import { useQuery } from "@tanstack/solid-query"
 import { toLocalDateString, getWeekName } from "../../lib/datetime.ts"
 import { getNotices } from "../../server/func/webNotice.ts"
 import type { WebNotice } from "../../server/domain/webNotice.ts"
@@ -7,13 +8,16 @@ import { css } from "../../styled-system/css/"
 export function Notice(){
   const [importants, setImportants] = createSignal<WebNotice[]>([]);
   const [normals, setNormals] = createSignal<WebNotice[]>([]);
-  const [notices, setNotices] = createSignal<WebNotice[]>([]);
+  const noticesQuery = useQuery(() => ({
+    queryKey: ['menu-notices'],
+    queryFn: ()=>getNotices(),
+  }));
 
   createEffect(()=>{
-    if(notices() && notices().length > 0){
+    if(noticesQuery.data && noticesQuery.data.length > 0){
       const imp = [];
       const normal = [];
-      for(const a of notices()){
+      for(const a of noticesQuery.data){
         if(a.importance){
           imp.push(a);
         }else{
@@ -23,10 +27,6 @@ export function Notice(){
       setImportants(imp);
       setNormals(normal);
     }
-  });
-
-  onMount(()=>{
-    getNotices().then(setNotices);
   });
 
 
