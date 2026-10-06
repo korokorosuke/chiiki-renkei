@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { AnswerPasswordService, AnswerService } from "../domain/answerService.ts"
 import { QuestionnaireService } from "../domain/questionnaireService.ts"
 import { AnswerRepository, AnswerPasswordRepository, QuestionnaireRepository } from "../infra/allRepository.ts"
@@ -25,8 +26,12 @@ export const getAnswers = createServerFn({ method: "GET" })
       const service = new AnswerService(new AnswerRepository(auth.user.base),
         new AnswerPasswordRepository(auth.user.base));
       return await service.getList(data.appId);
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return [];
 });
 
 export const getAnswersByPatient = createServerFn({ method: "GET" })
@@ -37,8 +42,12 @@ export const getAnswersByPatient = createServerFn({ method: "GET" })
       const service = new AnswerService(new AnswerRepository(auth.user.base),
         new AnswerPasswordRepository(auth.user.base));
       return await service.getListByPatient(data.patientId);
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return [];
 });
 
 export const exists = createServerFn({ method: "GET" })
@@ -58,8 +67,12 @@ export const getPassword = createServerFn({ method: "GET" })
       const service = new AnswerService(new AnswerRepository(auth.user.base),
         new AnswerPasswordRepository(auth.user.base));
       return await service.getPasswordService().getPassword(data.appId);
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return "";
 });
 
 export const resetPassword = createServerFn({ method: "GET" })
@@ -78,8 +91,12 @@ export const resetPassword = createServerFn({ method: "GET" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(["パスワードのリセットに失敗しました。"]);
 });
 
 export const getAnswersByPassword = createServerFn({ method: "GET" })
@@ -107,6 +124,11 @@ export const getAnswer = createServerFn({ method: "POST" })
           new AnswerPasswordRepository(auth.user.base));
         return await service.get(data.id);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
     return undefined;
 });
@@ -128,8 +150,12 @@ export const create = createServerFn({ method: "POST" })
         };
       }
       return initialize();
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return {} as Answer;
 });
 
 export const insert = createServerFn({ method: "POST" })
@@ -148,8 +174,12 @@ export const insert = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
@@ -162,7 +192,10 @@ export const update = createServerFn({ method: "POST" })
       if(auth.ok){
         data.base = auth.user.base;
       }else{
-        return ng(auth.errors!);
+        throw redirect({
+          // @ts-ignore: なんかエラーになるため
+          to: '/login'
+        });
       }
     }
     if(data.base){
@@ -196,6 +229,10 @@ export const del = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });

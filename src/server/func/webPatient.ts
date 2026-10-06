@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { PatientService } from "../domain/patientService.ts"
 import { WebAppService } from "../domain/webAppointmentService.ts"
 import { PatientRepository, WebAppRepository } from "../infra/allRepository.ts"
@@ -14,7 +15,10 @@ export const getPatientForId = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<FetchResult<Patient>> => {
     const auth = await authenticate(AUTH_MASTER);
     if(!auth.ok){
-      return ng(auth.errors!);
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
 
     if(!data.id){
@@ -35,7 +39,10 @@ export const getPatient = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<FetchResult<Patient>> => {
     const auth = await authenticate(AUTH_READ);
     if(!auth.ok){
-      return ng(auth.errors!);
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
 
     if(!data.facPatId){

@@ -1,4 +1,5 @@
 import { createServerFn, createServerOnlyFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { WebNoticeService } from "../domain/webNoticeService.ts"
 import { WebNoticeRepository } from "../infra/allRepository.ts"
 import type { WebNotice, NoticePage } from "../domain/webNotice.ts"
@@ -19,7 +20,10 @@ export const getAllNotices = createServerFn({ method: "GET" })
       const service = new WebNoticeService(new WebNoticeRepository(auth.user.base));
       return await service.getAll();
     }else{
-      return [];
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
 });
 
@@ -38,7 +42,10 @@ export const getNotices = createServerFn({ method: "GET" })
     if(auth.ok){
       return await getList(auth.user.base, "メニュー");
     }else{
-      return [];
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
 });
 
@@ -57,8 +64,12 @@ export const insert = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
@@ -76,8 +87,12 @@ export const update = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
@@ -95,6 +110,10 @@ export const del = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });

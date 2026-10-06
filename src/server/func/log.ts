@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { LogListService } from "../domain/logListService.ts"
 import { LogRepository } from "../infra/allRepository.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
@@ -58,6 +59,10 @@ export const getList = createServerFn({ method: "GET" })
       const res = await service.list(data.level, data.fromDate, data.toDate, data.userId, data.patientId,
         auth.user.authLog === 2);
       return res;
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return [];
 });

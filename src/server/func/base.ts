@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { BaseService } from "../domain/baseService.ts"
 import { BaseRepository } from "../infra/allRepository.ts"
 import type { Base } from "../domain/base.ts"
@@ -45,6 +46,10 @@ export const update = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });

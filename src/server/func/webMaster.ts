@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { WebMasterService } from "../domain/webMasterService.ts"
 import { WebMasterRepository } from "../infra/allRepository.ts"
 import type { WebMaster } from "../domain/webMaster.ts"
@@ -23,8 +24,12 @@ export const getWebMaster = createServerFn({ method: "GET" })
       }else{
         return ng(["データが存在しません。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const insert = createServerFn({ method: "POST" })
@@ -43,8 +48,12 @@ export const insert = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const update = insert;
@@ -64,6 +73,10 @@ export const del = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });

@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { InquiryService } from "../domain/inquiryService.ts"
 import { InquiryRepository } from "../infra/allRepository.ts"
 import type { Inquiry } from "../domain/inquiry.ts"
@@ -21,6 +22,11 @@ export const getInquiries = createServerFn({ method: "GET" })
         return await service.getList({patientId: data.patientId, facilityId: data.facilityId,
           fromDate: data.fromDate, toDate: data.toDate});
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
     return [];
 });
@@ -40,8 +46,12 @@ export const insert = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
@@ -59,8 +69,12 @@ export const update = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
@@ -78,6 +92,10 @@ export const del = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });

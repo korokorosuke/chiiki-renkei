@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { WebDepartmentService } from "../domain/webDepartmentService.ts"
 import { WebDepartmentRepository } from "../infra/allRepository.ts"
 import type { WebDepartment } from "../domain/webDepartment.ts"
@@ -28,7 +29,10 @@ export const get = createServerFn({ method: "GET" })
         return await service.get(data.id);
       }
     }else{
-      return undefined;
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
 });
 
@@ -38,8 +42,12 @@ export const getWebDepartments = createServerFn({ method: "GET" })
     if(auth.ok){
       const service = new WebDepartmentService(new WebDepartmentRepository(auth.user.base));
       return await service.getAll();
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return [];
 });
 
 export const insert = createServerFn({ method: "POST" })
@@ -57,8 +65,12 @@ export const insert = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
@@ -76,8 +88,12 @@ export const update = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
@@ -95,6 +111,10 @@ export const del = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });

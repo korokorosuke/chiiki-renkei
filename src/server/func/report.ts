@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { ReportService } from "../domain/reportService.ts"
 import { AppointmentService } from "../domain/appointmentService.ts"
 import { AppointmentRepository } from "../infra/allRepository.ts"
@@ -18,7 +19,10 @@ export const getAppointments = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<AppointmentPrint[]> => {
     const auth = await authenticate(AUTH_READ);
     if(!auth.ok){
-      return [];
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
     if(!validate(data.condition).ok){
       return [];

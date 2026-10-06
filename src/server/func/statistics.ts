@@ -1,4 +1,5 @@
 import { createServerFn, createServerOnlyFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { StatisticsService } from "../domain/statisticsService.ts"
 import { AppointmentService } from "../domain/appointmentService.ts"
 import { ReferralToService } from "../domain/referraltoService.ts"
@@ -34,7 +35,10 @@ export const getReferrals = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<Referral[]> => {
     const auth = await authenticate(AUTH_READ);
     if(!auth.ok){
-      return [];
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
     const cond = getCondition(data.condition);
     if(!validate(cond).ok){
@@ -52,7 +56,10 @@ export const getReferralTos = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<ReferralTo[]> => {
     const auth = await authenticate(AUTH_READ);
     if(!auth.ok){
-      return [];
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
     const cond = getCondition(data.condition);
     if(!validate(cond).ok){
@@ -70,7 +77,10 @@ export const getReplies = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<Referral[]> => {
     const auth = await authenticate(AUTH_READ);
     if(!auth.ok){
-      return [];
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
     const cond = getCondition(data.condition);
     if(!validate(cond).ok){

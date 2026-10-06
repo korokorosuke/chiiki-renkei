@@ -1,4 +1,5 @@
 import { createServerFn, createServerOnlyFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { NoticeService } from "../domain/noticeService.ts"
 import { NoticeRepository } from "../infra/allRepository.ts"
 import type { Notice, NoticePage } from "../domain/notice.ts"
@@ -18,7 +19,10 @@ export const getAllNotices = createServerFn({ method: "GET" })
       const service = new NoticeService(new NoticeRepository(auth.user.base));
       return await service.getAll();
     }else{
-      return [];
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
 });
 
@@ -42,8 +46,12 @@ export const getMenuNotices = createServerFn({ method: "GET" })
     const auth = await authenticate(AUTH_WRITE);
     if(auth.ok){
       return await getList(auth.user.base, "メニュー");
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return [];
 });
 
 export const insert = createServerFn({ method: "POST" })
@@ -61,8 +69,12 @@ export const insert = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
@@ -80,8 +92,12 @@ export const update = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
@@ -99,6 +115,10 @@ export const del = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });

@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { MasterService } from "../domain/masterService.ts"
 import { MasterRepository } from "../infra/allRepository.ts"
 import type { Master } from "../domain/master.ts"
@@ -61,6 +62,11 @@ async function getMasterMain(id: string): Promise<string[]> {
         return res;
       }
     }
+  }else{
+    throw redirect({
+      // @ts-ignore: なんかエラーになるため
+      to: '/login'
+    });
   }
   return [];
 }
@@ -80,6 +86,10 @@ export const update = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });

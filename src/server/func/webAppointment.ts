@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/solid-start"
+import { redirect } from "@tanstack/solid-router"
 import { WebAppService } from "../domain/webAppointmentService.ts"
 import { AppointmentService } from "../domain/appointmentService.ts"
 import { AnswerService } from "../domain/answerService.ts"
@@ -39,6 +40,11 @@ export const getWebAppointment = createServerFn({ method: "GET" })
           new WebAppRepository(auth.user.base));
         return await service.get(data.id);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
     return undefined;
 });
@@ -55,8 +61,12 @@ export const getConsultation = createServerFn({ method: "GET" })
       }else{
         return await service.getConsultation();
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return [];
 });
 
 export const getNoID = createServerFn({ method: "GET" })
@@ -66,8 +76,12 @@ export const getNoID = createServerFn({ method: "GET" })
       const service = new WebAppService(
         new WebAppRepository(auth.user.base));
       return await service.getNoID();
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return [];
 });
 
 export const getWebAppointments = createServerFn({ method: "GET" })
@@ -81,6 +95,11 @@ export const getWebAppointments = createServerFn({ method: "GET" })
         return await service.getList({patientId: data.cond.patid,
           facilityId: data.cond.facid, fromDate: data.cond.from, toDate: data.cond.to});
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
     return [];
 });
@@ -114,8 +133,12 @@ export const insert = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const update = createServerFn({ method: "POST" })
@@ -147,8 +170,12 @@ export const update = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
 
 export const del = createServerFn({ method: "POST" })
@@ -180,6 +207,10 @@ export const del = createServerFn({ method: "POST" })
         }
         return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
       }
+    }else{
+      throw redirect({
+        // @ts-ignore: なんかエラーになるため
+        to: '/login'
+      });
     }
-    return ng(auth.errors!);
 });
