@@ -1,17 +1,17 @@
 import { createSignal, onMount, For, Index, Show, type Setter, type Accessor } from "solid-js"
 import { createStore, unwrap } from "solid-js/store"
-import { initAppointment, initFac, initDr, toUser, toDr, toFac } from "../../helper/types.ts"
+import { initAppointment, initFac, initDr, initDept, toUser, toDr, toFac } from "../../helper/types.ts"
 import { MiniApp } from "../facility/-miniApp.tsx"
 import { toHHMM } from "../../lib/datetime.ts"
 import { Container, ContainerButton } from "../../components/Container.tsx"
 import { insert, update, del } from "../../server/func/appointment.ts"
 import { getFac } from "../../server/func/facility.ts"
-import { getDrsForDept } from "../../server/func/dr.ts"
 import { getMeans, getFacDepts } from "../../server/func/master.ts"
 import { getUser } from "../../server/func/user.ts"
 import { getDrs as getFacDrs } from "../../server/func/staff.ts"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
+import { DrSelect } from "../../components/DrSelect.tsx"
 import type { Appointment } from "../../server/domain/appointment.ts"
 import type { AuthUser } from "../../server/domain/user.ts"
 import type { Department } from "../../server/domain/department.ts"
@@ -30,12 +30,6 @@ type ViewProps = {
   auth: AuthUser
 }
 
-function handleEnter(e: KeyboardEvent, func: ()=>void){
-  if(e.key === "Enter"){
-    func();
-  }
-}
-
 export const route = {
   preload: () => {
     getMeans();
@@ -47,11 +41,16 @@ export function ModificationArea(props: ViewProps){
   const [appointment, setAppointment] = createStore<Appointment>(structuredClone(props.appointment()));
   const [facDrs, setFacDrs] = createSignal<Dr[]>([]);
   const [times, setTimes] = createSignal<string[]>([]);
-  const [drs, setDrs] = createSignal<Dr[]>([]);
   const [means, setMeans] = createSignal<string[]>([]);
   const [facDepts, setFacDepts] = createSignal<string[]>([]);
   let oldFacId = "";
   let oldPerson = "";
+
+  function handleEnter(e: KeyboardEvent, func: ()=>void){
+    if(e.key === "Enter"){
+      func();
+    }
+  }
 
   async function handleRegister(){
     const a = {
@@ -107,25 +106,23 @@ export function ModificationArea(props: ViewProps){
     }
   }
 
-  function handleDr(value: string){
-    for(const d of drs()){
-      if(value === d.id){
-        setAppointment("dr", {...d, id: value});
-        setAppointment("appDisplay", d.name);
-        return;
-      }
-    }
+  function handleDr(value: Dr){
+    setAppointment("dr", value);
+    setAppointment("appDisplay", value.name);
   }
 
-  async function handleDept(value: string){
+  function handleDept(value: string){
     for(const dept of props.depts){
       if(dept.id === value){
+        setAppointment("appDisplay", "");
+        setAppointment("dr", initDr());
         setAppointment("department", dept);
-        setDrs(await getDrsForDept({data: {dept: appointment.department.id}}));
-        setDr(drs());
         return;
       }
     }
+    setAppointment("appDisplay", "");
+    setAppointment("dr", initDr());
+    setAppointment("department", initDept());
   }
 
   function getPerson(id: string){
@@ -168,26 +165,11 @@ export function ModificationArea(props: ViewProps){
     closeDialog()
   }
 
-  function setDr(drs: Dr[]){
-    if(drs.length > 0){
-      if(appointment.dr.id){
-        const temp = drs.filter((d)=>d.id === appointment.dr.id);
-        if(temp.length === 1){
-          setAppointment("dr", temp[0]);
-          setAppointment("appDisplay", temp[0].name);
-          return;
-        }
-      }
-      setAppointment("dr", drs[0]);
-      setAppointment("appDisplay", drs[0].name);
-    }else{
-      setAppointment("dr", initDr());
-      setAppointment("appDisplay", "");
-    }
-  }
-
-  onMount(async ()=>{
+  onMount(()=>{
     getFacDepts().then(setFacDepts);
+    if(!props.appointment().department.id){
+      setAppointment("department", props.depts[0]);
+    }
     if(props.appointment().facility.id){
       getFacDrs({data: {facId: props.appointment().facility.id}}).then(
         (res)=>{
@@ -216,12 +198,6 @@ export function ModificationArea(props: ViewProps){
         setAppointment("means", m);
       }
     }).catch(()=>{alert("予約方法の取得に失敗しました。")});
-    await getDrsForDept({data: {dept: appointment.department.id}}).then((res)=>{
-      setDrs(res);
-      const dr = {...unwrap(appointment.dr)};
-      setAppointment("dr", initDr());
-      setAppointment("dr", dr);
-    }).catch(()=>{alert("医師の取得に失敗しました。")});
   });
 
 
@@ -278,22 +254,13 @@ export function ModificationArea(props: ViewProps){
         </select>
       </Container>
       <Container title="予約医師" require="*">
-        <select class={ input({ size: "text" }) } value={appointment.dr.id}
-            onChange={(e)=>handleDr(e.target.value)}>
-          <For each={drs()}>{(dr)=>
-            <option value={dr.id}>{dr.name}</option>
-          }</For>
-        </select>
+        <DrSelect dept={appointment.department} dr={appointment.dr}
+          onChange={handleDr} />
       </Container>
       <Container title="予約票表示" require="*">
         <input type="text" class={ input({ size: "text" }) } list="appname"
           value={appointment.appDisplay}
           onChange={(e)=>setAppointment("appDisplay", e.target.value)} />
-          <datalist id="appname">
-            <For each={drs()}>{(dr)=>
-              <option value={dr.name}>{dr.name}</option>
-            }</For>
-          </datalist>
       </Container>
       <Container title="予約方法" require="*">
         <select class={ input({ size: "id" }) }

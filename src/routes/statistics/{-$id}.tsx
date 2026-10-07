@@ -3,9 +3,10 @@ import { ListAreaReferral } from "./-listAreaReferral.tsx"
 import { ListAreaReferralTo } from "./-listAreaReferralTo.tsx"
 import { ListAreaReply } from "./-listAreaReply.tsx"
 import Header from "../-header.tsx"
+import { DrSelect } from "../../components/DrSelect.tsx"
 import { addDays, toDateString } from "../../lib/datetime.ts"
+import { initDept, initDr } from "../../helper/types.ts"
 import { getDepartments } from "../../server/func/department.ts"
-import { getDrs } from "../../server/func/dr.ts"
 import { getReferrals, getReferralTos, getReplies } from "../../server/func/statistics.ts"
 import type { Referral } from "../../server/domain/referral.ts"
 import type { ReferralTo } from "../../server/domain/referralto.ts"
@@ -14,20 +15,26 @@ import type { Dr } from "../../server/domain/dr.ts"
 import { button, input, area, etc } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/statistics/{-$id}")({ component: App });
+export const Route = createFileRoute("/statistics/{-$id}")({
+  component: App,
+  loader: () => {
+    const depts = getDepartments();
+    return { depts };
+  },
+});
 
 function App() {
   const [inputFromData, setInputFromData] = createSignal<string>("");
   const [inputToData, setInputToData] = createSignal<string>("");
   const [inputFacData, setInputFacData] = createSignal<string>("");
-  const [inputDeptData, setInputDeptData] = createSignal<string>("");
-  const [inputDrData, setInputDrData] = createSignal<string>("");
+  const [inputDeptData, setInputDeptData] = createSignal<Department>(initDept());
+  const [inputDrData, setInputDrData] = createSignal<Dr>(initDr());
   const [result, setResult] = createSignal<Referral[]|ReferralTo[]>([]);
   const [resultRep, setResultRep] = createSignal<Referral[]>([]);
   const [depts, setDepts] = createSignal<Department[]>([]);
-  const [drs, setDrs] = createSignal<Dr[]>([]);
   const [id, setId] = createSignal("");
 
+  const loaderData = Route.useLoaderData();
   const context = Route.useRouteContext();
   const { user, base } = context();
 
@@ -54,7 +61,7 @@ function App() {
   });
 
   async function execute(){
-    await loadData(inputFromData(), inputToData(), inputFacData(), inputDeptData(), inputDrData());
+    await loadData(inputFromData(), inputToData(), inputFacData(), inputDeptData().id, inputDrData().id);
   }
 
   async function handleSearch(e: KeyboardEvent){
@@ -99,13 +106,20 @@ function App() {
     }
   }
 
-  async function changeDept(val: string){
-    setInputDeptData(val);
-    setDrs(await getDrs({data: {dept: val}}));
+  function handleDept(value: string){
+    for(const dept of depts()){
+      if(dept.id === value){
+        setInputDeptData(dept);
+      }
+    }
   }
 
   onMount(() => {
-    getDepartments().then(setDepts);
+    console.log("mount0")
+    const {depts} = loaderData();
+    console.log("mount")
+    depts.then(setDepts);
+    console.log("mountaaa")
     if(refInput){
       refInput.focus();
     }
@@ -118,10 +132,11 @@ function App() {
     <main>
       <div class={ area({ type: "search" }) }>
         <div>
-          <label><div>日付開始<span class={ etc( { type: "require" }) }>*</span></div><input type="date" value={inputFromData()}
-            class={ input({ size: "search" }) } ref={refInput}
-            onChange={(e)=>setInputFromData(e.target.value)}
-            onKeyUp={(e)=>handleSearch(e)} /></label>
+          <label><div>日付開始<span class={ etc( { type: "require" }) }>*</span></div>
+            <input type="date" value={inputFromData()}
+              class={ input({ size: "search" }) } ref={refInput}
+              onChange={(e)=>setInputFromData(e.target.value)}
+              onKeyUp={(e)=>handleSearch(e)} /></label>
         </div>
         <div>
           <label><div>日付終了</div><input type="date" value={inputToData()}
@@ -136,9 +151,9 @@ function App() {
             onKeyUp={(e)=>handleSearch(e)} /></label>
         </div>
         <div>
-          <label><div>診療科</div><select value={inputDeptData()}
+          <label><div>診療科</div><select value={inputDeptData().id}
             class={ input({ size: "search" }) }
-            onChange={(e)=>{changeDept(e.target.value)}}>
+            onChange={(e)=>{handleDept(e.target.value)}}>
             <option value=""></option>
             <For each={depts()}>{dept=>
               <option value={dept.id}>{dept.name}</option>
@@ -147,14 +162,9 @@ function App() {
           </label>
         </div>
         <div>
-          <label><div>医師</div><select value={inputDrData()}
-            class={ input({ size: "search" }) }
-            onChange={(e)=>setInputDrData(e.target.value)}>
-            <option value=""></option>
-            <For each={drs()}>{dr=>
-              <option value={dr.id}>{dr.name}</option>
-            }</For>
-            </select>
+          <label><div>医師</div>
+            <DrSelect dept={inputDeptData()} dr={inputDrData()}
+              onChange={setInputDrData} />
           </label>
         </div>
         <div>

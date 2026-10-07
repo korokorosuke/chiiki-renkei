@@ -6,6 +6,7 @@ import {
   redirect
 } from '@tanstack/solid-router'
 import { TanStackRouterDevtools } from '@tanstack/solid-router-devtools'
+import { QueryClient, QueryClientProvider } from "@tanstack/solid-query"
 
 import { HydrationScript } from 'solid-js/web'
 import { Suspense } from 'solid-js'
@@ -69,6 +70,7 @@ export const Route = createRootRouteWithContext()({
 })
 
 function RootComponent() {
+  const queryClient = new QueryClient();
   return (
     <html>
       <head>
@@ -76,10 +78,12 @@ function RootComponent() {
         <HeadContent />
       </head>
       <body>
-        <Suspense>
-          <Outlet />
-          <TanStackRouterDevtools />
-        </Suspense>
+        <QueryClientProvider client={queryClient}>
+          <Suspense>
+            <Outlet />
+            <TanStackRouterDevtools />
+          </Suspense>
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>

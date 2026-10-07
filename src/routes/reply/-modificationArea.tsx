@@ -1,16 +1,16 @@
-import { createSignal, onMount, For, Index, Show, type Setter, type Accessor } from "solid-js"
+import { onMount, For, Index, Show, type Setter, type Accessor } from "solid-js"
 import { createStore, unwrap } from "solid-js/store"
-import { initReply, initDr, toUser, initClassification } from "../../helper/types.ts"
+import { initReply, toUser, initClassification, initDr, initDept } from "../../helper/types.ts"
 import { getUser } from "../../server/func/user.ts"
-import { getDrsForDept } from "../../server/func/dr.ts"
 import { insert, update, del } from "../../server/func/reply.ts"
 import { Container } from "../../components/Container.tsx"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
+import { DrSelect } from "../../components/DrSelect.tsx"
 import type { Reply } from "../../server/domain/reply.ts"
 import type { AuthUser } from "../../server/domain/user.ts"
 import type { Classification } from "../../server/domain/classification.ts"
+import type { Department } from "../../server/domain/department.ts"
 import type { Dr } from "../../server/domain/dr.ts"
-import type { Department, Dept } from "../../server/domain/department.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
 import { button, input, area } from "../../styled-system/recipes/"
 import { css } from "../../styled-system/css/"
@@ -25,16 +25,15 @@ type ViewProps = {
   auth: AuthUser
 }
 
-function handleEnter(e: KeyboardEvent, func: ()=>void){
-  if(e.key === "Enter"){
-    func();
-  }
-}
-
 export function ModificationArea(props: ViewProps){
-  const [reply, setReply ] = createStore<Reply>(structuredClone(props.reply()));
-  const [drs, setDrs] = createSignal<Dr[]>([]);
+  const [reply, setReply] = createStore<Reply>(structuredClone(props.reply()));
   let oldPerson = "";
+
+  function handleEnter(e: KeyboardEvent, func: ()=>void){
+    if(e.key === "Enter"){
+      func();
+    }
+  }
 
   async function handleRegister(){
     const r = {
@@ -69,43 +68,20 @@ export function ModificationArea(props: ViewProps){
     }
   }
 
-  function handleDr(value: string){
-    for(const f of drs()){
-      if(value === f.id){
-        setReply("dr", {...f, id: value});
-        return;
-      }
-    }
-  }
-
-  function getDrs(dept: Dept, dr: Dr|undefined) {
-    setReply("dr", initDr());
-    getDrsForDept({data: {dept: dept.id}}).then((res)=>{
-      if(res.length !== 0){
-        setDrs(res);
-        if(dr){
-          const temp = res.filter((d)=>d.id === dr.id);
-          if(temp.length === 1){
-            setReply("dr", temp[0]);
-            return;
-          }
-        }
-        setReply("dr", res[0]);
-      }else{
-        setDrs([]);
-        setReply("dr", initDr());
-      }
-    }).catch(()=>{alert("医師の取得に失敗しました。")});
+  function handleDr(value: Dr){
+    setReply("dr", value);
   }
 
   function handleDept(value: string){
     for(const dept of props.depts){
       if(dept.id === value){
-        getDrs(dept, {...reply.dr});
+        setReply("dr", initDr());
         setReply("department", dept);
         return;
       }
     }
+    setReply("dr", initDr());
+    setReply("department", initDept());
   }
 
   function handleClass(value: string){
@@ -139,11 +115,8 @@ export function ModificationArea(props: ViewProps){
   }
 
   onMount(()=>{
-    if(props.reply().department.id){
-      getDrs(props.reply().department, props.reply().dr);
-    }else{
+    if(!props.reply().department.id){
       setReply("department", props.depts[0]);
-      getDrs(props.depts[0], props.reply().dr);
     }
     if(props.classes.length !== 0){
       if(reply.classification.id === ""){
@@ -176,12 +149,8 @@ export function ModificationArea(props: ViewProps){
         </select>
       </Container>
       <Container title="返事医師" require="*">
-        <select class={ input({ size: "text" }) } value={reply.dr.id}
-            onChange={(e)=>handleDr(e.target.value)}>
-          <For each={drs()}>{dr=>
-            <option value={dr.id}>{dr.name}</option>
-          }</For>
-        </select>
+        <DrSelect dept={reply.department} dr={reply.dr}
+          onChange={handleDr} />
       </Container>
       <Container title="区分" require="*">
         <select class={ input({ size: "id" }) } value={reply.classification.id}

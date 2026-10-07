@@ -1,19 +1,19 @@
 import { createSignal, onMount, For, Index, Show, type Setter, type Accessor } from "solid-js"
 import { createStore, unwrap } from "solid-js/store"
-import { initReferralTo, initFac, initDr, toUser, toDr, toFac } from "../../helper/types.ts"
+import { initReferralTo, initFac, initDr, initDept, toUser, toDr, toFac } from "../../helper/types.ts"
 import { getFac } from "../../server/func/facility.ts"
 import { getDrs as getFacDrs } from "../../server/func/staff.ts"
 import { getUser } from "../../server/func/user.ts"
-import { getDrsForDept } from "../../server/func/dr.ts"
 import { getFacDepts } from "../../server/func/master.ts"
 import { insert, update, del } from "../../server/func/referralto.ts"
 import { MiniApp } from "../facility/-miniApp.tsx"
 import { Container, ContainerButton } from "../../components/Container.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
+import { DrSelect } from "../../components/DrSelect.tsx"
 import type { ReferralTo } from "../../server/domain/referralto.ts"
 import type { AuthUser } from "../../server/domain/user.ts"
-import type { Department, Dept } from "../../server/domain/department.ts"
+import type { Department } from "../../server/domain/department.ts"
 import type { Dr } from "../../server/domain/dr.ts"
 import type { Facility } from "../../server/domain/facility.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
@@ -29,19 +29,18 @@ type ViewProps = {
   auth: AuthUser
 }
 
-function handleEnter(e: KeyboardEvent, func: ()=>void){
-  if(e.key === "Enter"){
-    func();
-  }
-}
-
 export function ModificationArea(props: ViewProps){
   const [referral, setReferral] = createStore<ReferralTo>(structuredClone(props.referral()));
   const [facDrs, setFacDrs] = createSignal<Dr[]>([]);
-  const [drs, setDrs] = createSignal<Dr[]>([]);
   const [facDepts, setFacDepts] = createSignal<string[]>([]);
   let oldFacId = "";
   let oldPerson = "";
+
+  function handleEnter(e: KeyboardEvent, func: ()=>void){
+    if(e.key === "Enter"){
+      func();
+    }
+  }
 
   async function handleRegister(){
     const r = {
@@ -96,43 +95,20 @@ export function ModificationArea(props: ViewProps){
     }
   }
 
-  function handleDr(value: string){
-    for(const f of drs()){
-      if(value === f.id){
-        setReferral("dr", {...f, id: value});
-        return;
-      }
-    }
-  }
-
-  function getDrs(dept: Dept, dr: Dr|undefined) {
-    setReferral("dr", initDr());
-    getDrsForDept({data: {dept: dept.id}}).then((res)=>{
-      if(res.length !== 0){
-        setDrs(res);
-        if(dr){
-          const temp = res.filter((d)=>d.id === dr.id);
-          if(temp.length === 1){
-            setReferral("dr", temp[0]);
-            return;
-          }
-        }
-        setReferral("dr", res[0]);
-      }else{
-        setDrs([]);
-        setReferral("dr", initDr());
-      }
-    }).catch(()=>{alert("医師の取得に失敗しました。")});
+  function handleDr(value: Dr){
+    setReferral("dr", value);
   }
 
   function handleDept(value: string){
     for(const dept of props.depts){
       if(dept.id === value){
-        getDrs(dept, {...referral.dr});
+        setReferral("dr", initDr());
         setReferral("department", dept);
         return;
       }
     }
+    setReferral("dr", initDr());
+    setReferral("department", initDept());
   }
 
   function getPerson(id: string){
@@ -164,11 +140,8 @@ export function ModificationArea(props: ViewProps){
 
   onMount(()=>{
     getFacDepts().then(setFacDepts);
-    if(props.referral().department.id){
-      getDrs(props.referral().department, props.referral().dr);
-    }else{
+    if(!props.referral().department.id){
       setReferral("department", props.depts[0]);
-      getDrs(props.depts[0], props.referral().dr);
     }
     if(props.referral().facility.id){
       getFacDrs({data: {facId: props.referral().facility.id}}).then(
@@ -230,12 +203,8 @@ export function ModificationArea(props: ViewProps){
         </select>
       </Container>
       <Container title="紹介医師" require="*">
-        <select class={ input({ size: "text" }) } value={referral.dr.id}
-            onChange={(e)=>handleDr(e.target.value)}>
-          <For each={drs()}>{(dr)=>
-            <option value={dr.id}>{dr.name}</option>
-          }</For>
-        </select>
+        <DrSelect dept={referral.department} dr={referral.dr}
+          onChange={handleDr} />
       </Container>
       <Container title="担当者" require="*">
         <div><input type="text" class={ input({ size: "id" }) }

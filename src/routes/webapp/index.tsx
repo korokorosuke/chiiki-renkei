@@ -1,6 +1,5 @@
 import { createSignal, Switch, Match, Show, onMount } from "solid-js"
 import { createStore, unwrap, reconcile } from "solid-js/store"
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query"
 import { ListArea } from "./-listArea.tsx"
 import { DeptSelect } from "./-deptSelect.tsx"
 import { AppSelect } from "./-appSelect.tsx"
@@ -28,8 +27,6 @@ export const Route = createFileRoute("/webapp/")({
     scripts: [ { src: "/html2pdf.js" }, ],
   }),
 });
-
-const queryClient = new QueryClient();
 
 enum Status {
   DETAIL = -2,
@@ -244,9 +241,7 @@ function App() {
       <div class={ css({ marginBottom: "1rem" }) }>
       <Switch>
         <Match when={status()===Status.READY}>
-          <QueryClientProvider client={queryClient}>
-            <Notice />
-          </QueryClientProvider>
+          <Notice />
           <Show when={isUser(user)}>
             <div class={ css({ marginTop: "1rem" })}>
               <button type="button" class={ button({ color: "primary", size: "full" }) } onClick={create}>新規予約</button>

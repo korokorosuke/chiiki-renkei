@@ -11,12 +11,9 @@ import { getLocalStorage, setLocalStorage } from "../../lib/storage.ts"
 import { getBase } from "../../server/func/base.ts"
 import { css } from "../../styled-system/css/"
 import { useQuery } from "@tanstack/solid-query"
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query"
 import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/login/{-$base}")({ component: App });
-
-const queryClient = new QueryClient();
 
 const STORAGE_KEY = "reco_base";
 
@@ -102,7 +99,7 @@ function App() {
     }}}).then(res=>{
       if(res.ok){
         setLocalStorage(STORAGE_KEY, base());
-        if(isWebOnly(res.data!)){
+        if(isWebOnly(res.data)){
           location.href = "/webapp";
           return;
         }
@@ -152,9 +149,7 @@ function App() {
       }) }>
         <div>
           <label class={ css({ width: "20rem", fontSize: "2.5rem" }) }>地域連携システム</label>
-          <QueryClientProvider client={queryClient}>
-            <Notice base={base} />
-          </QueryClientProvider>
+          <Notice base={base} />
         </div>
       </div>
 
