@@ -5,7 +5,7 @@ import type { AuthUser } from "../domain/user.ts"
 import { AuthService } from "../domain/authService.ts"
 import { BaseService } from "../domain/baseService.ts"
 import { getSessionData, setSessionData, type SessionData } from "../lib/session.ts"
-import { type Result, type FetchResult, ok, ng } from "../lib/response.ts"
+import { type Result, type FetchResult, ok, okWithData, ng } from "../lib/response.ts"
 import { writeLogWithBase } from "./log.ts"
 import { Authentication } from "../usecase/authentication.ts"
 
@@ -15,7 +15,7 @@ export const get = createServerFn({ method: "GET" })
     if(data.token){
       const user = AuthService.getUser(data.token);
       if(user && await AuthService.validate(data.token)){
-        return {ok: true, data: user};
+        return okWithData(user);
       }
     }
     return ng(["認証に失敗しました。"]);

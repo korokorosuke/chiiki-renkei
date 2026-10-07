@@ -124,13 +124,13 @@ export const getAnswer = createServerFn({ method: "POST" })
           new AnswerPasswordRepository(auth.user.base));
         return await service.get(data.id);
       }
+      return undefined;
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return undefined;
 });
 
 export const create = createServerFn({ method: "POST" })

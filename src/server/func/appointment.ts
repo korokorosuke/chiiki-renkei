@@ -32,13 +32,13 @@ export const getAppointment = createServerFn({ method: "GET" })
           new AppointmentRepository(auth.user.base));
         return await service.get(data.id);
       }
+      return undefined;
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return undefined;
 });
 
 export const getAppointments = createServerFn({ method: "GET" })
@@ -51,13 +51,13 @@ export const getAppointments = createServerFn({ method: "GET" })
           new AppointmentRepository(auth.user.base));
         return await service.getListByPatient(data.patientId);
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 export const getAppointmentsForDate = createServerFn({ method: "GET" })

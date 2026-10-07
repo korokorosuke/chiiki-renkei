@@ -23,13 +23,13 @@ export const getActivities = createServerFn({ method: "GET" })
         const service = new ActivityService(new ActivityRepository(auth.user.base));
         return await service.getList(data);
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 export const insert = createServerFn({ method: "POST" })

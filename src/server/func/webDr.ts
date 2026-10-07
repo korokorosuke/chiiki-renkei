@@ -25,13 +25,13 @@ export const getWebDrs = createServerFn({ method: "GET" })
         const service = new WebDrService(new WebDrRepository(auth.user.base));
         return await service.getList(data.dept);
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 export const getAllWebDrs = createServerFn({ method: "GET" })

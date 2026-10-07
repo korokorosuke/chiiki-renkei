@@ -25,13 +25,13 @@ export const getDrs = createServerFn({ method: "GET" })
         const service = new StaffService(new StaffRepository(auth.user.base));
         return await service.getDr(data.facId);
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 export const getStaffs = createServerFn({ method: "GET" })
@@ -43,13 +43,13 @@ export const getStaffs = createServerFn({ method: "GET" })
         const service = new StaffService(new StaffRepository(auth.user.base));
         return await service.getAll(data.facId);
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 export const insert = createServerFn({ method: "POST" })

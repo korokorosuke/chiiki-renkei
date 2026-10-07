@@ -28,6 +28,7 @@ export const get = createServerFn({ method: "GET" })
         const service = new WebDepartmentService(new WebDepartmentRepository(auth.user.base));
         return await service.get(data.id);
       }
+      return undefined;
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため

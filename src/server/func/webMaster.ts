@@ -4,7 +4,7 @@ import { WebMasterService } from "../domain/webMasterService.ts"
 import { WebMasterRepository } from "../infra/allRepository.ts"
 import type { WebMaster } from "../domain/webMaster.ts"
 import { authenticate, Auth, Role } from "../lib/auth.ts"
-import { type FetchResult, type Result, ng } from "../lib/response.ts"
+import { type FetchResult, type Result, okWithData, ng } from "../lib/response.ts"
 import { LoggingMiddleware } from "../middleware/logging.ts"
 import { FatalError } from "../lib/types.ts"
 import { fatal } from "../lib/log.ts"
@@ -20,7 +20,7 @@ export const getWebMaster = createServerFn({ method: "GET" })
       const service = new WebMasterService(new WebMasterRepository(auth.user.base));
       const master = await service.get(data.dept, data.dr, data.week);
       if(master){
-        return {ok: true, data: master};
+        return okWithData(master);
       }else{
         return ng(["データが存在しません。"]);
       }

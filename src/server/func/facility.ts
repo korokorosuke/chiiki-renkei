@@ -22,13 +22,13 @@ export const getFacilities = createServerFn({ method: "GET" })
         const service = new FacilityService(new FacilityRepository(auth.user.base));
         return await service.getList({name: data.name});
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 const getFacilityMain =  createServerOnlyFn(
@@ -63,13 +63,13 @@ export const getFac = createServerFn({ method: "GET" })
       if(facility){
         return toFac(facility);
       }
+      return undefined;
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return undefined;
 });
 
 export const getUserFac = createServerFn({ method: "GET" })
@@ -81,13 +81,13 @@ export const getUserFac = createServerFn({ method: "GET" })
       if(facility){
         return toFac(facility);
       }
+      return undefined;
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return undefined;
 });
 
 export const insert = createServerFn({ method: "POST" })

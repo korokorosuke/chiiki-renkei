@@ -25,13 +25,13 @@ export const getPatients = createServerFn({ method: "GET" })
         const service = new PatientService(new PatientRepository(auth.user.base));
         return await service.getList(data.name);
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 export const getPatient = createServerFn({ method: "GET" })
@@ -44,13 +44,13 @@ export const getPatient = createServerFn({ method: "GET" })
         const service = new PatientService(new PatientRepository(auth.user.base));
         return await service.get(data.id);
       }
+      return undefined;
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return undefined;
 });
 
 export const insert = createServerFn({ method: "POST" })

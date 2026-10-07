@@ -23,13 +23,13 @@ export const getReply = createServerFn({ method: "GET" })
           new ReplyRepository(auth.user.base));
         return await service.get(data.id);
       }
+      return undefined;
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return undefined;
 });
 
 export const getReplies = createServerFn({ method: "GET" })
@@ -42,13 +42,13 @@ export const getReplies = createServerFn({ method: "GET" })
           new ReplyRepository(auth.user.base));
         return await service.getListByPatient(data.patientId);
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 export const insert = createServerFn({ method: "POST" })

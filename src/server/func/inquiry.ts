@@ -22,13 +22,13 @@ export const getInquiries = createServerFn({ method: "GET" })
         return await service.getList({patientId: data.patientId, facilityId: data.facilityId,
           fromDate: data.fromDate, toDate: data.toDate});
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 export const insert = createServerFn({ method: "POST" })

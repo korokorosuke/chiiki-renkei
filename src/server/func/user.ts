@@ -27,13 +27,13 @@ export const getAuthUser = createServerFn({ method: "GET" })
         const service = new UserService(new UserRepository(auth.user.base));
         return await service.get(data.id);
       }
+      return undefined;
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return undefined;
 });
 
 export const getUser = createServerFn({ method: "GET" })
@@ -55,13 +55,13 @@ export const getUsers = createServerFn({ method: "GET" })
         const service = new UserService(new UserRepository(auth.user.base));
         return await service.getList(data.name);
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 export const insert = createServerFn({ method: "POST" })

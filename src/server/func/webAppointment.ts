@@ -40,13 +40,13 @@ export const getWebAppointment = createServerFn({ method: "GET" })
           new WebAppRepository(auth.user.base));
         return await service.get(data.id);
       }
+      return undefined;
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return undefined;
 });
 
 export const getConsultation = createServerFn({ method: "GET" })
@@ -95,13 +95,13 @@ export const getWebAppointments = createServerFn({ method: "GET" })
         return await service.getList({patientId: data.cond.patid,
           facilityId: data.cond.facid, fromDate: data.cond.from, toDate: data.cond.to});
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 export const insert = createServerFn({ method: "POST" })

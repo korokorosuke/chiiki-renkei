@@ -62,13 +62,13 @@ async function getMasterMain(id: string): Promise<string[]> {
         return res;
       }
     }
+    return [];
   }else{
     throw redirect({
       // @ts-ignore: なんかエラーになるため
       to: '/login'
     });
   }
-  return [];
 }
 
 export const update = createServerFn({ method: "POST" })

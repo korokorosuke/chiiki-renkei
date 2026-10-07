@@ -24,13 +24,13 @@ const getDrsForDeptMain = createServerOnlyFn(async (dept: string): Promise<Dr[]>
       const service = new DrService(new DrRepository(auth.user.base));
       return await service.getList(dept);
     }
+    return [];
   }else{
     throw redirect({
       // @ts-ignore: なんかエラーになるため
       to: '/login'
     });
   }
-  return [];
 });
 
 export const getDrsForDept = createServerFn({ method: "GET" })

@@ -4,7 +4,7 @@ import { type FetchResult, ng } from "../lib/response.ts"
 import { setSessionData } from "../lib/session.ts"
 import type { Base } from "../domain/base.ts"
 import { info, writeLogWithBase } from "../lib/log.ts"
-import { type Result } from "../lib/response.ts"
+import { type Result, okWithData } from "../lib/response.ts"
 import * as base64 from "../../lib/base64.ts"
 
 interface IUserService {
@@ -38,7 +38,7 @@ export class Authentication{
 
       info("login", "success", base);
 
-      return {ok: true, data: user};
+      return okWithData(user);
     }else if(user){
       if(user.failCount){
         user.failCount++;

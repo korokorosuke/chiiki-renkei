@@ -26,13 +26,13 @@ export const getWebReservations = createServerFn({ method: "GET" })
       }else if(data.dept && data.date){
           return await service.getListByDate(data.dept, data.date);
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 export const insert = createServerFn({ method: "POST" })

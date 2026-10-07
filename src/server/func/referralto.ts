@@ -27,13 +27,13 @@ export const getReferralTo = createServerFn({ method: "GET" })
         const service = new ReferralToService(new ReferralToRepository(auth.user.base));
         return await service.get(data.id);
       }
+      return undefined;
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return undefined;
 });
 
 export const getReferralTos = createServerFn({ method: "GET" })
@@ -45,13 +45,13 @@ export const getReferralTos = createServerFn({ method: "GET" })
         const service = new ReferralToService(new ReferralToRepository(auth.user.base));
         return await service.getListByPatient(data.patientId);
       }
+      return [];
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return [];
 });
 
 export const insert = createServerFn({ method: "POST" })

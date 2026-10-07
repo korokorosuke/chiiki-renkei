@@ -40,13 +40,13 @@ export const getQuestionnaire = createServerFn({ method: "GET" })
         const service = new QuestionnaireService(new QuestionnaireRepository(auth.user.base));
         return await service.get(data.id);
       }
+      return undefined;
     }else{
       throw redirect({
         // @ts-ignore: なんかエラーになるため
         to: '/login'
       });
     }
-    return undefined;
 });
 
 export const insert = createServerFn({ method: "POST" })
