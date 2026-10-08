@@ -44,7 +44,7 @@ export function Question(props: Props){
       </div>
       <div>
         <For each={Object.entries(questionTypes)}>{([key, value])=>
-          <label class={ css({ marginRight: "!1rem", cursor: "pointer" }) }>
+          <label class={ css({ marginRight: "1rem!", cursor: "pointer" }) }>
             <input type="radio" name={'type'+props.question.id}
               value={key}
               checked={props.question.type === key}
@@ -57,9 +57,11 @@ export function Question(props: Props){
         <label>必須入力</label>
       </div>
       <div>
-        <input type="checkbox" class={ input({ type: "checkbox", size: "check1_5" })}
-          checked={props.question.require}
-          onChange={(e)=>handleChange({require: e.currentTarget.checked})} />
+        <label>
+          <input type="checkbox" class={ input({ type: "checkbox", size: "check1_5" })}
+            checked={props.question.require}
+            onChange={(e)=>handleChange({require: e.currentTarget.checked})} />
+          必須</label>
       </div>
       <div>
         <Show when={props.question.type === "choice" || props.question.type === "multiple"}>
