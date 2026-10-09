@@ -19,8 +19,9 @@ const STORAGE_KEY = "reco_base";
 
 function Notice(props: {base: Accessor<string>}){
   const noticesQuery = useQuery(() => ({
-    queryKey: ['login-notices', props.base()],
+    queryKey: ["login-notices", props.base()],
     queryFn: ()=>getLoginNotices({data: {base: props.base()}}),
+    gcTime: 1000 * 60 * 10
   }));
 
   function NoticeMessage(props: {notice: Notice, i: Accessor<number>}): JSXElement{

@@ -8,9 +8,9 @@ import { css } from "../styled-system/css/"
 
 export function Notice(){
   const noticesQuery = useQuery(() => ({
-    queryKey: ['menu-notices'],
+    queryKey: ["menu-notices"],
     queryFn: ()=>getMenuNotices(),
-    staleTime: 1000 * 60 * 60
+    gcTime: 1000 * 60 * 10
   }));
   const [notice, setNotice] = createSignal<Notice | undefined>(undefined);
 

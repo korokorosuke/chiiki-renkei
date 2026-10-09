@@ -9,8 +9,9 @@ export function Notice(){
   const [importants, setImportants] = createSignal<WebNotice[]>([]);
   const [normals, setNormals] = createSignal<WebNotice[]>([]);
   const noticesQuery = useQuery(() => ({
-    queryKey: ['menu-notices'],
+    queryKey: ["web-notices", "active"],
     queryFn: ()=>getNotices(),
+    gcTime: 1000 * 60 * 10
   }));
 
   createEffect(()=>{
