@@ -1,12 +1,11 @@
-import { createSignal, createEffect, onMount, For, Index } from "solid-js"
+import { createSignal, For, Index, Suspense } from "solid-js"
+import { useQuery } from "@tanstack/solid-query"
 import { initWebMaster, initReserv } from "../../helper/webtypes.ts"
 import { toHHMM } from "../../lib/datetime.ts"
 import { getWebDepartments } from "../../server/func/webDepartment.ts"
 import { getWebDrs } from "../../server/func/webDr.ts"
 import { getWebMaster, update } from "../../server/func/webMaster.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
-import type { WebDr } from "../../server/domain/webDr.ts"
-import type { WebDepartment } from "../../server/domain/webDepartment.ts"
 import type { WebMaster } from "../../server/domain/webMaster.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
 import { button, input, area } from "../../styled-system/recipes/"
@@ -22,25 +21,14 @@ export function WebMaster(props: Props) {
   const [inputDrData, setInputDrData] = createSignal("");
   const [inputWeekData, setInputWeekData] = createSignal(1);
   const [reserv, setReserv] = createSignal<WebMaster>(initWebMaster());
-  const [drs, setDrs] = createSignal<WebDr[]>([]);
-  const [depts, setDepts] = createSignal<WebDepartment[]>([]);
-
-  let refInput: HTMLInputElement | undefined;
-
-  createEffect(()=>{
-    if(inputDeptData()){
-      getWebDrs({data: {dept: inputDeptData()}}).then(
-        (res)=>{
-          if(res && res.length > 0){
-            setDrs(res);
-            setInputDrData(res[0].id);
-            execute().then(()=>{});
-          }else{
-            setDrs([]);
-          }
-        });
-      }
-  });
+  const deptsQuery = useQuery(() => ({
+    queryKey: ["web-depts"],
+    queryFn: ()=>getWebDepartments(),
+  }));
+  const drsQuery = useQuery(() => ({
+    queryKey: ["web-drs", inputDeptData()],
+    queryFn: ()=>getWebDrs({data: {dept: inputDeptData()}}),
+  }));
 
   async function register(): Promise<void>{
     const temp = reserv();
@@ -137,39 +125,36 @@ export function WebMaster(props: Props) {
     return list;
   }
 
-  createEffect(()=>{
-    if(depts().length > 0 && !inputDeptData()){
-      setInputDeptData(depts()[0].id);
-    }
-  });
-
-  onMount(()=>{
-    getWebDepartments().then(setDepts);
-    if(refInput){
-      refInput.focus();
-    }
-  });
-
   return (
     <>
       <div class={ area({ type: "search" }) }>
         <div>
-          <label><div>診療科</div><select value={inputDeptData()}
-              class={ input({ size: "search"}) }
-              onChange={(e)=>handelDeptChange(e.target.value)}>
-            <For each={depts()}>{d=>
-              <option value={d.id}>{d.name}</option>
-            }</For>
-          </select></label>
+          <label><div>診療科</div>
+            <Suspense fallback={<div>読み込み中...</div>}>
+            <select value={inputDeptData()}
+                class={ input({ size: "search"}) }
+                onChange={(e)=>handelDeptChange(e.target.value)}>
+              <option value=""></option>
+              <For each={deptsQuery.data}>{d=>
+                <option value={d.id}>{d.name}</option>
+              }</For>
+            </select>
+            </Suspense>
+          </label>
         </div>
         <div>
-          <label><div>予約医師</div><select value={inputDrData()}
-              class={ input({ size: "search"}) }
-              onChange={(e)=>handleDrChange(e.target.value)}>
-            <For each={drs()}>{d=>
-              <option value={d.id}>{d.name}</option>
-            }</For>
-          </select></label>
+          <label><div>予約医師</div>
+            <Suspense fallback={<div>読み込み中...</div>}>
+            <select value={inputDrData()}
+                class={ input({ size: "search"}) }
+                onChange={(e)=>handleDrChange(e.target.value)}>
+              <option value=""></option>
+              <For each={drsQuery.data}>{d=>
+                <option value={d.id}>{d.name}</option>
+              }</For>
+            </select>
+            </Suspense>
+          </label>
         </div>
         <div>
           <label><div>曜日</div><select value={inputWeekData()}

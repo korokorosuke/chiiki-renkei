@@ -1,4 +1,5 @@
-import { createSignal, For, Show, Switch, Match, onMount } from "solid-js"
+import { createSignal, For, Show, Switch, Match, Suspense } from "solid-js"
+import { useQuery } from "@tanstack/solid-query"
 import { initWebDept } from "../../helper/webtypes.ts"
 import { getWebDepartments, insert, update, del } from "../../server/func/webDepartment.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
@@ -19,7 +20,10 @@ export function WebDepartment(props: Props){
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createSignal<WebDepartment>(initWebDept());
   const [newadd, setNewadd] = createSignal<boolean>(false);
-  const [depts, setDepts] = createSignal<WebDepartment[]>([]);
+  const deptsQuery = useQuery(() => ({
+    queryKey: ["web-depts"],
+    queryFn: ()=>getWebDepartments(),
+  }));
 
   let refInput: HTMLInputElement | undefined;
 
@@ -40,15 +44,21 @@ export function WebDepartment(props: Props){
   }
 
   function handleSelect(index: number){
+    if(!deptsQuery.data){
+      return;
+    }
     setSelectedIndex(index);
-    setSelected({...depts()[index]});
+    setSelected({...deptsQuery.data[index]});
     setNewadd(false);
     showDialog();
     focus();
   }
 
   function addWebDepartment(){
-    setSelectedIndex(depts().length);
+    if(!deptsQuery.data){
+      return;
+    }
+    setSelectedIndex(deptsQuery.data.length);
     setSelected(initWebDept());
     setNewadd(true);
     showDialog();
@@ -63,7 +73,7 @@ export function WebDepartment(props: Props){
       res = await update({data: {department: structuredClone(selected())}});
     }
     if(res.ok){
-      setDepts(await getWebDepartments());
+      deptsQuery.refetch();
       setSelected(initWebDept());
       setSelectedIndex(-1);
       closeDialog();
@@ -79,10 +89,13 @@ export function WebDepartment(props: Props){
     if(!confirm("削除します。よろしいですか？")){
       return;
     }
+    if(!deptsQuery.data){
+      return;
+    }
 
-    const res = await del({data: {department: depts()[index]}});
+    const res = await del({data: {department: deptsQuery.data[index]}});
     if(res.ok){
-      setDepts(await getWebDepartments());
+      deptsQuery.refetch();
       setSelected(initWebDept());
       setSelectedIndex(-1);
       props.setMessage("delete");
@@ -90,10 +103,6 @@ export function WebDepartment(props: Props){
       setErrors(res.errors!);
     }
   }
-
-  onMount(async ()=>{
-    setDepts(await getWebDepartments());
-  })
 
   return (
     <div class={ flex({ direction: "row", justifyContent: "flex-start", wrap: "wrap"}) }>
@@ -108,7 +117,8 @@ export function WebDepartment(props: Props){
             </tr>
           </thead>
           <tbody>
-            <For each={depts()}>{(data, i)=>
+            <Suspense fallback={<div>読み込み中...</div>}>
+            <For each={deptsQuery.data}>{(data, i)=>
               <tr onClick={()=>handleSelect(i())}
                   class={ css(i()===selectedIndex()? selectedStyle: {}) }>
                 <td class={ css({ fontFamily: "number" }) }>{data.id}</td>
@@ -120,6 +130,7 @@ export function WebDepartment(props: Props){
                 </td>
               </tr>
             }</For>
+            </Suspense>
           </tbody>
         </table>
         <button type="button" class={ button({ color: "success", space: "top1" }) }

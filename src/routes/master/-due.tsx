@@ -1,4 +1,5 @@
-import { createSignal, For, Show, Switch, Match, onMount } from "solid-js"
+import { createSignal, For, Show, Switch, Match, Suspense } from "solid-js"
+import { useQuery } from "@tanstack/solid-query"
 import { initDue } from "../../helper/types.ts"
 import { getAllDues, insert, update, del } from "../../server/func/due.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
@@ -19,7 +20,10 @@ export function Due(props: Props){
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createSignal<Due>(initDue());
   const [newadd, setNewadd] = createSignal<boolean>(false);
-  const [dues, setDues] = createSignal<Due[]>([]);
+  const duesQuery = useQuery(() => ({
+    queryKey: ["dues"],
+    queryFn: ()=>getAllDues(),
+  }));
 
   let refInput: HTMLInputElement | undefined;
 
@@ -40,15 +44,21 @@ export function Due(props: Props){
   }
 
   function handleSelect(index: number){
+    if(!duesQuery.data){
+      return;
+    }
     setSelectedIndex(index);
-    setSelected({...dues()[index]});
+    setSelected({...duesQuery.data[index]});
     setNewadd(false);
     showDialog();
     focus();
   }
 
   function addDue(){
-    setSelectedIndex(dues().length);
+    if(!duesQuery.data){
+      return;
+    }
+    setSelectedIndex(duesQuery.data.length);
     setSelected(initDue());
     setNewadd(true);
     showDialog();
@@ -63,7 +73,7 @@ export function Due(props: Props){
       res = await update({data: {due: structuredClone(selected())}});
     }
     if(res.ok){
-      setDues(await getAllDues());
+      duesQuery.refetch();
       setSelected(initDue());
       setSelectedIndex(-1);
       closeDialog();
@@ -79,10 +89,13 @@ export function Due(props: Props){
     if(!confirm("削除します。よろしいですか？")){
       return;
     }
+    if(!duesQuery.data){
+      return;
+    }
 
-    const res = await del({data: {due: dues()[index]}});
+    const res = await del({data: {due: duesQuery.data[index]}});
     if(res.ok){
-      setDues(await getAllDues());
+      duesQuery.refetch();
       setSelected(initDue());
       setSelectedIndex(-1);
       props.setMessage("delete");
@@ -90,10 +103,6 @@ export function Due(props: Props){
       setErrors(res.errors!);
     }
   }
-
-  onMount(async ()=>{
-    setDues(await getAllDues());
-  });
 
   return (
     <div class={ flex({ direction: "row", justifyContent: "flex-start", wrap: "wrap"}) }>
@@ -108,7 +117,8 @@ export function Due(props: Props){
             </tr>
           </thead>
           <tbody>
-            <For each={dues()}>{(data, i)=>
+            <Suspense fallback={<div>読み込み中...</div>}>
+            <For each={duesQuery.data}>{(data, i)=>
               <tr onClick={()=>handleSelect(i())}
                   class={ css(i()===selectedIndex()? selectedStyle: {}) }>
                 <td class={ css({ fontFamily: "number" }) }>{data.id}</td>
@@ -120,6 +130,7 @@ export function Due(props: Props){
                 </td>
               </tr>
             }</For>
+            </Suspense>
           </tbody>
         </table>
         <button type="button" class={ button({ color: "success", space: "top1" }) }

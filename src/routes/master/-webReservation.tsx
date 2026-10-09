@@ -1,12 +1,11 @@
-import { createSignal, createEffect, onMount, For, Index, Show } from "solid-js"
+import { createSignal, For, Index, Show, Suspense } from "solid-js"
+import { useQuery } from "@tanstack/solid-query"
 import { initWebReservation } from "../../helper/webtypes.ts"
 import { getWebDepartments } from "../../server/func/webDepartment.ts"
 import { getWebDrs } from "../../server/func/webDr.ts"
 import { getWebReservations, insert, update } from "../../server/func/webReservation.ts"
 import { getWebMaster } from "../../server/func/webMaster.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
-import type { WebDepartment } from "../../server/domain/webDepartment.ts"
-import type { WebDr } from "../../server/domain/webDr.ts"
 import type { WebMaster } from "../../server/domain/webMaster.ts"
 import type { WebReservation } from "../../server/domain/webReservation.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
@@ -24,33 +23,19 @@ export function WebReservation(props: Props) {
   const [inputFromData, setInputFromData] = createSignal<string>("");
   const [inputToData, setInputToData] = createSignal<string>("");
   const [reservs, setReservs] = createSignal<WebReservation[]>([]);
-  const [depts, setDepts] = createSignal<WebDepartment[]>([]);
-  const [drs, setDrs] = createSignal<WebDr[]>([]);
   const [changes, setChanges] = createSignal<WebReservation[]>([]);
   const [modification, setModification] = createSignal(false);
+  const deptsQuery = useQuery(() => ({
+    queryKey: ["web-depts"],
+    queryFn: ()=>getWebDepartments(),
+  }));
+  const drsQuery = useQuery(() => ({
+    queryKey: ["web-drs", inputDeptData()],
+    queryFn: ()=>getWebDrs({data: {dept: inputDeptData()}}),
+  }));
 
   //const dels: WebReservation[] = [];
   const selected: WebReservation = initWebReservation();
-
-  let refInput: HTMLInputElement | undefined;
-
-  createEffect(()=>{
-    if(inputDeptData()){
-      getWebDrs({data: {dept: inputDeptData()}}).then(
-        (res)=>{
-          if(res && res.length > 0){
-            setDrs(res);
-            setInputDrData(res[0].id);
-            if(check()){
-              execute();
-            }
-          }else{
-            setDrs([]);
-          }
-        }
-      )
-    }
-  });
 
   function check(){
     return inputDeptData() && inputDrData() && inputFromData();
@@ -246,48 +231,46 @@ export function WebReservation(props: Props) {
     return list;
   }
 
-  onMount(async ()=>{
-    const res = await getWebDepartments();
-    if(res){
-      setDepts(res);
-      setInputDeptData(res[0].id);
-    }
-
-    if(refInput){
-      refInput.focus();
-    }
-  });
-
   return (
     <>
       <div class={ area({ type: "search" }) }>
         <div>
-        <label><div>診療科</div><select value={inputDeptData()}
-            class={ input({ size: "search"}) }
-            onChange={(e)=>handelDeptChange(e.target.value)}>
-          <For each={depts()}>{d=>
-            <option value={d.id}>{d.name}</option>
-          }</For>
-        </select></label>
+        <label><div>診療科</div>
+          <Suspense fallback={<div>読み込み中...</div>}>
+          <select value={inputDeptData()}
+              class={ input({ size: "search"}) }
+              onChange={(e)=>handelDeptChange(e.target.value)}>
+            <option value=""></option>
+            <For each={deptsQuery.data}>{d=>
+              <option value={d.id}>{d.name}</option>
+            }</For>
+          </select>
+          </Suspense>
+        </label>
         </div>
         <div>
-        <label><div>予約医師</div><select value={inputDrData()}
-            class={ input({ size: "search"}) }
-            onChange={(e)=>handleDrChange(e.target.value)}>
-          <For each={drs()}>{d=>
-            <option value={d.id}>{d.name}</option>
-          }</For>
-        </select></label>
+        <label><div>予約医師</div>
+          <Suspense fallback={<div>読み込み中...</div>}>
+          <select value={inputDrData()}
+              class={ input({ size: "search"}) }
+              onChange={(e)=>handleDrChange(e.target.value)}>
+            <option value=""></option>
+            <For each={drsQuery.data}>{d=>
+              <option value={d.id}>{d.name}</option>
+            }</For>
+          </select>
+          </Suspense>
+        </label>
         </div>
         <div>
         <label><div>開始日付</div><input type="date" value={inputFromData()}
-          class={ input({ size: "search"}) } ref={refInput}
+          class={ input({ size: "search"}) }
           onChange={(e)=>handleFromChange(e.target.value)}
           onKeyUp={(e)=>handleSearch(e)} /></label>
         </div>
         <div>
         <label><div>終了日付</div><input type="date" value={inputToData()}
-          class={ input({ size: "search"}) } ref={refInput}
+          class={ input({ size: "search"}) }
           onChange={(e)=>handleToChange(e.target.value)}
           onKeyUp={(e)=>handleSearch(e)} /></label>
         </div>

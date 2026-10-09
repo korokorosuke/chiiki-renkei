@@ -1,11 +1,11 @@
-import { createSignal, For, Switch, Match, Show, onMount } from "solid-js"
+import { createSignal, For, Switch, Match, Show, Suspense } from "solid-js"
+import { useQuery } from "@tanstack/solid-query"
 import { initDr } from "../../helper/types.ts"
 import { getDepartments } from "../../server/func/department.ts"
 import { getAllDrs, insert, update, del } from "../../server/func/dr.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import type { Dr } from "../../server/domain/dr.ts"
-import type { Department } from "../../server/domain/department.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
 import batsu from "../../assets/del.svg"
 import { modificationAreaStyle, selectedStyle } from "./-css.ts"
@@ -21,8 +21,14 @@ export function Dr(props: Props){
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createSignal<Dr>(initDr());
   const [newadd, setNewadd] = createSignal<boolean>(false);
-  const [drs, setDrs] = createSignal<Dr[]>([]);
-  const [depts, setDepts] = createSignal<Department[]>([]);
+  const deptsQuery = useQuery(() => ({
+    queryKey: ["departments", "exam"],
+    queryFn: ()=>getDepartments(),
+  }));
+  const drsQuery = useQuery(() => ({
+    queryKey: ["drs"],
+    queryFn: ()=>getAllDrs(),
+  }));
 
   let refInput: HTMLInputElement | undefined;
 
@@ -43,24 +49,30 @@ export function Dr(props: Props){
   }
 
   function handleSelect(index: number){
+    if(!drsQuery.data){
+      return;
+    }
     setSelectedIndex(index);
-    setSelected({...drs()[index]});
+    setSelected({...drsQuery.data[index]});
     setNewadd(false);
     showDialog();
     focus();
   }
 
   function addDr(){
-    setSelectedIndex(drs().length);
-    setSelected({id: "", name: "", department: depts() ? depts()[0].id : ""});
+    if(!drsQuery.data || !deptsQuery.data){
+      return;
+    }
+    setSelectedIndex(drsQuery.data.length);
+    setSelected({id: "", name: "", department: deptsQuery.data ? deptsQuery.data[0].id : ""});
     setNewadd(true);
     showDialog();
     focus();
   }
 
   function getName(id: string): string {
-    if(depts()){
-      for(const dept of depts()){
+    if(deptsQuery.data){
+      for(const dept of deptsQuery.data){
         if(dept.id === id){
           return dept.name;
         }
@@ -77,7 +89,7 @@ export function Dr(props: Props){
       res = await update({data: {dr: structuredClone(selected())}});
     }
     if(res.ok){
-      setDrs(await getAllDrs());
+      drsQuery.refetch();
       setSelected(initDr());
       setSelectedIndex(-1);
       closeDialog();
@@ -93,10 +105,13 @@ export function Dr(props: Props){
     if(!confirm("削除します。よろしいですか？")){
       return;
     }
+    if(!drsQuery.data){
+      return;
+    }
 
-    const res = await del({data: {dr: drs()[index]}});
+    const res = await del({data: {dr: drsQuery.data[index]}});
     if(res.ok){
-      setDrs(await getAllDrs());
+      drsQuery.refetch();
       setSelected(initDr());
       setSelectedIndex(-1);
       props.setMessage("delete");
@@ -104,11 +119,6 @@ export function Dr(props: Props){
       setErrors(res.errors!);
     }
   }
-
-  onMount(()=>{
-    getAllDrs().then(setDrs);
-    getDepartments().then(setDepts);
-  });
 
   return (
     <div class={ flex({ direction: "row", justifyContent: "flex-start", wrap: "wrap"}) }>
@@ -123,7 +133,8 @@ export function Dr(props: Props){
             </tr>
           </thead>
           <tbody>
-            <For each={drs()}>{(data, i)=>
+            <Suspense fallback={<div>読み込み中...</div>}>
+            <For each={drsQuery.data}>{(data, i)=>
               <tr onClick={()=>handleSelect(i())}
                   class={ css(i()===selectedIndex()? selectedStyle: {}) }>
                 <td class={ css({ fontFamily: "number" }) }>{data.id}</td>
@@ -135,6 +146,7 @@ export function Dr(props: Props){
                 </td>
               </tr>
             }</For>
+            </Suspense>
           </tbody>
         </table>
         <button type="button" class={ button({ color: "success", space: "top1" }) }
@@ -175,12 +187,14 @@ export function Dr(props: Props){
             <label>部署<span class={ etc({ type: "require" }) }>*</span></label>
           </div>
           <div>
+            <Suspense fallback={<div>読み込み中...</div>}>
             <select value={selected().department}
                 onChange={(e)=>handleChange({department: e.target.value})}>
-              <For each={depts()}>{(dept)=>
+              <For each={deptsQuery.data}>{(dept)=>
                 <option value={dept.id}>{dept.name}</option>
               }</For>
             </select>
+          </Suspense>
           </div>
           <Show when={selectedIndex() >= 0}>
             <button type="button" class={ button({ color: "primary", size: "full", space: "top1_2" }) }

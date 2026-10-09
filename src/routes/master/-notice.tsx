@@ -1,4 +1,5 @@
-import { createSignal, Show, For, onMount } from "solid-js"
+import { createSignal, Show, For, Suspense } from "solid-js"
+import { useQuery } from "@tanstack/solid-query"
 import { getTodayString } from "../../lib/datetime.ts"
 import { ErrorArea } from "../../components/ErrorArea.tsx"
 import { getAllNotices, insert, update, del } from "../../server/func/notice.ts"
@@ -20,7 +21,10 @@ export function Notice(props: Props){
   const [selected, setSelected] = createSignal<Notice>(initNotice());
   const [newadd, setNewadd] = createSignal<boolean>(false);
   const [errors, setErrors] = createSignal<string[]>([]);
-  const [notices, setNotices] = createSignal<Notice[]>([]);
+  const noticesQuery = useQuery(() => ({
+    queryKey: ["notices"],
+    queryFn: ()=>getAllNotices(),
+  }));
 
   let refInput: HTMLTextAreaElement | undefined;
 
@@ -59,13 +63,19 @@ export function Notice(props: Props){
   }
 
   function handleSelect(index: number){
-    clear({...notices()[index]}, index, false);
+    if(!noticesQuery.data){
+      return;
+    }
+    clear({...noticesQuery.data[index]}, index, false);
     showDialog();
     focus();
   }
 
   function addNotices(){
-    clear(initNotice(), notices().length, true);
+    if(!noticesQuery.data){
+      return;
+    }
+    clear(initNotice(), noticesQuery.data.length, true);
     showDialog();
     focus();
   }
@@ -79,7 +89,7 @@ export function Notice(props: Props){
       res = await update({data: {notice: body}});
     }
     if(res.ok){
-      setNotices(await getAllNotices());
+      noticesQuery.refetch();
       clear(initNotice());
       closeDialog();
       props.setMessage("register");
@@ -94,20 +104,20 @@ export function Notice(props: Props){
     if(!confirm("削除します。よろしいですか？")){
       return;
     }
-    const body = notices()[index];
+    if(!noticesQuery.data){
+      return;
+    }
+
+    const body = noticesQuery.data[index];
     const res = await del({data: {notice: body}});
     if(res.ok){
-      setNotices(await getAllNotices());
+      noticesQuery.refetch();
       clear(initNotice());
       props.setMessage("delete");
     }else{
       setErrors(res.errors!);
     }
   }
-
-  onMount(async ()=>{
-    setNotices(await getAllNotices());
-  });
 
   return (
     <div class={ flex({ direction: "row", justifyContent: "flex-start", wrap: "wrap"}) }>
@@ -124,7 +134,8 @@ export function Notice(props: Props){
             </tr>
           </thead>
           <tbody>
-            <For each={notices()}>{(data, i)=>
+            <Suspense fallback={<div>読み込み中...</div>}>
+            <For each={noticesQuery.data}>{(data, i)=>
               <tr onClick={()=>handleSelect(i())}
                   class={ css(i()===selectedIndex()? selectedStyle: {}) }>
                 <td class={ css({ minWidth: "4rem" }) }>{data.page}</td>
@@ -138,6 +149,7 @@ export function Notice(props: Props){
                 </td>
               </tr>
             }</For>
+            </Suspense>
           </tbody>
         </table>
         <button type="button" class={ button({ color: "success", space: "top1" }) }

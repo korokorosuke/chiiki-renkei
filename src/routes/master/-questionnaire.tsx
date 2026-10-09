@@ -1,4 +1,5 @@
-import { createSignal, For, Show, onMount } from "solid-js"
+import { createSignal, For, Show, Suspense } from "solid-js"
+import { useQuery } from "@tanstack/solid-query"
 import { createStore, unwrap } from "solid-js/store"
 import { initQuestionnaire } from "../../helper/types.ts"
 import { getQuestionnaires, insert, update, del } from "../../server/func/questionnaire.ts"
@@ -7,7 +8,6 @@ import { setErrors, ErrorArea } from "../../components/ErrorArea.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import { Question as QuestionComp } from "./-question.tsx"
 import type { Questionnaire, Question } from "../../server/domain/questionnaire.ts"
-import type { Department } from "../../server/domain/department.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
 import { modificationAreaStyle, selectedStyle } from "./-css.ts"
 import { button, input, etc, table } from "../../styled-system/recipes/"
@@ -22,12 +22,21 @@ export function Questionnaire(props: Props){
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createStore<Questionnaire>(initQuestionnaire());
   const [newadd, setNewadd] = createSignal<boolean>(false);
-  const [qs, setQs] = createSignal<Questionnaire[]>([]);
-  const [depts, setDepts] = createSignal<Department[]>([]);
+  const deptsQuery = useQuery(() => ({
+    queryKey: ["departments", "exam"],
+    queryFn: ()=>getDepartments(),
+  }));
+  const qsQuery = useQuery(() => ({
+    queryKey: ["qs"],
+    queryFn: ()=>getQuestionnaires(),
+  }));
 
   function handleSelect(index: number){
+    if(!qsQuery.data){
+      return;
+    }
     setSelectedIndex(index);
-    const q = {...qs()[index]};
+    const q = {...qsQuery.data[index]};
     setSelected(q);
     setNewadd(false);
     showDialog();
@@ -35,7 +44,10 @@ export function Questionnaire(props: Props){
   }
 
   function addQuestionnaire(){
-    setSelectedIndex(qs().length);
+    if(!qsQuery.data){
+      return;
+    }
+    setSelectedIndex(qsQuery.data.length);
     setSelected(initQuestionnaire());
     setNewadd(true);
     addQuestion();
@@ -62,7 +74,7 @@ export function Questionnaire(props: Props){
       res = await update({data: {q: unwrap(selected)}});
     }
     if(res.ok){
-      setQs(await getQuestionnaires());
+      qsQuery.refetch();
       setSelected(initQuestionnaire());
       setSelectedIndex(-1);
       closeDialog();
@@ -76,10 +88,13 @@ export function Questionnaire(props: Props){
     if(!confirm("削除します。よろしいですか？")){
       return;
     }
+    if(!qsQuery.data){
+      return;
+    }
 
-    const res = await del({data: {q: qs()[index]}});
+    const res = await del({data: {q: qsQuery.data[index]}});
     if(res.ok){
-      setQs(await getQuestionnaires());
+      qsQuery.refetch();
       setSelected(initQuestionnaire());
       setSelectedIndex(-1);
       props.setMessage("delete");
@@ -93,11 +108,6 @@ export function Questionnaire(props: Props){
     setSelected("items", newItems);
   }
 
-  onMount(()=>{
-    getQuestionnaires().then(setQs);
-    getDepartments().then(setDepts);
-  });
-
   return (
     <div class={ flex({ direction: "row", justifyContent: "flex-start", wrap: "wrap"}) }>
       <div>
@@ -109,13 +119,15 @@ export function Questionnaire(props: Props){
             </tr>
           </thead>
           <tbody>
-            <For each={qs()}>{(data, i)=>
+            <Suspense fallback={<div>読み込み中...</div>}>
+            <For each={qsQuery.data}>{(data, i)=>
               <tr onClick={()=>handleSelect(i())}
                   class={ css(i()===selectedIndex()? selectedStyle: {}) }>
                 <td class={ css({ fontFamily: "number" }) }>{data.title}</td>
                 <td class={ css({ minWidth: "8rem" }) }>{data.description}</td>
               </tr>
             }</For>
+            </Suspense>
           </tbody>
         </table>
         <button type="button" class={ button({ color: "success", space: "top1" }) }
@@ -146,7 +158,8 @@ export function Questionnaire(props: Props){
           <label>対象科</label>
         </div>
         <div class={ css({ maxWidth: "30rem" }) }>
-          <For each={depts()}>{(dept)=>
+          <Suspense fallback={<div>読み込み中...</div>}>
+          <For each={deptsQuery.data}>{(dept)=>
             <div class={ css({ display: "inline-block" })}>
             <label class={ css({ marginRight: "0.5rem" }) }>
               <input type="checkbox"
@@ -165,6 +178,7 @@ export function Questionnaire(props: Props){
             </label>
             </div>
           }</For>
+          </Suspense>
         </div>
 
         <For each={selected.items}>{(item, i)=>

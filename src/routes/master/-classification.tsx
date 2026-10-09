@@ -1,4 +1,5 @@
-import { createSignal, For, Show, Switch, Match, onMount } from "solid-js"
+import { createSignal, For, Show, Switch, Match, Suspense } from "solid-js"
+import { useQuery } from "@tanstack/solid-query"
 import { initClassification } from "../../helper/types.ts"
 import { getAllClassifications, insert, update, del } from "../../server/func/classification.ts"
 import { setErrors, ErrorArea } from "../../components/ErrorArea.tsx"
@@ -19,7 +20,10 @@ export function Classification(props: Props){
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createSignal<Classification>(initClassification());
   const [newadd, setNewadd] = createSignal<boolean>(false);
-  const [classes, setClasses] = createSignal<Classification[]>([]);
+  const classesQuery = useQuery(() => ({
+    queryKey: ["classifications"],
+    queryFn: ()=>getAllClassifications(),
+  }));
 
   let refInput: HTMLInputElement | undefined;
 
@@ -40,15 +44,21 @@ export function Classification(props: Props){
   }
 
   function handleSelect(index: number){
+    if(!classesQuery.data){
+      return;
+    }
     setSelectedIndex(index);
-    setSelected({...classes()[index]});
+    setSelected({...classesQuery.data[index]});
     setNewadd(false);
     showDialog();
     focus();
   }
 
   function addClassification(){
-    setSelectedIndex(classes().length);
+    if(!classesQuery.data){
+      return;
+    }
+    setSelectedIndex(classesQuery.data.length);
     setSelected(initClassification());
     setNewadd(true);
     showDialog();
@@ -63,13 +73,13 @@ export function Classification(props: Props){
       res = await update({data: {Classification: structuredClone(selected())}});
     }
     if(res.ok){
-      setClasses(await getAllClassifications());
+      classesQuery.refetch();
       setSelected(initClassification());
       setSelectedIndex(-1);
       closeDialog();
       props.setMessage("register");
     }else{
-      setErrors(res.errors!);
+      setErrors(res.errors);
     }
   }
 
@@ -80,20 +90,19 @@ export function Classification(props: Props){
       return;
     }
 
-    const res = await del({data: {Classification: classes()[index]}});
+    if(!classesQuery.data){
+      return;
+    }
+    const res = await del({data: {Classification: classesQuery.data[index]}});
     if(res.ok){
-      setClasses(await getAllClassifications());
+      classesQuery.refetch();
       setSelected(initClassification());
       setSelectedIndex(-1);
       props.setMessage("delete");
     }else{
-      setErrors(res.errors!);
+      setErrors(res.errors);
     }
   }
-
-  onMount(async ()=>{
-    setClasses(await getAllClassifications());
-  });
 
   return (
     <div class={ flex({ direction: "row", justifyContent: "flex-start", wrap: "wrap"}) }>
@@ -108,7 +117,8 @@ export function Classification(props: Props){
             </tr>
           </thead>
           <tbody>
-            <For each={classes()}>{(data, i)=>
+            <Suspense fallback={<div>読み込み中...</div>}>
+            <For each={classesQuery.data}>{(data, i)=>
               <tr onClick={()=>handleSelect(i())}
                   class={ css(i()===selectedIndex()? selectedStyle: {}) }>
                 <td class={ css({ fontFamily: "number" }) }>{data.id}</td>
@@ -119,6 +129,7 @@ export function Classification(props: Props){
                 </td>
               </tr>
             }</For>
+            </Suspense>
           </tbody>
         </table>
         <button type="button" class={ button({ color: "success", space: "top1" }) }

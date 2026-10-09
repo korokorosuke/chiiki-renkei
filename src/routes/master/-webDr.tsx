@@ -1,11 +1,11 @@
-import { createSignal, For, Switch, Match, Show, onMount } from "solid-js"
+import { createSignal, For, Switch, Match, Show, Suspense } from "solid-js"
+import { useQuery } from "@tanstack/solid-query"
 import { initWebDr } from "../../helper/webtypes.ts"
 import { getWebDepartments } from "../../server/func/webDepartment.ts"
 import { getAllWebDrs, insert, update, del } from "../../server/func/webDr.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import type { WebDr } from "../../server/domain/webDr.ts"
-import type { WebDepartment } from "../../server/domain/webDepartment.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
 import batsu from "../../assets/del.svg"
 import { modificationAreaStyle, selectedStyle } from "./-css.ts"
@@ -21,8 +21,14 @@ export function WebDr(props: Props){
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createSignal<WebDr>(initWebDr());
   const [newadd, setNewadd] = createSignal<boolean>(false);
-  const [webDrs, setWebDrs] = createSignal<WebDr[]>([]);
-  const [webDepts, setWebDepts] = createSignal<WebDepartment[]>([]);
+  const deptsQuery = useQuery(() => ({
+    queryKey: ["web-depts"],
+    queryFn: ()=>getWebDepartments(),
+  }));
+  const drsQuery = useQuery(() => ({
+    queryKey: ["web-drs"],
+    queryFn: ()=>getAllWebDrs(),
+  }));
 
   let refInput: HTMLInputElement | undefined;
 
@@ -53,24 +59,30 @@ export function WebDr(props: Props){
   }
 
   function handleSelect(index: number){
+    if(!drsQuery.data){
+      return;
+    }
     setSelectedIndex(index);
-    setSelected({...webDrs()[index]});
+    setSelected({...drsQuery.data[index]});
     setNewadd(false);
     showDialog();
     focus();
   }
 
   function addWebDr(){
-    setSelectedIndex(webDrs().length);
-    setSelected({...initWebDr(), department: webDepts()[0].id});
+    if(!drsQuery.data || !deptsQuery.data){
+      return;
+    }
+    setSelectedIndex(drsQuery.data.length);
+    setSelected({...initWebDr(), department: deptsQuery.data[0].id});
     setNewadd(true);
     showDialog();
     focus();
   }
 
   function getName(id: string): string {
-    if(webDepts){
-      for(const dept of webDepts()){
+    if(deptsQuery.data){
+      for(const dept of deptsQuery.data){
         if(dept.id === id){
           return dept.name;
         }
@@ -87,7 +99,7 @@ export function WebDr(props: Props){
       res = await update({data: {dr: structuredClone(selected())}});
     }
     if(res.ok){
-      setWebDrs(await getAllWebDrs());
+      drsQuery.refetch();
       setSelected(initWebDr());
       setSelectedIndex(-1);
       closeDialog();
@@ -103,10 +115,13 @@ export function WebDr(props: Props){
     if(!confirm("削除します。よろしいですか？")){
       return;
     }
+    if(!drsQuery.data){
+      return;
+    }
 
-    const res = await del({data: {dr: webDrs()[index]}});
+    const res = await del({data: {dr: drsQuery.data[index]}});
     if(res.ok){
-      setWebDrs(await getAllWebDrs());
+      drsQuery.refetch();
       setSelected(initWebDr());
       setSelectedIndex(-1);
       props.setMessage("delete");
@@ -114,11 +129,6 @@ export function WebDr(props: Props){
       setErrors(res.errors!);
     }
   }
-
-  onMount(()=>{
-    getAllWebDrs().then(setWebDrs);
-    getWebDepartments().then(setWebDepts);
-  });
 
   return (
     <div class={ flex({ direction: "row", justifyContent: "flex-start", wrap: "wrap"}) }>
@@ -134,7 +144,8 @@ export function WebDr(props: Props){
             </tr>
           </thead>
           <tbody>
-            <For each={webDrs()}>{(data, i)=>
+            <Suspense fallback={<div>読み込み中...</div>}>
+            <For each={drsQuery.data}>{(data, i)=>
               <tr onClick={()=>handleSelect(i())}
                   class={ css(i()===selectedIndex()? selectedStyle: {}) }>
                 <td class={ css({ fontFamily: "number" }) }>{data.id}</td>
@@ -147,6 +158,7 @@ export function WebDr(props: Props){
                 </td>
               </tr>
             }</For>
+            </Suspense>
           </tbody>
         </table>
         <button type="button" class={ button({ color: "success", space: "top1" }) }
@@ -195,12 +207,14 @@ export function WebDr(props: Props){
             <label>部署<span class={ etc({ type: "require" }) }>*</span></label>
           </div>
           <div>
+            <Suspense fallback={<div>読み込み中...</div>}>
             <select value={selected().department} class={ input() }
                 onChange={(e)=>handleChange({department: e.target.value})}>
-              <For each={webDepts()}>{(dept)=>
+              <For each={deptsQuery.data}>{(dept)=>
                 <option value={dept.id}>{dept.name}</option>
               }</For>
             </select>
+            </Suspense>
           </div>
           <Show when={selectedIndex() >= 0}>
             <button type="button" class={ button({ color: "primary", size: "full", space: "top1_2" }) }

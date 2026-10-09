@@ -1,4 +1,5 @@
-import { createEffect, createSignal, Index, Show } from "solid-js"
+import { createSignal, Index, Show, Suspense } from "solid-js"
+import { useQuery } from "@tanstack/solid-query"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import { getMaster, update } from "../../server/func/master.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
@@ -15,34 +16,23 @@ type Props = {
 }
 
 export function Multi(props: Props){
-  const [values, setValues] = createSignal<string[]>([]);
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createSignal<string>("");
   const [value, setValue] = createSignal<string>("");
+  const mastersQuery = useQuery(() => ({
+    queryKey: ["masters", props.id],
+    queryFn: ()=>getMaster({data: {id: props.id}}),
+  }));
 
   let refInput: HTMLInputElement | undefined;
 
-  createEffect(()=>{
-    loadData(props.id).then( ()=>{ } )
-    .catch(e=>{
-        setValues([]);
-        alert(e);
-      })
-    .finally(
-      ()=>{
-        setSelectedIndex(-1);
-        setSelected("");
-      });
-  },[props.id]);
-
-  async function loadData(id: string){
-    setValues(await getMaster({data: {id}}));
-  }
-
   function handleClick(index: number){
+    if(!mastersQuery.data){
+      return;
+    }
     setSelectedIndex(index);
-    setSelected(values()[index]);
-    setValue(values()[index]);
+    setSelected(mastersQuery.data[index]);
+    setValue(mastersQuery.data[index]);
     showDialog();
     focus();
   }
@@ -54,7 +44,10 @@ export function Multi(props: Props){
   }
 
   function handleButtonClick(){
-    setSelectedIndex(values().length);
+    if(!mastersQuery.data){
+      return;
+    }
+    setSelectedIndex(mastersQuery.data.length);
     setSelected("新規追加");
     showDialog();
     focus();
@@ -66,12 +59,15 @@ export function Multi(props: Props){
     if(!confirm("削除します。よろしいですか？")){
       return;
     }
+    if(!mastersQuery.data){
+      return;
+    }
 
-    const vs = values().filter((_,i)=>i !== index);
+    const vs = mastersQuery.data.filter((_,i)=>i !== index);
 
     const res = await update({data: {master: { id: props.id, value: vs }}});
     if(res.ok){
-      setValues(vs);
+      mastersQuery.refetch();
       setValue("");
       setSelectedIndex(-1);
       setSelected("");
@@ -82,7 +78,10 @@ export function Multi(props: Props){
   }
 
   async function register(){
-    const vs = values().slice();
+    if(!mastersQuery.data){
+      return;
+    }
+    const vs = mastersQuery.data.slice();
     if(selectedIndex() >= vs.length){
       vs.push(value());
     }else{
@@ -91,7 +90,7 @@ export function Multi(props: Props){
 
     const res = await update({data: {master: { id: props.id, value: vs }}});
     if(res.ok){
-      setValues(vs);
+      mastersQuery.refetch();
       setValue("");
       setSelectedIndex(-1);
       setSelected("");
@@ -105,8 +104,9 @@ export function Multi(props: Props){
   return (
     <div class={ flex({ direction: "row", content: "flex-start", wrap: "wrap" }) }>
       <div>
+        <Suspense fallback={<div>読み込み中...</div>}>
         <ul class={ css({ paddingInlineStart: "0" }) }>
-          <Index each={values()}>{(val, i)=>
+          <Index each={mastersQuery.data}>{(val, i)=>
               <li onClick={()=>handleClick(i)}
                   class={ css(styles, i===selectedIndex() ? selectedStyle : {}) }>
                 <span>{val()}</span>
@@ -115,6 +115,7 @@ export function Multi(props: Props){
               </li>
           }</Index>
         </ul>
+        </Suspense>
         <button type="button" class={ button({ color: "success", space: "top1" }) }
           onClick={handleButtonClick}>追加</button>
       </div>

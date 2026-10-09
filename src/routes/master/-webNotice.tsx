@@ -1,4 +1,5 @@
-import { createSignal, Show, For, onMount } from "solid-js"
+import { createSignal, Show, For, Suspense } from "solid-js"
+import { useQuery } from "@tanstack/solid-query"
 import { initWebNotice } from "../../helper/webtypes.ts"
 import { getAllNotices, insert, update, del } from "../../server/func/webNotice.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
@@ -19,7 +20,10 @@ export function WebNotice(props: Props){
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createSignal<WebNotice>(initWebNotice());
   const [newadd, setNewadd] = createSignal<boolean>(false);
-  const [notices, setNotices] = createSignal<WebNotice[]>([]);
+  const noticesQuery = useQuery(() => ({
+    queryKey: ["web-notices"],
+    queryFn: ()=>getAllNotices(),
+  }));
 
   let refInput: HTMLTextAreaElement | undefined;
 
@@ -40,15 +44,21 @@ export function WebNotice(props: Props){
   }
 
   function handleSelect(index: number){
+    if(!noticesQuery.data){
+      return;
+    }
     setSelectedIndex(index);
-    setSelected({...notices()[index]});
+    setSelected({...noticesQuery.data[index]});
     setNewadd(false);
     showDialog();
     focus();
   }
 
   function addWebNotices(){
-    setSelectedIndex(notices().length);
+    if(!noticesQuery.data){
+      return;
+    }
+    setSelectedIndex(noticesQuery.data.length);
     setSelected({...initWebNotice()});
     setNewadd(true);
     showDialog();
@@ -63,7 +73,7 @@ export function WebNotice(props: Props){
       res = await update({data: {notice: structuredClone(selected())}});
     }
     if(res.ok){
-      setNotices(await getAllNotices());
+      noticesQuery.refetch();
       setSelected(initWebNotice());
       setSelectedIndex(-1);
       closeDialog();
@@ -79,10 +89,13 @@ export function WebNotice(props: Props){
     if(!confirm("削除します。よろしいですか？")){
       return;
     }
+    if(!noticesQuery.data){
+      return;
+    }
 
-    const res = await del({data: {notice: notices()[index]}});
+    const res = await del({data: {notice: noticesQuery.data[index]}});
     if(res.ok){
-      setNotices(await getAllNotices());
+      noticesQuery.refetch();
       setSelected(initWebNotice());
       setSelectedIndex(-1);
       props.setMessage("delete");
@@ -90,10 +103,6 @@ export function WebNotice(props: Props){
       setErrors(res.errors!);
     }
   }
-
-  onMount(async ()=>{
-    setNotices(await getAllNotices());
-  });
 
   return (
     <div class={ flex({ direction: "row", justifyContent: "flex-start", wrap: "wrap"}) }>
@@ -110,7 +119,8 @@ export function WebNotice(props: Props){
             </tr>
           </thead>
           <tbody>
-            <For each={notices()}>{(data, i)=>
+            <Suspense fallback={<div>読み込み中...</div>}>
+            <For each={noticesQuery.data}>{(data, i)=>
               <tr onClick={()=>handleSelect(i())}
                   class={ css(i()===selectedIndex()? selectedStyle: {}) }>
                 <td class={ css({ minWidth: "4rem" }) }>{data.page}</td>
@@ -123,6 +133,7 @@ export function WebNotice(props: Props){
                 </td>
               </tr>
             }</For>
+            </Suspense>
           </tbody>
         </table>
         <button type="button" class={ button({ color: "success", space: "top1" }) }
