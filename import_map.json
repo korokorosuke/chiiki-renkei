@@ -11,6 +11,6 @@
     "zod": "npm:zod@4.6.5",
     "drizzle-kit": "npm:drizzle-kit@1.0.0-rc.4",
     "drizzle-orm": "npm:drizzle-orm@1.0.0-rc.4",
-    "pg": "npm:pg@8.23.0"
+    "pg": "npm:pg@8.23.1"
   }
 }
