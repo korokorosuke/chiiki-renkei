@@ -171,7 +171,7 @@ export function WebDepartment(props: Props){
             <label>説明</label>
           </div>
           <div>
-            <input type="text" class={ input({ size: "textarea" }) }
+            <textarea class={ input({ size: "textarea" }) }
               value={selected().description}
               onChange={(e)=>handleChange({description: e.target.value})} />
           </div>
