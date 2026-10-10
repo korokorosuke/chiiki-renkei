@@ -1,6 +1,12 @@
 import { validater } from "../lib/validation.ts"
 import { z } from "zod"
 
+export const dueBaseSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  days: z.number(),
+});
+
 export const dueSchema = z.object({
     id: z.number()
         .min(0, "ＩＤは０から１０００００までです。")

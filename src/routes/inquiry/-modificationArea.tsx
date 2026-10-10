@@ -6,8 +6,7 @@ import { ResponseModify } from "./-responseModify.tsx"
 import { Container, ContainerImage } from "../../components/Container.tsx"
 import { toDateHHMMString } from "../../lib/datetime.ts"
 import { insert, update, del } from "../../server/func/inquiry.ts"
-import { getAllDues } from "../../server/func/due.ts"
-import { getUser as getServerUser } from "../../server/func/user.ts"
+import { getUser } from "../../server/func/user.ts"
 import { getFacility } from "../../server/func/facility.ts"
 import { getPatient } from "../../server/func/patient.ts"
 import { getStaffs } from "../../server/func/staff.ts"
@@ -26,6 +25,7 @@ type ViewProps = {
   newadd: Accessor<boolean>
   selected: Accessor<Inquiry>
   setSelected: Setter<Inquiry>
+  dues: Due[]
   auth: AuthUser
 }
 
@@ -39,8 +39,7 @@ type ListProps = {
   auth: AuthUser
 }
 
-function handleKeyUp(e: KeyboardEvent,
-    func: (id: string)=>void, id: string){
+function handleKeyUp(e: KeyboardEvent, func: (id: string)=>void, id: string){
   if(e.key === "Enter"){
     func(id);
   }
@@ -123,7 +122,6 @@ export function ModificationArea(props: ViewProps){
   const [inquiry, setInquiry] = createStore<Inquiry>(initInquiry());
   const [staffs, setStaffs] = createSignal<Staff[]>([]);
   const [tels, setTels] = createSignal<string[]>([]);
-  const [dues, setDues] = createSignal<Due[]>([]);
 
   function clearResponse(){
     tempResponse = undefined;
@@ -169,14 +167,14 @@ export function ModificationArea(props: ViewProps){
       f.name = f.id;
       f.id = "";
     }
-    let ress = unwrap(inquiry.responses);
+    let responses = unwrap(inquiry.responses);
     if(tempIndex === -1 && tempResponse && tempResponse.details){
-      ress.push(tempResponse);
+      responses.push(tempResponse);
     }
     if(tempIndex === -1 && (tempDone || (inquiry.done && !tempDone))){
       setInquiry("done", tempDone);
     }
-    ress = ress.sort((v1, v2)=>{
+    responses = responses.sort((v1, v2)=>{
       if(v1.datetime > v2.datetime){
         return 1;
       }else if(v1.datetime < v2.datetime){
@@ -188,7 +186,7 @@ export function ModificationArea(props: ViewProps){
       ...unwrap(inquiry),
       patient: pat,
       facility: f,
-      responses: ress,
+      responses: responses,
     };
 
     let res;
@@ -219,8 +217,8 @@ export function ModificationArea(props: ViewProps){
     }
   }
 
-  function getUser(id: string){
-    getServerUser({data: {id}}).then((res)=>{
+  function setUser(id: string){
+    getUser({data: {id}}).then((res)=>{
       if(res){
         setInquiry("personInCharge", res);
       }else{
@@ -270,7 +268,7 @@ export function ModificationArea(props: ViewProps){
 
   function setDue(id: string){
     const n = parseInt(id);
-    const res = dues().filter((due)=>due.id === n);
+    const res = props.dues.filter((due)=>due.id === n);
     if(res.length > 0){
       setInquiry("due", res[0]);
     }
@@ -278,30 +276,20 @@ export function ModificationArea(props: ViewProps){
 
   onMount(()=>{
     setInquiry(structuredClone(props.selected()));
-    const pat = inquiry.patient;
+    const pat = props.selected().patient;
     if(!pat.id){
       batch(()=>{
         setInquiry("patient", "id", pat.lastName);
         setInquiry("patient", "lastName", "");
       });
     }
-    const f = inquiry.facility;
+    const f = props.selected().facility;
     if(!f.id){
       batch(()=>{
         setInquiry("facility", "id", f.name);
         setInquiry("facility", "name", "");
       });
     }
-    getAllDues().then((res)=>{
-      setDues(res);
-      if(inquiry.due.id === -1 && dues().length > 0){
-        setInquiry("due", dues()[0]);
-      }else{
-        const dueid = inquiry.due.id;
-        setInquiry("due", "id", -999);
-        setInquiry("due", "id", dueid);
-      }
-    });
   });
 
 
@@ -339,7 +327,7 @@ export function ModificationArea(props: ViewProps){
         </div>
       </Container>
       <Container title="問合せ者" require="*">
-        <input type="text" class={ input({ size: "rem10" }) } list="facstaff"
+        <input type="text" class={ input({ size: "full" }) } list="facstaff"
           value={inquiry.facilityStaff} onChange={(e)=>setInquiry("facilityStaff", e.target.value)} />
           <datalist id="facstaff">
             <For each={staffs()}>{staff=>
@@ -359,7 +347,7 @@ export function ModificationArea(props: ViewProps){
       <Container title="期限" require="*">
         <select class={ input({ size: "id" }) }
             value={inquiry.due.id} onChange={(e)=>setDue(e.target.value)}>
-          <For each={dues()}>{due=>
+          <For each={props.dues}>{due=>
             <option value={due.id}>{due.name}</option>
           }</For>
         </select>
@@ -369,8 +357,8 @@ export function ModificationArea(props: ViewProps){
         <div class={ css({ flexGrow: "0!", marginRight: "1rem" }) }><input type="text"
           class={ input({ size: "id" }) }
           value={inquiry.personInCharge.id}
-          onBlur={()=>getUser(inquiry.personInCharge.id)}
-          onKeyUp={(e)=>handleKeyUp(e, getUser, inquiry.personInCharge.id)}
+          onBlur={()=>setUser(inquiry.personInCharge.id)}
+          onKeyUp={(e)=>handleKeyUp(e, setUser, inquiry.personInCharge.id)}
           onChange={(e)=>setInquiry("personInCharge", {...initUser(), id: e.target.value})} />
         </div>
         <div class={ grid({ placeItems: "center" }) }>{inquiry.personInCharge.name}</div>

@@ -2,7 +2,7 @@ import { validater } from "../lib/validation.ts"
 import { type User, userBaseSchema, initializeUser } from "./user.ts"
 import { type Patient, patientBaseSchema, initialize as initializePatient } from "./patient.ts"
 import { facBaseSchema, initializeFac } from "./facility.ts"
-import { dueSchema, initialize as initializeDue } from "./due.ts"
+import { dueBaseSchema, initialize as initializeDue } from "./due.ts"
 import { z } from "zod"
 
 export const responseSchema = z.object({
@@ -21,13 +21,14 @@ export const inquirySchema = z.object({
     patient: patientBaseSchema.refine((val: Patient) =>  val && val.id, "患者を入力してください。"),
     facility: facBaseSchema.refine((val) => val && val.name, "問合せ施設を入力してください。"),
     facilityStaff: z.string()
-        .max(50, "問合せ者は５０文字までです。"),
+        .min(1, "問合せ者を入力してください。")
+        .max(100, "問合せ者は１００文字までです。"),
     personInCharge: userBaseSchema.refine((val: User) => val && val.id && val.name, "担当者を入力してください。"),
     tel: z.string()
-        .max(50, "連絡先は５０文字までです。"),
+        .max(100, "連絡先は１００文字までです。"),
     datetime: z.iso.datetime({local: true, message: "問合せ日時が不正です。"})
         .min(1, "問合せ日時を入力してください。"),
-    due: dueSchema,
+    due: dueBaseSchema.refine((val) => val && val.name, "期間を選択してください。"),
     details: z.string()
         .min(1, "問合せ内容を入力してください。")
         .max(1000, "問合せ内容は１０００文字までです。"),

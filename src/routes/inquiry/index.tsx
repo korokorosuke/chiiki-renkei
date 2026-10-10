@@ -2,15 +2,23 @@ import { createSignal, Switch, Match, onMount } from "solid-js"
 import { ListArea } from "./-listArea.tsx"
 import { ModificationArea } from "./-modificationArea.tsx"
 import { getInquiries, update, del } from "../../server/func/inquiry.ts"
+import { getAllDues } from "../../server/func/due.ts"
 import Header from "../-header.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
 import { toDateHHMMString, toDateString, addDays } from "../../lib/datetime.ts"
 import { toUser, initInquiry } from "../../helper/types.ts"
 import type { Inquiry } from "../../server/domain/inquiry.ts"
+import type { Due } from "../../server/domain/due.ts"
 import { button, area, input } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/inquiry/")({ component: App });
+export const Route = createFileRoute("/inquiry/")({
+  component: App,
+  loader: () => {
+    const dues = getAllDues();
+    return { dues };
+  }
+});
 
 export const [selected, setSelected] = createSignal<Inquiry>(initInquiry());
 
@@ -22,7 +30,9 @@ function App() {
   const [inquiries, setInquiries] = createSignal<Inquiry[]>([]);
   const [modification, setModification] = createSignal<boolean>(false);
   const [newadd, setNewadd] = createSignal<boolean>(false);
+  const [ dues, setDues ] = createSignal<Due[]>([]);
 
+  const loaderData = Route.useLoaderData();
   const context = Route.useRouteContext();
   const { user, base } = context();
 
@@ -116,6 +126,8 @@ function App() {
   }
 
   onMount(() => {
+    const { dues } = loaderData();
+    dues.then(setDues);
     loadData("", "", "", "").then();
     if(refInput){
       refInput.focus();
@@ -159,7 +171,7 @@ function App() {
       <hr />
       <Switch>
         <Match when={modification()}>
-          <ModificationArea auth={user}
+          <ModificationArea auth={user} dues={dues()}
             terminateModification={terminateModification} newadd={newadd}
             selected={selected} setSelected={setSelected} />
         </Match>
