@@ -115,11 +115,8 @@ function App() {
   }
 
   onMount(() => {
-    console.log("mount0")
     const {depts} = loaderData();
-    console.log("mount")
     depts.then(setDepts);
-    console.log("mountaaa")
     if(refInput){
       refInput.focus();
     }
