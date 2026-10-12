@@ -18,11 +18,11 @@ export function Notice(){
     if(noticesQuery.data && noticesQuery.data.length > 0){
       const imp = [];
       const normal = [];
-      for(const a of noticesQuery.data){
-        if(a.importance){
-          imp.push(a);
+      for(const notice of noticesQuery.data){
+        if(notice.importance){
+          imp.push(notice);
         }else{
-          normal.push(a);
+          normal.push(notice);
         }
       }
       setImportants(imp);

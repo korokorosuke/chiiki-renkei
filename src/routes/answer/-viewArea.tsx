@@ -40,10 +40,11 @@ export function ViewArea(props: Props){
     if(confirm("パスワードをリセットします。よろしいですか。")){
       const res = await resetPassword({data: { appId: props.selected.appointmentId }});
       if(res.ok){
-        setPass(res.data!);
+        setPass(res.data);
         alert("パスワードをリセットしました。");
+      }else{
+        alert(res.errors[0]);
       }
-      alert(res.errors![0]);
     }
   }
 

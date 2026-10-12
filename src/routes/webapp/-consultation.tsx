@@ -43,10 +43,6 @@ export function ConsultationInput(props: Props){
       setInputFirst(props.selected.consultation.first);
       setInputSecond(props.selected.consultation.second);
       setInputEtc(props.selected.consultation.etc);
-    }else{
-      setInputFirst("");
-      setInputSecond("");
-      setInputEtc("");
     }
     if(refInput){
       refInput.focus();

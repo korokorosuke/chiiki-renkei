@@ -53,7 +53,7 @@ export function PatIdInput(props: Props){
   async function getPatient(id: string){
     const res = await getPatientForId({data: {id}});
     if(res.ok){
-      const p = res.data!;
+      const p = res.data;
       setPatient({
         ...p,
         address: {

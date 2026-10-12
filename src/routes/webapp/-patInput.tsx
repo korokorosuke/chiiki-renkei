@@ -29,7 +29,7 @@ export function PatientInput(props: Props){
     const id = props.selected.facPatientId;
     const res = await getPatient({data: {facPatId: id}});
     if(res.ok){
-      const patient = res.data!;
+      const patient = res.data;
       props.setSelected("patient", "id", patient.id);
       props.setSelected("patient", "birthday", patient.birthday);
       props.setSelected("patient", "lastName", patient.lastName);
