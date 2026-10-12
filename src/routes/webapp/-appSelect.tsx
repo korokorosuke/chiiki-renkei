@@ -1,12 +1,13 @@
 import { onMount, Index, createSignal, createMemo, Show, For } from "solid-js"
 import { unwrap, type SetStoreFunction } from "solid-js/store"
+import { useQuery } from "@tanstack/solid-query"
+import { getWebDrs } from "../../server/func/webDr.ts"
 import { addDays, toYM, toDateString } from "../../lib/datetime.ts"
 import { initWebDr, isMaster, isUser } from "../../helper/webtypes.ts"
 import { styles } from "../../components/NormalDialog.tsx"
 import { ConsultationInput } from "./-consultation.tsx"
 import { DecisionInput } from "./-decision.tsx"
 import { getWebReservations } from "../../server/func/webReservation.ts"
-import { getWebDrs } from "../../server/func/webDr.ts"
 import type { AuthUser } from "../../server/domain/user.ts"
 import type { WebReservation } from "../../server/domain/webReservation.ts"
 import type { WebDr } from "../../server/domain/webDr.ts"
@@ -49,7 +50,18 @@ export function AppSelect(props: Props){
   const [resNames, setResNames] = createSignal<Map<string, string[]>>(new Map());
   const [resTimes, setResTimes] = createSignal<Map<string, WebReservation[]>>(new Map());
   const [baseDate, setBaseDate] = createSignal(new Date());
-  const [drs, setDrs] = createSignal<Map<string, WebDr>>(new Map());
+  const drsQuery = useQuery(()=>({
+    queryKey: ["web-drs", props.selected.department.id],
+    queryFn: async ()=>{
+      const res = await getWebDrs({data: {dept: props.selected.department.id}});
+      const m = new Map();
+      for(const dr of res){
+        m.set(dr.id, dr);
+      }
+      return m;
+    },
+    gcTime: 1000 * 60 * 10
+  }));
 
   const loadedMonth = new Map();
   const thisMonth = toYM(new Date());
@@ -121,25 +133,14 @@ export function AppSelect(props: Props){
     }
   }
 
-  function getDrs(){
-    getWebDrs({data: {dept: props.selected.department.id}}).then((res)=>{
-      if(res){
-        const m = new Map();
-        for(const dr of res){
-          m.set(dr.id, dr);
-        }
-        setDrs(m);
-      }
-    }).catch(()=>{alert("予約枠の取得に失敗しました。")});
-  }
-
   function getDr(id: string): WebDr{
-    const dr = drs().get(id);
-    if(dr){
-      return dr;
-    }else{
-      return {...initWebDr(), displayName: "XXXX"};
+    if(drsQuery.data){
+      const dr = drsQuery.data.get(id);
+      if(dr){
+        return dr;
+      }
     }
+    return {...initWebDr(), displayName: "XXXX"};
   }
 
   function prevMonth(){
@@ -213,8 +214,6 @@ export function AppSelect(props: Props){
 
   onMount(async ()=>{
     loadedMonth.clear();
-    setBaseDate(new Date());
-    getDrs();
     const dept = unwrap(props.selected.department.id);
     await getReservation(dept, toYM(new Date()), props.user.authWeb >= 2);
     getReservation(dept, toYM(new Date()), props.user.authWeb >= 2).then(()=>{});

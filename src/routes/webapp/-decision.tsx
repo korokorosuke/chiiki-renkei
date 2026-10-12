@@ -1,9 +1,10 @@
 import { createSignal, Index, onMount } from "solid-js"
 import type { SetStoreFunction } from "solid-js/store"
+import { useQuery } from "@tanstack/solid-query"
+import { getWebDrs } from "../../server/func/webDr.ts"
 import { initWebDr } from "../../helper/webtypes.ts"
 import { toYM } from "../../lib/datetime.ts"
 import { ContainerWeb } from "../../components/Container.tsx"
-import { getWebDrs } from "../../server/func/webDr.ts"
 import { getWebReservations } from "../../server/func/webReservation.ts"
 import type { WebAppointment } from "../../server/domain/webAppointment.ts"
 import type { WebDr } from "../../server/domain/webDr.ts"
@@ -25,7 +26,18 @@ export function DecisionInput(props: Props){
   const [time, setTime] = createSignal("");
   const [resNames, setResNames] = createSignal<Map<string, WebDr>>(new Map());
   const [resTimes, setResTimes] = createSignal<Set<string>>(new Set());
-  const [drs, setDrs] = createSignal<Map<string, WebDr>>(new Map());
+  const drsQuery = useQuery(()=>({
+    queryKey: ["web-drs", props.selected.department.id],
+    queryFn: async ()=>{
+      const res = await getWebDrs({data: {dept: props.selected.department.id}});
+      const m = new Map();
+      for(const dr of res){
+        m.set(dr.id, dr);
+      }
+      return m;
+    },
+    gcTime: 1000 * 60 * 10
+  }));
 
   const loadedMonth = new Map();
   let refInput: HTMLInputElement|undefined;
@@ -48,26 +60,14 @@ export function DecisionInput(props: Props){
     await getReservation(props.department, d.substring(0, 7));
   }
 
-  async function getDrs(){
-    const res = await getWebDrs({data: {dept: props.selected.department.id}});
-    if(res.length !== 0){
-      const m = new Map();
-      for(const dr of res){
-        m.set(dr.id, dr);
-      }
-      setDrs(m);
-    }else{
-      alert("予約枠の取得に失敗しました。");
-    }
-  }
-
   function getDr(id: string): WebDr{
-    const dr = drs().get(id);
-    if(dr){
-      return dr;
-    }else{
-      return {...initWebDr(), displayName: "XXXX"};
+    if(drsQuery.data){
+      const dr = drsQuery.data.get(id);
+      if(dr){
+        return dr;
+      }
     }
+    return {...initWebDr(), displayName: "XXXX"};
   }
 
   async function getReservation(dept: string, ym: string){
@@ -93,14 +93,10 @@ export function DecisionInput(props: Props){
   }
 
   onMount(async ()=>{
+    await getReservation(props.department, toYM(new Date()));
     if(refInput){
       refInput.focus();
     }
-    setDate("");
-    setTime("");
-    setDr("");
-    await getDrs();
-    await getReservation(props.department, toYM(new Date()));
   })
 
 

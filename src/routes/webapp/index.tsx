@@ -23,6 +23,10 @@ import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/webapp/")({
   component: App,
+  loader: () => {
+    const depts = getWebDepartments();
+    return { depts };
+  },
   head: () => ({
     scripts: [ { src: "/html2pdf.js" }, ],
   }),
@@ -47,6 +51,7 @@ function App() {
   const [force, setForce] = createSignal(false);
   const [depts, setDepts] = createSignal<WebDepartment[]>([]);
 
+  const loaderData = Route.useLoaderData();
   const context = Route.useRouteContext();
   const { user, base } = context();
 
@@ -174,7 +179,8 @@ function App() {
 
 
   onMount(() => {
-    getWebDepartments().then(setDepts);
+    const {depts} = loaderData();
+    depts.then(setDepts);
     if(isUser(user)){
       if(user.facilityId){
         getUserFac({data: {id: user.facilityId!}}).then(res=>{
