@@ -1,7 +1,6 @@
-import { createSignal, onMount, For, Index, Show, type Setter, type Accessor } from "solid-js"
+import { For, Index, Show, type Setter, type Accessor } from "solid-js"
 import { createStore, unwrap } from "solid-js/store"
 import { initStaff, toUser } from "../../helper/types.ts"
-import { getFacDepts, getPosts } from "../../server/func/master.ts"
 import { insert, update, del } from "../../server/func/staff.ts"
 import { Container } from "../../components/Container.tsx"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
@@ -16,12 +15,12 @@ type ViewProps = {
   terminateModification: (status: MessageStatus)=>void
   newadd: boolean
   auth: AuthUser
+  facDepts: string[],
+  posts: string[]
 }
 
 export function ModificationArea(props: ViewProps){
   const [staff, setStaff] = createStore<Staff>(props.staff());
-  const [posts, setPosts] = createSignal<string[]>([]);
-  const [facDepts, setFacDepts] = createSignal<string[]>([]);
 
   async function handleRegister(){
     const s = {
@@ -56,19 +55,6 @@ export function ModificationArea(props: ViewProps){
     }
   }
 
-  onMount(()=>{
-    getFacDepts().then(setFacDepts);
-    getPosts().then((data)=>{
-      setPosts(data);
-      if(posts().length > 0 && staff.post){
-        const post = staff.post;
-        setStaff("post", "");
-        setStaff("post", post);
-      }
-    });
-  });
-
-
   return (
     <>
     <div class={ area({ type: "contents" }) }>
@@ -85,7 +71,7 @@ export function ModificationArea(props: ViewProps){
         <input type="text" class={ input({ size: "text" }) } list="facdept"
           value={staff.department} onChange={(e)=>setStaff("department", e.target.value)} />
         <datalist id="facdept">
-          <For each={facDepts()}>{(fdept)=>
+          <For each={props.facDepts}>{(fdept)=>
             <option value={fdept}>{fdept}</option>
           }</For>
         </datalist>
@@ -99,7 +85,7 @@ export function ModificationArea(props: ViewProps){
         <select class={ input({ size: "id" }) } value={staff.post}
             onChange={(e)=>setStaff("post", e.target.value)}>
           <option value=""></option>
-          <Index each={posts()}>{(post)=>
+          <Index each={props.posts}>{(post)=>
             <option value={post()}>{post()}</option>
           }</Index>
         </select>
