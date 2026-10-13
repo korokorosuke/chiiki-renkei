@@ -1,8 +1,6 @@
 import { createSignal, For, Index, Show, Suspense } from "solid-js"
-import { useQuery } from "@tanstack/solid-query"
+import { getWebDeptsQuery, getWebDrsQuery } from "./-query.ts"
 import { initWebReservation } from "../../helper/webtypes.ts"
-import { getWebDepartments } from "../../server/func/webDepartment.ts"
-import { getWebDrs } from "../../server/func/webDr.ts"
 import { getWebReservations, insert, update } from "../../server/func/webReservation.ts"
 import { getWebMaster } from "../../server/func/webMaster.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
@@ -25,14 +23,8 @@ export function WebReservation(props: Props) {
   const [reservs, setReservs] = createSignal<WebReservation[]>([]);
   const [changes, setChanges] = createSignal<WebReservation[]>([]);
   const [modification, setModification] = createSignal(false);
-  const deptsQuery = useQuery(() => ({
-    queryKey: ["web-depts"],
-    queryFn: ()=>getWebDepartments(),
-  }));
-  const drsQuery = useQuery(() => ({
-    queryKey: ["web-drs", inputDeptData()],
-    queryFn: ()=>getWebDrs({data: {dept: inputDeptData()}}),
-  }));
+  const deptsQuery = getWebDeptsQuery();
+  const drsQuery = getWebDrsQuery(inputDeptData);
 
   //const dels: WebReservation[] = [];
   const selected: WebReservation = initWebReservation();

@@ -1,7 +1,7 @@
 import { createSignal, For, Show, Switch, Match, Suspense } from "solid-js"
-import { useQuery } from "@tanstack/solid-query"
+import { getAllDeptsQuery } from "./-query.ts"
 import { initDept } from "../../helper/types.ts"
-import { getAllDepartments, insert, update, del } from "../../server/func/department.ts"
+import { insert, update, del } from "../../server/func/department.ts"
 import { setErrors, ErrorArea } from "../../components/ErrorArea.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import type { Department } from "../../server/domain/department.ts"
@@ -20,10 +20,7 @@ export function Department(props: Props){
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createSignal<Department>(initDept());
   const [newadd, setNewadd] = createSignal<boolean>(false);
-  const deptsQuery = useQuery(() => ({
-    queryKey: ["departments"],
-    queryFn: ()=>getAllDepartments(),
-  }));
+  const deptsQuery = getAllDeptsQuery();
 
   let refInput: HTMLInputElement | undefined;
 

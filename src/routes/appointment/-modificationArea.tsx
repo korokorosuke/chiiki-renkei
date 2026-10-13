@@ -6,12 +6,13 @@ import { toHHMM } from "../../lib/datetime.ts"
 import { Container, ContainerButton } from "../../components/Container.tsx"
 import { insert, update, del } from "../../server/func/appointment.ts"
 import { getFac } from "../../server/func/facility.ts"
-import { getMeans, getFacDepts } from "../../server/func/master.ts"
+import { getMeans } from "../../server/func/master.ts"
 import { getUser } from "../../server/func/user.ts"
 import { getDrs as getFacDrs } from "../../server/func/staff.ts"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import { DrSelect } from "../../components/DrSelect.tsx"
+import { DeptsDataList } from "../../components/DeptsDataList.tsx"
 import type { Appointment } from "../../server/domain/appointment.ts"
 import type { AuthUser } from "../../server/domain/user.ts"
 import type { Department } from "../../server/domain/department.ts"
@@ -30,19 +31,11 @@ type ViewProps = {
   auth: AuthUser
 }
 
-export const route = {
-  preload: () => {
-    getMeans();
-    getFacDepts();
-  }
-};
-
 export function ModificationArea(props: ViewProps){
   const [appointment, setAppointment] = createStore<Appointment>(structuredClone(props.appointment()));
   const [facDrs, setFacDrs] = createSignal<Dr[]>([]);
   const [times, setTimes] = createSignal<string[]>([]);
   const [means, setMeans] = createSignal<string[]>([]);
-  const [facDepts, setFacDepts] = createSignal<string[]>([]);
   let oldFacId = "";
   let oldPerson = "";
 
@@ -166,7 +159,6 @@ export function ModificationArea(props: ViewProps){
   }
 
   onMount(()=>{
-    getFacDepts().then(setFacDepts);
     if(!props.appointment().department.id){
       setAppointment("department", props.depts[0]);
     }
@@ -224,13 +216,9 @@ export function ModificationArea(props: ViewProps){
           </datalist>
       </Container>
       <Container title="施設診療科">
-        <input type="text" class={ input({ size: "text" }) } list="facdept" value={appointment.facilityDept}
+        <input type="text" class={ input({ size: "text" }) } list="fac-depts" value={appointment.facilityDept}
             onChange={(e)=>setAppointment("facilityDept", e.target.value)} />
-        <datalist id="facdept">
-          <Index each={facDepts()}>{(fdept)=>
-            <option value={fdept()}>{fdept()}</option>
-          }</Index>
-        </datalist>
+        <DeptsDataList id="fac-depts" />
       </Container>
       <Container title="予約(紹介)日" require="*">
         <input type="date" class={ input({ size: "date" }) }

@@ -1,9 +1,9 @@
 import { createSignal, For, Show, Suspense } from "solid-js"
-import { useQuery } from "@tanstack/solid-query"
 import { createStore, unwrap } from "solid-js/store"
+import { useQuery } from "@tanstack/solid-query"
+import { getDeptsQuery } from "./-query.ts"
 import { initQuestionnaire } from "../../helper/types.ts"
 import { getQuestionnaires, insert, update, del } from "../../server/func/questionnaire.ts"
-import { getDepartments } from "../../server/func/department.ts"
 import { setErrors, ErrorArea } from "../../components/ErrorArea.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import { Question as QuestionComp } from "./-question.tsx"
@@ -22,10 +22,7 @@ export function Questionnaire(props: Props){
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createStore<Questionnaire>(initQuestionnaire());
   const [newadd, setNewadd] = createSignal<boolean>(false);
-  const deptsQuery = useQuery(() => ({
-    queryKey: ["departments", "exam"],
-    queryFn: ()=>getDepartments(),
-  }));
+  const deptsQuery = getDeptsQuery();
   const qsQuery = useQuery(() => ({
     queryKey: ["qs"],
     queryFn: ()=>getQuestionnaires(),

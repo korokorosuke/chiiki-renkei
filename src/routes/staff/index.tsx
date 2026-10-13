@@ -4,7 +4,7 @@ import { ModificationArea } from "./-modificationArea.tsx"
 import { initStaff, initFac } from "../../helper/types.ts"
 import { getFac } from "../../server/func/facility.ts"
 import { getStaffs } from "../../server/func/staff.ts"
-import { getFacDepts, getPosts } from "../../server/func/master.ts"
+import { getPosts } from "../../server/func/master.ts"
 import Header from "../-header.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
 import type { Fac } from "../../server/domain/facility.ts"
@@ -17,9 +17,8 @@ import { createFileRoute } from "@tanstack/solid-router"
 export const Route = createFileRoute("/staff/")({
   component: App,
   loader: () => {
-    const depts = getFacDepts();
     const posts = getPosts();
-    return { depts, posts };
+    return { posts };
   },
 });
 
@@ -32,7 +31,6 @@ function App() {
   const [newadd, setNewadd] = createSignal<boolean>(false);
   const [message, setMessage] = createSignal("");
   const [visible, setVisible] = createSignal(false);
-  const [facDepts, setFacDepts] = createSignal<string[]>([]);
   const [posts, setPosts] = createSignal<string[]>([]);
 
   const loaderData = Route.useLoaderData();
@@ -111,8 +109,7 @@ function App() {
   }
 
   onMount(() => {
-    const {depts, posts} = loaderData();
-    depts.then(setFacDepts);
+    const {posts} = loaderData();
     posts.then(setPosts);
     if(refInput){
       refInput.focus();
@@ -147,7 +144,7 @@ function App() {
       <Switch>
         <Match when={modification()}>
           <ModificationArea staff={staff} setStaff={setStaff} auth={user}
-            facDepts={facDepts()} posts={posts()}
+            posts={posts()}
             terminateModification={terminateModification} newadd={newadd()} />
         </Match>
         <Match when={staffs().length > 0}>

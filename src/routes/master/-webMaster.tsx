@@ -1,9 +1,7 @@
 import { createSignal, For, Index, Suspense } from "solid-js"
-import { useQuery } from "@tanstack/solid-query"
+import { getWebDeptsQuery, getWebDrsQuery } from "./-query.ts"
 import { initWebMaster, initReserv } from "../../helper/webtypes.ts"
 import { toHHMM } from "../../lib/datetime.ts"
-import { getWebDepartments } from "../../server/func/webDepartment.ts"
-import { getWebDrs } from "../../server/func/webDr.ts"
 import { getWebMaster, update } from "../../server/func/webMaster.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import type { WebMaster } from "../../server/domain/webMaster.ts"
@@ -21,14 +19,8 @@ export function WebMaster(props: Props) {
   const [inputDrData, setInputDrData] = createSignal("");
   const [inputWeekData, setInputWeekData] = createSignal(1);
   const [reserv, setReserv] = createSignal<WebMaster>(initWebMaster());
-  const deptsQuery = useQuery(() => ({
-    queryKey: ["web-depts"],
-    queryFn: ()=>getWebDepartments(),
-  }));
-  const drsQuery = useQuery(() => ({
-    queryKey: ["web-drs", inputDeptData()],
-    queryFn: ()=>getWebDrs({data: {dept: inputDeptData()}}),
-  }));
+  const deptsQuery = getWebDeptsQuery();
+  const drsQuery = getWebDrsQuery(inputDeptData);
 
   async function register(): Promise<void>{
     const temp = reserv();

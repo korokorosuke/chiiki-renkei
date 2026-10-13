@@ -1,8 +1,7 @@
 import { createSignal, For, Switch, Match, Show, Suspense } from "solid-js"
-import { useQuery } from "@tanstack/solid-query"
+import { getWebDeptsQuery, getWebAllDrsQuery } from "./-query.ts"
 import { initWebDr } from "../../helper/webtypes.ts"
-import { getWebDepartments } from "../../server/func/webDepartment.ts"
-import { getAllWebDrs, insert, update, del } from "../../server/func/webDr.ts"
+import { insert, update, del } from "../../server/func/webDr.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import type { WebDr } from "../../server/domain/webDr.ts"
@@ -21,14 +20,8 @@ export function WebDr(props: Props){
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createSignal<WebDr>(initWebDr());
   const [newadd, setNewadd] = createSignal<boolean>(false);
-  const deptsQuery = useQuery(() => ({
-    queryKey: ["web-depts"],
-    queryFn: ()=>getWebDepartments(),
-  }));
-  const drsQuery = useQuery(() => ({
-    queryKey: ["web-drs"],
-    queryFn: ()=>getAllWebDrs(),
-  }));
+  const deptsQuery = getWebDeptsQuery();
+  const drsQuery = getWebAllDrsQuery();
 
   let refInput: HTMLInputElement | undefined;
 

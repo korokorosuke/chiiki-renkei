@@ -1,7 +1,7 @@
 import { createSignal, For, Switch, Match, Show, Suspense } from "solid-js"
 import { useQuery } from "@tanstack/solid-query"
+import { getDeptsQuery } from "./-query.ts"
 import { initDr } from "../../helper/types.ts"
-import { getDepartments } from "../../server/func/department.ts"
 import { getAllDrs, insert, update, del } from "../../server/func/dr.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
@@ -21,10 +21,7 @@ export function Dr(props: Props){
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createSignal<Dr>(initDr());
   const [newadd, setNewadd] = createSignal<boolean>(false);
-  const deptsQuery = useQuery(() => ({
-    queryKey: ["departments", "exam"],
-    queryFn: ()=>getDepartments(),
-  }));
+  const deptsQuery = getDeptsQuery();
   const drsQuery = useQuery(() => ({
     queryKey: ["drs"],
     queryFn: ()=>getAllDrs(),

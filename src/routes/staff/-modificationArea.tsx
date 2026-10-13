@@ -1,9 +1,10 @@
-import { For, Index, Show, type Setter, type Accessor } from "solid-js"
+import { Index, Show, type Setter, type Accessor } from "solid-js"
 import { createStore, unwrap } from "solid-js/store"
 import { initStaff, toUser } from "../../helper/types.ts"
 import { insert, update, del } from "../../server/func/staff.ts"
 import { Container } from "../../components/Container.tsx"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
+import { DeptsDataList } from "../../components/DeptsDataList.tsx"
 import type { AuthUser } from "../../server/domain/user.ts"
 import type { Staff } from "../../server/domain/staff.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
@@ -15,7 +16,6 @@ type ViewProps = {
   terminateModification: (status: MessageStatus)=>void
   newadd: boolean
   auth: AuthUser
-  facDepts: string[],
   posts: string[]
 }
 
@@ -68,13 +68,9 @@ export function ModificationArea(props: ViewProps){
           value={staff.kana} onChange={(e)=>setStaff("kana", e.target.value)} />
       </Container>
       <Container title="部署" require="*">
-        <input type="text" class={ input({ size: "text" }) } list="facdept"
+        <input type="text" class={ input({ size: "text" }) } list="fac-depts"
           value={staff.department} onChange={(e)=>setStaff("department", e.target.value)} />
-        <datalist id="facdept">
-          <For each={props.facDepts}>{(fdept)=>
-            <option value={fdept}>{fdept}</option>
-          }</For>
-        </datalist>
+        <DeptsDataList id="fac-depts" />
       </Container>
       <Container title="医師">
         <input type="checkbox" class={ input({ size: "check2", type: "checkbox" }) }

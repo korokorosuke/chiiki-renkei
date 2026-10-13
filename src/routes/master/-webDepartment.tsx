@@ -1,7 +1,7 @@
 import { createSignal, For, Show, Switch, Match, Suspense } from "solid-js"
-import { useQuery } from "@tanstack/solid-query"
+import { getWebDeptsQuery } from "./-query.ts"
 import { initWebDept } from "../../helper/webtypes.ts"
-import { getWebDepartments, insert, update, del } from "../../server/func/webDepartment.ts"
+import { insert, update, del } from "../../server/func/webDepartment.ts"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import type { WebDepartment } from "../../server/domain/webDepartment.ts"
@@ -20,10 +20,7 @@ export function WebDepartment(props: Props){
   const [selectedIndex, setSelectedIndex] = createSignal<number>(-1);
   const [selected, setSelected] = createSignal<WebDepartment>(initWebDept());
   const [newadd, setNewadd] = createSignal<boolean>(false);
-  const deptsQuery = useQuery(() => ({
-    queryKey: ["web-depts"],
-    queryFn: ()=>getWebDepartments(),
-  }));
+  const deptsQuery = getWebDeptsQuery();
 
   let refInput: HTMLInputElement | undefined;
 

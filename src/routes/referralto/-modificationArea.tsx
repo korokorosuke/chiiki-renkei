@@ -1,16 +1,16 @@
-import { createSignal, onMount, For, Index, Show, type Setter, type Accessor } from "solid-js"
+import { createSignal, onMount, For, Show, type Setter, type Accessor } from "solid-js"
 import { createStore, unwrap } from "solid-js/store"
 import { initReferralTo, initFac, initDr, initDept, toUser, toDr, toFac } from "../../helper/types.ts"
 import { getFac } from "../../server/func/facility.ts"
 import { getDrs as getFacDrs } from "../../server/func/staff.ts"
 import { getUser } from "../../server/func/user.ts"
-import { getFacDepts } from "../../server/func/master.ts"
 import { insert, update, del } from "../../server/func/referralto.ts"
 import { MiniApp } from "../facility/-miniApp.tsx"
 import { Container, ContainerButton } from "../../components/Container.tsx"
 import { NormalDialog, showDialog, closeDialog } from "../../components/NormalDialog.tsx"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
 import { DrSelect } from "../../components/DrSelect.tsx"
+import { DeptsDataList } from "../../components/DeptsDataList.tsx"
 import type { ReferralTo } from "../../server/domain/referralto.ts"
 import type { AuthUser } from "../../server/domain/user.ts"
 import type { Department } from "../../server/domain/department.ts"
@@ -32,7 +32,6 @@ type ViewProps = {
 export function ModificationArea(props: ViewProps){
   const [referral, setReferral] = createStore<ReferralTo>(structuredClone(props.referral()));
   const [facDrs, setFacDrs] = createSignal<Dr[]>([]);
-  const [facDepts, setFacDepts] = createSignal<string[]>([]);
   let oldFacId = "";
   let oldPerson = "";
 
@@ -139,7 +138,6 @@ export function ModificationArea(props: ViewProps){
   }
 
   onMount(()=>{
-    getFacDepts().then(setFacDepts);
     if(!props.referral().department.id){
       setReferral("department", props.depts[0]);
     }
@@ -182,13 +180,9 @@ export function ModificationArea(props: ViewProps){
         </datalist>
       </Container>
       <Container title="施設診療科">
-        <input type="text" class={ input({ size: "text" }) } list="facdept" value={referral.facilityDept}
+        <input type="text" class={ input({ size: "text" }) } list="fac-depts" value={referral.facilityDept}
           onChange={(e)=>setReferral("facilityDept", e.target.value)} />
-        <datalist id="facdept">
-          <Index each={facDepts()}>{(fdept)=>
-            <option value={fdept()}>{fdept()}</option>
-          }</Index>
-        </datalist>
+        <DeptsDataList id="fac-depts" />
       </Container>
       <Container title="紹介日" require="*">
         <input type="date" class={ input({ size: "date" }) }
