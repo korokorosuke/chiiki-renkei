@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { expect } from "vitest"
 import type { IDueRepository } from "../../domain/dueService.ts"
 import type { Due } from "../../domain/due.ts"
 
@@ -23,72 +23,51 @@ export const due4: Due = {
   days: -1
 }
 
-function compare(u1: Due, u2: Due): boolean {
-  if(u1.id !== u2.id){
-    return false;
-  }
-  if(u1.name !== u2.name){
-    return false;
-  }
-  if(u1.days !== u2.days){
-    return false;
-  }
-  return true;
-}
-
 export async function insert(repo: IDueRepository){
   let res = await repo.insert(due);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(due2);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(due4);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function update(repo: IDueRepository){
   const res = await repo.update(due3);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function read(repo: IDueRepository){
   let res = await repo.read(due.id);
-  if(res){
-    assert(compare(due3, res));
-  }else{
-    fail();
-  }
+  expect(due3).toEqual(res);
   res = await repo.read(due2.id);
-  if(res){
-    assert(compare(due2, res));
-  }else{
-    fail();
-  }
+  expect(due2).toEqual(res);
 }
 export async function all(repo: IDueRepository){
   const res = await repo.all();
   if(res.length === 3){
     for(const r of res){
       if(r.id === due3.id){
-        assert(compare(due3, r));
+        expect(due3).toEqual(r);
       }else if(r.id === due2.id){
-        assert(compare(due2, r));
+        expect(due2).toEqual(r);
       }else if(r.id === due4.id){
-        assert(compare(due4, r));
+        expect(due4).toEqual(r);
       }else{
-        fail();
+        expect.fail();
       }
     }
   }else{
     console.log(`list2: ${res.length}`);
-    fail();
+    expect.fail();
   }
 }
 export async function del(repo: IDueRepository){
   await repo.delete(due);
   let res = await repo.read(due3.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(due2);
   res = await repo.read(due2.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(due4);
   res = await repo.read(due4.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
 }

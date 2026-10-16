@@ -1,3 +1,4 @@
+import { describe, test } from "vitest"
 import { LogRepository } from "./logRepository.ts"
 import { write, list } from "./testdata/log.ts"
 import { BASE } from "./testdata/settings.ts"
@@ -5,8 +6,8 @@ import { Kv } from "./kv.ts"
 
 Kv.test = true;
 
-Deno.test("Log repository", async (t) => {
+describe("Log repository", () => {
   const repo = new LogRepository(BASE);
-  await t.step("write", async () => {await write(repo);});
-  await t.step("list", async () => {await list(repo);});
+  test("write", async () => {await write(repo);});
+  test("list", async () => {await list(repo);});
 });

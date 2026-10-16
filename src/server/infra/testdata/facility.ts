@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { expect } from "vitest"
 import type { IFacilityRepository } from "../../domain/facilityService.ts"
 import type { Facility, Contact } from "../../domain/facility.ts"
 import { addressData } from "./address.ts"
@@ -98,134 +98,62 @@ export const facility4: Facility = {
   updatedAt: "2023-11-01T00:00:00Z",
 }
 
-function compare(u1: Facility, u2: Facility): boolean {
-  if(u1.id !== u2.id){
-    console.log(`id: ${u1.id} : ${u2.id}`);
-    return false;
+function omitTimestamps(val: Facility|undefined): Omit<Facility, "updatedAt"|"updatedBy"|"createdAt"|"createdBy">|undefined {
+  if(val){
+    const {createdAt, createdBy, updatedAt, updatedBy, ...value} = val;
+    return value;
   }
-  if(u1.name !== u2.name){
-    console.log(`name: ${u1.name} : ${u2.name}`);
-    return false;
-  }
-  if(u1.nameCorp !== u2.nameCorp){
-    console.log(`nameCorp: ${u1.nameCorp} : ${u2.nameCorp}`);
-    return false;
-  }
-  if(u1.kana !== u2.kana){
-    console.log(`kana: ${u1.kana} : ${u2.kana}`);
-    return false;
-  }
-  if(u1.tel !== u2.tel){
-    console.log(`tel: ${u1.tel} : ${u2.tel}`);
-    return false;
-  }
-  if(u1.fax !== u2.fax){
-    console.log(`fax: ${u1.fax} : ${u2.fax}`);
-    return false;
-  }
-  if(u1.email !== u2.email){
-    console.log(`email: ${u1.email} : ${u2.email}`);
-    return false;
-  }
-  if(u1.address.postalCode !== u2.address.postalCode){
-    console.log(`postalCode: ${u1.address.postalCode} : ${u2.address.postalCode}`);
-    return false;
-  }
-  if(u1.address.plus !== u2.address.plus){
-    console.log(`plus: ${u1.address.plus} : ${u2.address.plus}`);
-    return false;
-  }
-  if(u1.memo !== u2.memo){
-    console.log(`memo: ${u1.memo} : ${u2.memo}`);
-    return false;
-  }
-  if(u1.closedDate !== u2.closedDate){
-    console.log(`closedDate: ${u1.closedDate} : ${u2.closedDate}`);
-    return false;
-  }
-  if(u1.contacts.length !== u2.contacts.length){
-    console.log(`contacts: ${u1.contacts.length} : ${u2.contacts.length}`);
-    return false;
-  }
-  for(let i = 0; i < u1.contacts.length; i++){
-    const c1 = u1.contacts[i];
-    const c2 = u2.contacts[i];
-    if(c1.tel !== c2.tel){
-      console.log(`tel: ${i} : ${c1.tel} : ${c2.tel}`);
-      return false;
-    }
-    if(c1.fax !== c2.fax){
-      console.log(`fax: ${i} : ${c1.fax} : ${c2.fax}`);
-      return false;
-    }
-    if(c1.email !== c2.email){
-      console.log(`email: ${i} : ${c1.tel} : ${c2.tel}`);
-      return false;
-    }
-    if(c1.name !== c2.name){
-      console.log(`name: ${i} : ${c1.name} : ${c2.name}`);
-      return false;
-    }
-  }
-  return true;
+  return undefined;
 }
 
 export async function insert(repo: IFacilityRepository){
   let res = await repo.insert(facility);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(facility2);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(facility4);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function update(repo: IFacilityRepository){
   const res = await repo.update(facility3);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function read(repo: IFacilityRepository){
   let res = await repo.read(facility.id);
-  if(res){
-    assert(compare(facility3, res));
-  }else{
-    fail();
-  }
+  expect(omitTimestamps(facility3)).toEqual(omitTimestamps(res));
   res = await repo.read(facility2.id);
-  if(res){
-    assert(compare(facility2, res));
-  }else{
-    fail();
-  }
+  expect(omitTimestamps(facility2)).toEqual(omitTimestamps(res));
 }
 export async function list(repo: IFacilityRepository){
   let res = await repo.list("たこやき");
   if(res.length === 1){
-    assert(compare(facility3, res[0]));
+    expect(omitTimestamps(facility3)).toEqual(omitTimestamps(res[0]));
   }else{
     console.log(`list1: ${res.length}`);
-    fail();
+    expect.fail();
   }
   res = await repo.list("病院");
   if(res.length === 2){
     for(const r of res){
       if(r.id === facility3.id) {
-        assert(compare(facility3, r));
+        expect(omitTimestamps(facility3)).toEqual(omitTimestamps(r));
       }else if(r.id === facility2.id) {
-        assert(compare(facility2, r));
+        expect(omitTimestamps(facility2)).toEqual(omitTimestamps(r));
       }
     }
   }else{
     console.log(`list2: ${res.length}`);
-    fail();
+    expect.fail();
   }
 }
 export async function del(repo: IFacilityRepository){
   await repo.delete(facility);
   let res = await repo.read(facility.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(facility2);
   res = await repo.read(facility2.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(facility4);
   res = await repo.read(facility4.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
 }

@@ -51,7 +51,10 @@ export class ActivityRepository implements IActivityRepository {
   }
   fromData(val: ActivityDBResult): Activity {
     return {
-      ...val,
+      id: val.id,
+      participants: val.participants,
+      facilityParticipants: val.facilityParticipants,
+      details: val.details,
       date: val.dateString ?? "",
       toDate: val.toDateString ?? "",
       facility: toFacility(val.facility),

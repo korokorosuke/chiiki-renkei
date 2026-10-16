@@ -1,13 +1,14 @@
+import { describe, test } from "vitest"
 import { AddressRepository } from "./addressRepository.ts"
 import { insert, update, read, del } from "../testdata/address.ts"
 import { Db } from "./db.ts"
 
 Db.test = true;
 
-Deno.test("address repository rdb", async (t) => {
+describe("address repository rdb", () => {
   const repo = new AddressRepository();
-  await t.step("insert", async () => {await insert(repo);});
-  await t.step("update", async () => {await update(repo);});
-  await t.step("read", async () => {await read(repo);});
-  await t.step("del", async () => {await del(repo);});
+  test("insert", async () => {await insert(repo);});
+  test("update", async () => {await update(repo);});
+  test("read", async () => {await read(repo);});
+  test("del", async () => {await del(repo);});
 });

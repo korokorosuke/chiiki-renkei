@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { expect } from "vitest"
 import type { IWebReservationRepository } from "../../domain/webReservationService.ts"
 import type { WebReservation } from "../../domain/webReservation.ts"
 
@@ -43,85 +43,55 @@ export const reservation5: WebReservation = {
   cnt: 0
 }
 
-function compare(u1: WebReservation, u2: WebReservation): boolean {
-  if(u1.dept !== u2.dept){
-    return false;
-  }
-  if(u1.dr !== u2.dr){
-    return false;
-  }
-  if(u1.date !== u2.date){
-    return false;
-  }
-  if(u1.time !== u2.time){
-    return false;
-  }
-  if(u1.max !== u2.max){
-    return false;
-  }
-  if(u1.cnt !== u2.cnt){
-    return false;
-  }
-  return true;
-}
-
 export async function insert(repo: IWebReservationRepository){
   let res = await repo.insert(reservation);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(reservation2);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(reservation4);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(reservation5);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function update(repo: IWebReservationRepository){
   const res = await repo.update(reservation3);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function read(repo: IWebReservationRepository){
   let res = await repo.read(reservation3.dept, reservation3.dr, reservation3.date, reservation3.time);
-  if(res){
-    assert(compare(reservation3, res));
-  }else{
-    fail();
-  }
+  expect(reservation3).toEqual(res);
   res = await repo.read(reservation2.dept, reservation2.dr, reservation2.date, reservation2.time);
-  if(res){
-    assert(compare(reservation2, res));
-  }else{
-    fail();
-  }
+  expect(reservation2).toEqual(res);
 }
 export async function list(repo: IWebReservationRepository){
   let res = await repo.listByDate("02", "2024-08");
   if(res.length === 2){
-    assert(compare(reservation2, res[0]));
-    assert(compare(reservation4, res[1]));
+    expect(reservation2).toEqual(res[0]);
+    expect(reservation4).toEqual(res[1]);
   }else{
     console.log(`list1: ${res.length}`);
-    fail();
+    expect.fail();
   }
   res = await repo.listByDate("01", "2024-08");
   if(res.length === 1){
-    assert(compare(reservation3, res[0]));
+    expect(reservation3).toEqual(res[0]);
   }else{
     console.log(res);
     console.log(`list2: ${res.length}`);
-    fail();
+    expect.fail();
   }
 }
 export async function del(repo: IWebReservationRepository){
   await repo.delete(reservation3);
   let res = await repo.read(reservation3.dept, reservation3.dr, reservation3.date, reservation3.time);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(reservation2);
   res = await repo.read(reservation2.dept, reservation2.dr, reservation2.date, reservation2.time);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(reservation4);
   res = await repo.read(reservation4.dept, reservation4.dr, reservation4.date, reservation4.time);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(reservation5);
   res = await repo.read(reservation5.dept, reservation5.dr, reservation5.date, reservation5.time);
-  assertFalse(res);
+  expect(res).toBeUndefined();
 }

@@ -37,7 +37,14 @@ type AppointmentDBResult = {
 
 export function toAppointment(val: AppointmentDBResult): Appointment {
   return {
-    ...val,
+    id: val.id,
+    date: val.date,
+    time: val.time,
+    facilityDr: val.facilityDr,
+    facilityDept: val.facilityDept,
+    appDisplay: val.appDisplay,
+    means: val.means,
+    memo: val.memo,
     department: val.department ?? initializeDept(),
     dr: val.dr ?? initializeDr(),
     patient: toPatient(val.patient),

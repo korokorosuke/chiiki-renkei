@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { describe, test, expect } from "vitest"
 import { WebAppRepository } from "../infra/webAppointmentRepository.ts"
 import type { WebAppointment } from "./webAppointment.ts"
 import { facility, facility2, toFac } from "../infra/testdata/facility.ts"
@@ -232,270 +232,207 @@ const appointment_nodate3: WebAppointment = {
     updatedAt: "2024-06-07T12:34:56Z",
 }
 
-function compare(app1: WebAppointment, app2: WebAppointment): boolean {
-    if(app1.id !== app2.id){
-        console.log(`id: ${app1.id} : ${app2.id}`)
-        return false;
-    }
-    if(app1.date !== app2.date){
-        console.log(`date: ${app1.date} : ${app2.date}`)
-        return false;
-    }
-    if(app1.time !== app2.time){
-        console.log(`time: ${app1.time} : ${app2.time}`)
-        return false;
-    }
-    if(app1.mainComplaint !== app2.mainComplaint){
-        console.log(`mainComplaint: ${app1.mainComplaint} : ${app2.mainComplaint}`)
-        return false;
-    }
-    if(app1.patient && app2.patient){
-        const p1 = app1.patient;
-        const p2 = app2.patient;
-        if(p1.id !== p2.id){
-            console.log(`patient_id: ${p1.id} : ${p2.id}`)
-            return false;
-        }
-        if(p1.lastName !== p2.lastName){
-            console.log(`patient_name: ${p1.lastName} : ${p2.lastName}`)
-            return false;
-        }
-        if(p1.firstName !== p2.firstName){
-            console.log(`patient_name: ${p1.firstName} : ${p2.firstName}`)
-            return false;
-        }
-    }
-    if(app1.facility.id !== app2.facility.id){
-        console.log(`facilityId: ${app1.facility.id} : ${app2.facility.id}`)
-        return false;
-    }
-    if(app1.department && app2.department){
-        const p1 = app1.department;
-        const p2 = app2.department;
-        if(p1.id !== p2.id){
-            console.log(`department_id: ${p1.id} : ${p2.id}`)
-            return false;
-        }
-        if(p1.name !== p2.name){
-            console.log(`department_name: ${p1.name} : ${p2.name}`)
-            return false;
-        }
-    }
-    if(app1.dr && app2.dr){
-        const p1 = app1.dr;
-        const p2 = app2.dr;
-        if(p1.id !== p2.id){
-            console.log(`dr_id: ${p1.id} : ${p2.id}`)
-            return false;
-        }
-        if(p1.name !== p2.name){
-            console.log(`dr_name: ${p1.name} : ${p2.name}`)
-            return false;
-        }
-    }
-    if(app1.facPatientId !== app2.facPatientId){
-      console.log(`facPatientId: ${app1.facPatientId} : ${app2.facPatientId}`);
-      return false;
-    }
-    return true;
-}
-
 Kv.test = true;
 
-Deno.test("webappointment service", async (t) => {
-    await t.step("insert", async () => {
+function omitTimestamps(val: WebAppointment): Omit<WebAppointment, "createdAt" | "updatedAt"> {
+  const {createdAt, updatedAt, ...value} = val;
+  return value;
+}
+
+describe("webappointment service", () => {
+    test("insert", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         let res = await service.insert(appointment);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         if(res.ok){
             appointment3.id = res.data.id;
         }
         res = await service.insert(appointment2);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         if(res.ok){
             appointment4.id = res.data.id;
         }
         res = await service.insert(appointment5);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         if(res.ok){
             appointment5.id = res.data.id;
         }
         res = await service.insert(structuredClone(appointment_nodate));
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         if(res.ok){
             appointment_nodate2.id = res.data.id;
         }
         res = await service.insert(structuredClone(appointment_nodate1));
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         if(res.ok){
             appointment_nodate3.id = res.data.id;
         }
         res = await service.insert(structuredClone(appointment_noid));
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         if(res.ok){
             appointment_noid2.id = res.data.id;
         }
         res = await service.insert(structuredClone(appointment_noid1));
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         if(res.ok){
             appointment_noid3.id = res.data.id;
         }
     });
 
-    await t.step("update", async () => {
+    test("update", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         let res = await service.update(appointment3);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         res = await service.update(appointment4);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         res = await service.update(structuredClone(appointment_nodate2));
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         res = await service.update(structuredClone(appointment_nodate3));
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         res = await service.update(structuredClone(appointment_noid2));
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         res = await service.update(structuredClone(appointment_noid3));
-        assert(res.ok);
+        expect(res.ok).toBe(true);
     });
 
-    await t.step("list", async () => {
+    test("list", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         let res = await service.getList({fromDate:"2024-06-07", toDate: "2024-06-07"});
         if(res.length === 2){
             for(const a of res){
                 if(a.id === appointment3.id){
-                    assert(compare(appointment3, a));
+                    expect(omitTimestamps(appointment3)).toEqual(omitTimestamps(a));
                 }else{
-                    assert(compare(appointment_noid2, a));
+                    expect(omitTimestamps(appointment_noid2)).toEqual(omitTimestamps(a));
                 }
             }
         }else{
             console.log(`list1: ${res.length}`)
-            fail();
+            expect.fail();
         }
         res = await service.getList({fromDate:"2024-06-01"});
         if(res.length === 6){
             for(const a of res){
                 if(a.id === appointment3.id){
-                    assert(compare(appointment3, a));
+                    expect(omitTimestamps(appointment3)).toEqual(omitTimestamps(a));
                 }else if(a.id === appointment4.id){
-                    assert(compare(appointment4, a));
+                    expect(omitTimestamps(appointment4)).toEqual(omitTimestamps(a));
                 }else if(a.id === appointment5.id){
-                    assert(compare(appointment5, a));
+                    expect(omitTimestamps(appointment5)).toEqual(omitTimestamps(a));
                 }else if(a.id === appointment_noid3.id){
-                    assert(compare(appointment_noid3, a));
+                    expect(omitTimestamps(appointment_noid3)).toEqual(omitTimestamps(a));
                 }else if(a.id === appointment_noid2.id){
-                    assert(compare(appointment_noid2, a));
+                    expect(omitTimestamps(appointment_noid2)).toEqual(omitTimestamps(a));
                 }else if(a.id === appointment_nodate3.id){
-                    assert(compare(appointment_nodate3, a));
+                    expect(omitTimestamps(appointment_nodate3)).toEqual(omitTimestamps(a));
                 }else{
-                    fail();
+                    expect.fail();
                 }
             }
         }else{
             console.log(`list2: ${res.length}`)
-            fail();
+            expect.fail();
         }
     });
 
-    await t.step("patient", async () => {
+    test("patient", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         const res = await service.getList({patientId: patient.id});
         if(res.length === 2){
             for(const a of res){
                 if(a.id === appointment3.id){
-                    assert(compare(appointment3, a));
+                    expect(omitTimestamps(appointment3)).toEqual(omitTimestamps(a));
                 }else{
-                    assert(compare(appointment_nodate2, a));
+                    expect(omitTimestamps(appointment_nodate2)).toEqual(omitTimestamps(a));
                 }
             }
         }else{
             console.log(`list1: ${res.length}`)
-            fail();
+            expect.fail();
         }
         const res3 = await service.getList({patientId: patient6.id});
         if(res.length === 2){
             for(const a of res3){
-                assert(compare(appointment_nodate3, a));
+                expect(omitTimestamps(appointment_nodate3)).toEqual(omitTimestamps(a));
             }
         }else{
             console.log(`list2: ${res.length}`)
-            fail();
+            expect.fail();
         }
     });
 
-    await t.step("facility", async () => {
+    test("facility", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         const res = await service.getList({facilityId: facility2.id});
         if(res.length === 1){
-            assert(compare(appointment5, res[0]));
+            expect(omitTimestamps(appointment5)).toEqual(omitTimestamps(res[0]));
         }else{
             console.log(`list1: ${res.length}`)
-            fail();
+            expect.fail();
         }
     });
 
-    await t.step("consult", async () => {
+    test("consult", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         const res = await service.getConsultation(facility.id);
         if(res.length === 1){
-            assert(compare(appointment_nodate2, res[0]));
+            expect(omitTimestamps(appointment_nodate2)).toEqual(omitTimestamps(res[0]));
         }else{
             console.log(`list1: ${res.length}`)
-            fail();
+            expect.fail();
         }
     });
 
-    await t.step("noid", async () => {
+    test("noid", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         const res = await service.getNoID();
         if(res.length === 1){
-            assert(compare(appointment_noid3, res[0]));
+            expect(omitTimestamps(appointment_noid3)).toEqual(omitTimestamps(res[0]));
         }else{
             console.log(`list1: ${res.length}`)
-            fail();
+            expect.fail();
         }
     });
 
-    await t.step("delete", async () => {
+    test("delete", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         await service.delete(appointment3);
         let res = await repo.read(appointment3.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         let res2 = await service.get(appointment3.id);
-        assertFalse(res2);
+        expect(res2).toBeUndefined();
         await service.delete(appointment4);
         res = await repo.read(appointment4.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         res2 = await service.get(appointment4.id);
-        assertFalse(res2);
+        expect(res2);
         await service.delete(appointment5);
         res = await repo.read(appointment5.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         res2 = await service.get(appointment5.id);
-        assertFalse(res2);
+        expect(res2).toBeUndefined();
         await service.delete(appointment_nodate2);
         res = await repo.read(appointment_nodate2.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         await service.delete(appointment_nodate3);
         res = await repo.read(appointment_nodate3.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         res2 = await service.get(appointment_nodate3.id);
-        assertFalse(res2);
-        assertFalse(res);
+        expect(res2).toBeUndefined();
+        expect(res).toBeUndefined();
         await service.delete(appointment_noid2);
         res = await repo.read(appointment_noid2.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         res2 = await service.get(appointment_noid2.id);
-        assertFalse(res2);
+        expect(res2).toBeUndefined();
         await service.delete(appointment_noid3);
         res = await repo.read(appointment_noid3.id);
     });

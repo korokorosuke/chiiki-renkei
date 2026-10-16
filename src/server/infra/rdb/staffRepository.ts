@@ -44,7 +44,12 @@ export class StaffRepository implements IStaffRepository {
   }
   fromData(val: StaffDBResult): Staff {
     return {
-      ...val,
+      id: val.id,
+      name: val.name,
+      kana: val.kana,
+      department: val.department,
+      post: val.post,
+      facilityId: val.facilityId,
       dr: val.dr ? true : false,
       hidden: val.hidden ? true : false,
       sort: val.order,

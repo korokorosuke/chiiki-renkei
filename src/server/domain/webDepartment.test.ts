@@ -1,81 +1,59 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { describe, test, expect } from "vitest"
 import { WebDepartmentRepository } from "../infra/webDepartmentRepository.ts"
 import { WebDepartmentService } from "./webDepartmentService.ts"
-import type { WebDepartment } from "./webDepartment.ts"
 import { department, department2, department3 } from "../infra/testdata/webDept.ts"
 import { BASE } from "../infra/testdata/settings.ts"
 import { Kv } from "../infra/kv.ts"
 
-function compare(u1: WebDepartment, u2: WebDepartment): boolean {
-    if(u1.id !== u2.id){
-        return false;
-    }
-    if(u1.name !== u2.name){
-        return false;
-    }
-    if(u1.description !== u2.description){
-        return false;
-    }
-    return true;
-}
-
 Kv.test = true;
 
-Deno.test("webdepartment service", async (t) => {
-    await t.step("insert", async()=>{
+describe("webdepartment service", () => {
+    test("insert", async()=>{
         const repo = new WebDepartmentRepository(BASE);
         const service = new WebDepartmentService(repo);
         let res = await service.insert(department);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         res = await service.insert(department2);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
     });
 
-    await t.step("update", async () => {
+    test("update", async () => {
         const repo = new WebDepartmentRepository(BASE);
         const service = new WebDepartmentService(repo);
         const res = await service.update(department3);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
     });
 
-    await t.step("read", async () => {
+    test("read", async () => {
         const repo = new WebDepartmentRepository(BASE);
         const service = new WebDepartmentService(repo);
         let res = await service.get(department.id);
-        if(res){
-            assert(compare(department3, res));
-        }else{
-            fail();
-        }
+        expect(department3).toEqual(res);
         res = await service.get(department2.id);
-        if(res){
-            assert(compare(department2, res));
-        }else{
-            fail();
-        }
+        expect(department2).toEqual(res);
     });
 
-    await t.step("all", async () => {
+    test("all", async () => {
         const repo = new WebDepartmentRepository(BASE);
         const service = new WebDepartmentService(repo);
         const res = await service.getAll();
         if(res.length === 2){
-            assert(compare(department3, res[0]));
-            assert(compare(department2, res[1]));
+            expect(department3).toEqual(res[0]);
+            expect(department2).toEqual(res[1]);
         }else{
             console.log(`all: ${res.length}`)
-            fail();
+            expect.fail();
         }
     });
 
-    await t.step("delete", async () => {
+    test("delete", async () => {
         const repo = new WebDepartmentRepository(BASE);
         const service = new WebDepartmentService(repo);
         await service.delete(department);
         let res = await service.get(department.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         await service.delete(department2);
         res = await service.get(department2.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
     });
 });

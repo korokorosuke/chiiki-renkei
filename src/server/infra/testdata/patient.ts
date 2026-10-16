@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { expect } from "vitest"
 import type { IPatientRepository } from "../../domain/patientService.ts"
 import type { Patient } from "../../domain/patient.ts"
 import { addressData } from "./address.ts"
@@ -95,92 +95,36 @@ export const patientName: Patient = {
   memo: ""
 }
 
-function compare(u1: Patient, u2: Patient): boolean {
-  if(u1.id !== u2.id){
-    console.log(`id: ${u1.id} : ${u2.id}`);
-    return false;
-  }
-  if(u1.lastName !== u2.lastName){
-    console.log(`name: ${u1.lastName} : ${u2.lastName}`);
-    return false;
-  }
-  if(u1.firstName !== u2.firstName){
-    console.log(`name: ${u1.firstName} : ${u2.firstName}`);
-    return false;
-  }
-  if(u1.lastKana !== u2.lastKana){
-    console.log(`name: ${u1.lastKana} : ${u2.lastKana}`);
-    return false;
-  }
-  if(u1.firstKana !== u2.firstKana){
-    console.log(`name: ${u1.firstKana} : ${u2.firstKana}`);
-    return false;
-  }
-  if(u1.sex !== u2.sex){
-    console.log(`sex: ${u1.sex} : ${u2.sex}`);
-    return false;
-  }
-  if(u1.birthday !== u2.birthday){
-    console.log(`birthday: ${u1.birthday} : ${u2.birthday}`);
-    return false;
-  }
-  if(u1.tel !== u2.tel){
-    console.log(`tel: ${u1.tel} : ${u2.tel}`);
-    return false;
-  }
-  if(u1.address.postalCode !== u2.address.postalCode){
-    console.log(`postalCode: ${u1.address.postalCode} : ${u2.address.postalCode}`);
-    return false;
-  }
-  if(u1.address.plus !== u2.address.plus){
-    console.log(`plus: ${u1.address.plus} : ${u2.address.plus}`);
-    return false;
-  }
-  if(u1.memo !== u2.memo){
-    console.log(`memo: ${u1.memo} : ${u2.memo}`);
-    return false;
-  }
-  return true;
-}
-
 export async function insert(repo: IPatientRepository){
   let res = await repo.insert(patient);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(patient2);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function update(repo: IPatientRepository){
   const res = await repo.update(patient3);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function read(repo: IPatientRepository){
   let res = await repo.read(patient.id);
-  if(res){
-    assert(compare(patient3, res));
-  }else{
-    fail();
-  }
+  expect(patient3).toEqual(res);
   res = await repo.read(patient2.id);
-  if(res){
-    assert(compare(patient2, res));
-  }else{
-    fail();
-  }
+  expect(patient2).toEqual(res);
 }
 export async function list(repo: IPatientRepository){
   const res = await repo.list({name: patient3.firstName});
   if(res.length === 1){
-    assert(compare(patient3, res[0]));
+    expect(patient3).toEqual(res[0]);
   }else{
     console.log(res.length);
-    fail();
+    expect.fail();
   }
 }
 export async function del(repo: IPatientRepository){
   await repo.delete(patient);
   let res = await repo.read(patient.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(patient2);
   res = await repo.read(patient2.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
 }

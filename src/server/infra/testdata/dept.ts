@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { expect } from "vitest"
 import type { IDepartmentRepository } from "../../domain/departmentService.ts"
 import type { Department } from "../../domain/department.ts"
 
@@ -23,57 +23,39 @@ export const department4: Department = {
   exam: false,
 }
 
-function compare(u1: Department, u2: Department): boolean {
-  if(u1.id !== u2.id){
-    return false;
-  }
-  if(u1.name !== u2.name){
-    return false;
-  }
-  return true;
-}
-
 export async function insert(repo: IDepartmentRepository){
   let res = await repo.insert(department);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(department2);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(department4);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function update(repo: IDepartmentRepository){
   const res = await repo.update(department3);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function read(repo: IDepartmentRepository){
   let res = await repo.read(department.id);
-  if(res){
-    assert(compare(department3, res));
-  }else{
-    fail();
-  }
+  expect(department3).toEqual(res);
   res = await repo.read(department2.id);
-  if(res){
-    assert(compare(department2, res));
-  }else{
-    fail();
-  }
+  expect(department2).toEqual(res);
 }
 export async function exam(repo: IDepartmentRepository){
   const res = await repo.exam();
   if(res.length === 2){
     for(const r of res){
       if(r.id === department3.id) {
-        assert(compare(department3, r));
+        expect(department3).toEqual(r);
       }else if(r.id === department2.id) {
-        assert(compare(department2, r));
+        expect(department2).toEqual(r);
       }else{
-        fail();
+        expect.fail();
       }
     }
   }else{
     console.log(`exam: ${res.length}`);
-    fail();
+    expect.fail();
   }
 }
 export async function all(repo: IDepartmentRepository){
@@ -81,28 +63,28 @@ export async function all(repo: IDepartmentRepository){
   if(res.length === 3){
     for(const r of res){
       if(r.id === department3.id) {
-        assert(compare(department3, r));
+        expect(department3).toEqual(r);
       }else if(r.id === department2.id) {
-        assert(compare(department2, r));
+        expect(department2).toEqual(r);
       }else if(r.id === department4.id) {
-        assert(compare(department4, r));
+        expect(department4).toEqual(r);
       }else{
-        fail();
+        expect.fail();
       }
     }
   }else{
     console.log(`all: ${res.length}`);
-    fail();
+    expect.fail();
   }
 }
 export async function del(repo: IDepartmentRepository){
   await repo.delete(department);
   let res = await repo.read(department.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(department2);
   res = await repo.read(department2.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(department4);
   res = await repo.read(department4.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
 }

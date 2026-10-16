@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { expect } from "vitest"
 import type { INoticeRepository } from "../../domain/noticeService.ts"
 import { type Notice, NOTICE_PAGES } from "../../domain/notice.ts"
 
@@ -35,74 +35,40 @@ export const notice4: Notice = {
   importance: false
 }
 
-function compare(u1: Notice, u2: Notice): boolean {
-  if(u1.id !== u2.id){
-    return false;
-  }
-  if(u1.page !== u2.page){
-    return false;
-  }
-  if(u1.message !== u2.message){
-    return false;
-  }
-  if(u1.fromDate !== u2.fromDate){
-    return false;
-  }
-  if(u1.toDate !== u2.toDate){
-    return false;
-  }
-  if(u1.importance !== u2.importance){
-    return false;
-  }
-  return true;
-}
-
 export async function insert(repo: INoticeRepository){
   let res = await repo.insert(notice);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(notice2);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(notice4);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function update(repo: INoticeRepository){
   const res = await repo.update(notice3);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function read(repo: INoticeRepository){
   let res = await repo.read(notice.id);
-  if(res){
-    assert(compare(notice3, res));
-  }else{
-    fail();
-  }
+  expect(notice3).toEqual(res);
   res = await repo.read(notice2.id);
-  if(res){
-    assert(compare(notice2, res));
-  }else{
-    fail();
-  }
+  expect(notice2).toEqual(res);
   res = await repo.read(notice4.id);
-  if(res){
-    assert(compare(notice4, res));
-  }else{
-    fail();
-  }
+  expect(notice4).toEqual(res);
 }
 export async function list(repo: INoticeRepository){
   const res = await repo.list(NOTICE_PAGES[1], "2024-08-01");
   if(res.length === 1){
-    assert(compare(notice3, res[0]));
+    expect(notice3).toEqual(res[0]);
   }else{
     console.log(`list1: ${res.length}`);
-    fail();
+    expect.fail();
   }
   const res2 = await repo.list(NOTICE_PAGES[0], "2025-01-02");
   if(res2.length === 1){
-    assert(compare(notice2, res2[0]));
+    expect(notice2).toEqual(res2[0]);
   }else{
     console.log(`list2: ${res.length}`);
-    fail();
+    expect.fail();
   }
 }
 export async function all(repo: INoticeRepository){
@@ -110,28 +76,28 @@ export async function all(repo: INoticeRepository){
   if(res.length === 3){
     for(const r of res){
       if(notice3.id === r.id){
-        assert(compare(notice3, r));
+        expect(notice3).toEqual(r);
       }else if(notice2.id === r.id){
-        assert(compare(notice2, r));
+        expect(notice2).toEqual(r);
       }else if(notice4.id === r.id){
-        assert(compare(notice4, r));
+        expect(notice4).toEqual(r);
       }else{
-        fail();
+        expect.fail();
       }
     }
   }else{
     console.log(`all: ${res.length}`);
-    fail();
+    expect.fail();
   }
 }
 export async function del(repo: INoticeRepository){
   await repo.delete(notice3);
   let res = await repo.read(notice3.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(notice2);
   res = await repo.read(notice2.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(notice4);
   res = await repo.read(notice4.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
 }

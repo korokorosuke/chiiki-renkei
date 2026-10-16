@@ -1,18 +1,31 @@
+import { describe, test } from "vitest"
 import { AppointmentRepository } from "./appointmentRepository.ts"
-import { insert, update, read, list, patientList, reportList, del } from "./testdata/appointment.ts"
+import { insert, update, read, list, patientList, reportList, del, prepare, cleanUp } from "./testdata/appointment.ts"
+import { PatientRepository } from "./patientRepository.ts"
+import { DepartmentRepository } from "./departmentRepository.ts"
+import { DrRepository } from "./drRepository.ts"
+import { FacilityRepository } from "./facilityRepository.ts"
+import { UserRepository } from "./userRepository.ts"
 
 import { BASE } from "./testdata/settings.ts"
 import { Kv } from "./kv.ts"
 
 Kv.test = true;
 
-Deno.test("appointment repository", async (t) => {
+describe("appointment repository", () => {
   const repo = new AppointmentRepository(BASE);
-  await t.step("insert", async () => {await insert(repo);});
-  await t.step("update", async () => {await update(repo);});
-  await t.step("read", async () => {await read(repo);});
-  await t.step("list", async () => {await list(repo);});
-  await t.step("patient", async () => {await patientList(repo);});
-  await t.step("reportList", async () => {await reportList(repo);});
-  await t.step("del", async () => {await del(repo);});
+  const repoUser = new UserRepository(BASE);
+  const repoPat = new PatientRepository(BASE);
+  const repoDept = new DepartmentRepository(BASE);
+  const repoDr = new DrRepository(BASE);
+  const repoFac = new FacilityRepository(BASE);
+  test("prepare", async () => {await prepare(repoUser, repoPat, repoDept, repoDr, repoFac);});
+  test("insert", async () => {await insert(repo);});
+  test("update", async () => {await update(repo);});
+  test("read", async () => {await read(repo);});
+  test("list", async () => {await list(repo);});
+  test("patient", async () => {await patientList(repo);});
+  test("reportList", async () => {await reportList(repo);});
+  test("del", async () => {await del(repo);});
+  test("cleanUp", async () => {await cleanUp(repoUser, repoPat, repoDept, repoDr, repoFac);});
 });

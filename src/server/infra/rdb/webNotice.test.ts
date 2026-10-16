@@ -1,3 +1,4 @@
+import { describe, test } from "vitest"
 import { WebNoticeRepository } from "./webNoticeRepository.ts"
 import { insert, update, read, list, all, del } from "../testdata/webNotice.ts"
 import { BASE } from "../testdata/settings.ts"
@@ -5,12 +6,12 @@ import { Db } from "./db.ts"
 
 Db.test = true;
 
-Deno.test("webNotice repository rdb", async (t) => {
+describe("webNotice repository rdb", () => {
   const repo = new WebNoticeRepository(BASE);
-  await t.step("insert", async () => {await insert(repo);});
-  await t.step("update", async () => {await update(repo);});
-  await t.step("read", async () => {await read(repo);});
-  await t.step("list", async () => {await list(repo);});
-  await t.step("all", async () => {await all(repo);});
-  await t.step("del", async () => {await del(repo);});
+  test("insert", async () => {await insert(repo);});
+  test("update", async () => {await update(repo);});
+  test("read", async () => {await read(repo);});
+  test("list", async () => {await list(repo);});
+  test("all", async () => {await all(repo);});
+  test("del", async () => {await del(repo);});
 });

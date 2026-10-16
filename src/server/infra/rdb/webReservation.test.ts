@@ -1,3 +1,4 @@
+import { describe, test } from "vitest"
 import { WebReservationRepository } from "./webReservationRepository.ts"
 import { insert, update, read, list, del } from "../testdata/webReservation.ts"
 import { BASE } from "../testdata/settings.ts"
@@ -5,11 +6,11 @@ import { Db } from "./db.ts"
 
 Db.test = true;
 
-Deno.test("webreservation repository rdb", async (t) => {
+describe("webreservation repository rdb", () => {
   const repo = new WebReservationRepository(BASE);
-  await t.step("insert", async () => {await insert(repo);});
-  await t.step("update", async () => {await update(repo);});
-  await t.step("read", async () => {await read(repo);});
-  await t.step("list", async () => {await list(repo);});
-  await t.step("del", async () => {await del(repo);});
+  test("insert", async () => {await insert(repo);});
+  test("update", async () => {await update(repo);});
+  test("read", async () => {await read(repo);});
+  test("list", async () => {await list(repo);});
+  test("del", async () => {await del(repo);});
 });

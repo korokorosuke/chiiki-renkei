@@ -1,3 +1,4 @@
+import { describe, test } from "vitest"
 import { ClassificationRepository } from "./classificationRepository.ts"
 import { insert, update, read, all, del } from "./testdata/classification.ts"
 import { BASE } from "./testdata/settings.ts"
@@ -5,11 +6,11 @@ import { Kv } from "./kv.ts"
 
 Kv.test = true;
 
-Deno.test("classification repository", async (t) => {
+describe("classification repository", () => {
   const repo = new ClassificationRepository(BASE);
-  await t.step("insert", async () => {await insert(repo);});
-  await t.step("update", async () => {await update(repo);});
-  await t.step("read", async () => {await read(repo);});
-  await t.step("all", async () => {await all(repo);});
-  await t.step("del", async () => {await del(repo);});
+  test("insert", async () => {await insert(repo);});
+  test("update", async () => {await update(repo);});
+  test("read", async () => {await read(repo);});
+  test("all", async () => {await all(repo);});
+  test("del", async () => {await del(repo);});
 });

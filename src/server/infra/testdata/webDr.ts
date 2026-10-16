@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { expect } from "vitest"
 import type { IWebDrRepository } from "../../domain/webDrService.ts"
 import type { WebDr } from "../../domain/webDr.ts"
 
@@ -27,70 +27,49 @@ export const dr4: WebDr = {
   department: "02",
 }
 
-function compare(u1: WebDr, u2: WebDr): boolean {
-  if(u1.id !== u2.id){
-    return false;
-  }
-  if(u1.name !== u2.name){
-    return false;
-  }
-  if(u1.department !== u2.department){
-    return false;
-  }
-  return true;
-}
-
 export async function insert(repo: IWebDrRepository){
   let res = await repo.insert(dr);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(dr2);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(dr4);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function update(repo: IWebDrRepository){
   const res = await repo.update(dr3);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function read(repo: IWebDrRepository){
   let res = await repo.read(dr.id);
-  if(res){
-    assert(compare(dr3, res));
-  }else{
-    fail();
-  }
+  expect(dr3).toEqual(res);
   res = await repo.read(dr2.id);
-  if(res){
-    assert(compare(dr2, res));
-  }else{
-    fail();
-  }
+  expect(dr2).toEqual(res);
 }
 export async function list(repo: IWebDrRepository){
   let res = await repo.list("02");
   if(res.length === 2){
-    assert(compare(dr2, res[0]));
-    assert(compare(dr4, res[1]));
+    expect(dr2).toEqual(res[0]);
+    expect(dr4).toEqual(res[1]);
   }else{
     console.log(`list1: ${res.length}`);
-    fail();
+    expect.fail();
   }
   res = await repo.list("01");
   if(res.length === 1){
-    assert(compare(dr3, res[0]));
+    expect(dr3).toEqual(res[0]);
   }else{
     console.log(`list2: ${res.length}`);
-    fail();
+    expect.fail();
   }
 }
 export async function del(repo: IWebDrRepository){
   await repo.delete(dr3);
   let res = await repo.read(dr.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(dr2);
   res = await repo.read(dr2.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(dr4);
   res = await repo.read(dr4.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
 }

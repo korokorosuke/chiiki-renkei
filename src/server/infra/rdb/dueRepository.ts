@@ -88,7 +88,11 @@ export class DueRepository implements IDueRepository {
 
   async all(): Promise<Due[]> {
     const db = await this.database.open();
-    const res = await db.select().from(due)
+    const res = await db.select({
+      id: due.id,
+      name: due.name,
+      days: due.days,
+    }).from(due)
       .where(eq(due.base, this.base));
     return res;
   }

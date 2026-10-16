@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { expect } from "vitest"
 import type { IStaffRepository } from "../../domain/staffService.ts"
 import type { Staff } from "../../domain/staff.ts"
 import { user } from "./user.ts"
@@ -56,96 +56,72 @@ export const staff4: Staff = {
   updatedAt: "2020-01-01T00:00:00Z"
 }
 
-function compare(u1: Staff, u2: Staff): boolean {
-  if(u1.id !== u2.id){
-    return false;
+function omitTimestamps(val: Staff|undefined): Omit<Staff, "updatedAt"|"updatedBy">|undefined {
+  if(val){
+    const {updatedAt, updatedBy, ...value} = val;
+    return value;
+  }else{
+    return undefined;
   }
-  if(u1.name !== u2.name){
-    return false;
-  }
-  if(u1.kana !== u2.kana){
-    return false;
-  }
-  if(u1.department !== u2.department){
-    return false;
-  }
-  if(u1.dr !== u2.dr){
-    return false;
-  }
-  if(u1.facilityId !== u2.facilityId){
-    return false;
-  }
-  if(u1.hidden !== u2.hidden){
-    return false;
-  }
-  return true;
 }
 
 export async function insert(repo: IStaffRepository){
   let res = await repo.insert(staff);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(staff2);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(staff4);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function update(repo: IStaffRepository){
   const res = await repo.update(staff3);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function read(repo: IStaffRepository){
   let res = await repo.read(staff.id);
-  if(res){
-    assert(compare(staff3, res));
-  }else{
-    fail();
-  }
+  expect(omitTimestamps(staff3)).toEqual(omitTimestamps(res));
   res = await repo.read(staff2.id);
-  if(res){
-    assert(compare(staff2, res));
-  }else{
-    fail();
-  }
+  expect(omitTimestamps(staff2)).toEqual(omitTimestamps(res));
 }
 export async function list(repo: IStaffRepository){
   let res = await repo.list({facilityid: "00001", dr: false, hidden: true});
   if(res.length === 2){
     for(const r of res){
       if(staff3.id === r.id){
-        assert(compare(staff3, r));
+        expect(omitTimestamps(staff3)).toEqual(omitTimestamps(r));
       }else if(staff2.id === r.id){
-        assert(compare(staff2, r));
+        expect(omitTimestamps(staff2)).toEqual(omitTimestamps(r));
       }else{
-        fail();
+        expect.fail();
       }
     }
   }else{
     console.log(`list1: ${res.length}`);
-    fail();
+    expect.fail();
   }
   res = await repo.list({facilityid: "00001", dr: false, hidden: false});
   if(res.length === 1){
-    assert(compare(staff3, res[0]));
+    expect(omitTimestamps(staff3)).toEqual(omitTimestamps(res[0]));
   }else{
     console.log(`list2: ${res.length}`);
-    fail();
+    expect.fail();
   }
   res = await repo.list({facilityid: "00002", dr: true, hidden: true});
   if(res.length === 1){
-    assert(compare(staff4, res[0]));
+    expect(omitTimestamps(staff4)).toEqual(omitTimestamps(res[0]));
   }else{
     console.log(`list3: ${res.length}`);
-    fail();
+    expect.fail();
   }
 }
 export async function del(repo: IStaffRepository){
   await repo.delete(staff);
   let res = await repo.read(staff.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(staff2);
   res = await repo.read(staff2.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(staff4);
   res = await repo.read(staff4.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
 }

@@ -1,4 +1,4 @@
-import { assert, fail } from "@std/assert"
+import { describe, test, expect } from "vitest"
 import { AppointmentRepository } from "../infra/appointmentRepository.ts"
 import { AnswerRepository } from "../infra/answerRepository.ts"
 import { AnswerPasswordRepository } from "../infra/answerPasswordRepository.ts"
@@ -13,47 +13,47 @@ import { Kv } from "../infra/kv.ts"
 
 Kv.test = true;
 
-Deno.test("answer registration", async (t) => {
-    await t.step("prepare", async () => {
+describe("answer registration", () => {
+    test("prepare", async () => {
         const apprepo = new AppointmentRepository(BASE);
         let res = await apprepo.insert(appointment);
-        assert(res);
+        expect(res).toBe(true);
         res = await apprepo.insert(appointment6);
-        assert(res);
+        expect(res).toBe(true);
         const qrepo = new QuestionnaireRepository(BASE);
         res = await qrepo.insert(questionnaire3);
-        assert(res);
+        expect(res).toBe(true);
         res = await qrepo.insert(questionnaire4);
-        assert(res);
+        expect(res).toBe(true);
         res = await qrepo.insert(questionnaire5);
-        assert(res);
+        expect(res).toBe(true);
     });
-    await t.step("insert", async()=>{
+    test("insert", async()=>{
         const repo = new AnswerRepository(BASE);
         const service = new AnswerService(repo,
             new AnswerPasswordRepository(BASE));
         const reg = new AnswerRegistration(service,
                 new QuestionnaireService(new QuestionnaireRepository(BASE)));
         const res = await reg.insert(appointment);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
 
         const list = await service.getList(appointment.id);
         if(list.length !== 2){
-            fail("no data");
+            expect.fail("no data");
         }
         for(const ans of list){
             if(ans.questionnaire.id !== questionnaire3.id &&
                     ans.questionnaire.id !== questionnaire4.id){
-                fail();
+                expect.fail();
             }else{
-                assert(appointment.date === ans.appointmentDate);
+                expect(appointment.date).toBe(ans.appointmentDate);
             }
         }
         list[0].inputDate = "2024-06-07T12:00:00Z";
         await repo.update(list[0]);
     });
 
-    await t.step("update", async () => {
+    test("update", async () => {
         const repo = new AnswerRepository(BASE);
         const service = new AnswerService(repo,
             new AnswerPasswordRepository(BASE));
@@ -63,22 +63,22 @@ Deno.test("answer registration", async (t) => {
         const apprepo = new AppointmentRepository(BASE);
         await apprepo.update(appointment);
         const res = await reg.update(appointment);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
 
         const list = await service.getList(appointment.id);
         if(list.length !== 2){
-            fail("wrong data length");
+            expect.fail("wrong data length");
         }
         for(const ans of list){
             if(!ans.inputDate){
                 if(ans.questionnaire.id !== questionnaire5.id){
-                    fail("wrong questionnaire");
+                    expect.fail("wrong questionnaire");
                 }
             }
         }
     });
 
-    await t.step("delete", async () => {
+    test("delete", async () => {
         const qrepo = new QuestionnaireRepository(BASE);
         const qservice = new QuestionnaireService(qrepo);
         const repo = new AnswerRepository(BASE);

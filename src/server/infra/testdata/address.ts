@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { expect } from "vitest"
 import type { IAddressRepository } from "../../domain/addressService.ts"
 import type { Address } from "../../domain/address.ts"
 
@@ -23,48 +23,30 @@ export const addressData: Address = {
   plus: "犬町５－１０－２"
 }
 
-function compare(u1: Address, u2: Address): boolean {
-  if(u1.postalCode !== u2.postalCode){
-    return false;
-  }
-  if(u1.name !== u2.name){
-    return false;
-  }
-  return true;
-}
-
 export async function insert(repo: IAddressRepository){
   let res = await repo.insert(address);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(address2);
-  assert(res);
+  expect(res).toBe(true);
 }
 
 export async function update(repo: IAddressRepository){
   const res = await repo.update(address3);
-  assert(res);
+  expect(res).toBe(true);
 }
 
 export async function read(repo: IAddressRepository){
   let res = await repo.read(address.postalCode);
-  if(res){
-    assert(compare(address3, res));
-  }else{
-    fail();
-  }
+  expect(address3).toEqual(res);
   res = await repo.read(address2.postalCode);
-  if(res){
-    assert(compare(address2, res));
-  }else{
-    fail();
-  }
+  expect(address2).toEqual(res);
 }
 
 export async function del(repo: IAddressRepository){
   await repo.delete(address);
   let res = await repo.read(address.postalCode);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(address2);
   res = await repo.read(address2.postalCode);
-  assertFalse(res);
+  expect(res).toBeUndefined();
 }

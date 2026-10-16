@@ -1,10 +1,9 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { describe, test, expect } from "vitest"
 import { WebAppRepository } from "../infra/webAppointmentRepository.ts"
 import type { WebAppointment } from "../domain/webAppointment.ts"
 import { AppointmentService } from "../domain/appointmentService.ts"
 import { AppointmentRepository } from "../infra/appointmentRepository.ts"
 import type { WebReservation } from "../domain/webReservation.ts"
-import type { Appointment } from "../domain/appointment.ts"
 import { BASE } from "../infra/testdata/settings.ts"
 import { facility, facility2, toFac } from "../infra/testdata/facility.ts"
 import { patient, patient2, patient6, patient4, patientNoId } from "../infra/testdata/patient.ts"
@@ -332,181 +331,21 @@ const appointment_required: WebAppointment = {
     updatedAt: "2024-06-07 12:34:56",
 }
 
-function compare(app1: WebAppointment, app2: WebAppointment): boolean {
-    //if(app1.id !== app2.id){
-    //    console.log(`id: ${app1.id} : ${app2.id}`)
-    //    return false;
-    //}
-    if(app1.date !== app2.date && (app1.date !== DATE_EMPTY && app2.date !== "")){
-        console.log(`date: ${app1.date} : ${app2.date}`)
-        return false;
+function convertEmpty(a: WebAppointment): WebAppointment{
+    if(a.patient.id === ""){
+        a.patient.id = ID_EMPTY;
     }
-    if(app1.time !== app2.time){
-        console.log(`time: ${app1.time} : ${app2.time}`)
-        return false;
+    if(a.date === ""){
+        a.date = DATE_EMPTY;
     }
-    if(app1.mainComplaint !== app2.mainComplaint){
-        console.log(`mainComplaint: ${app1.mainComplaint} : ${app2.mainComplaint}`)
-        return false;
-    }
-    if(app1.patient && app2.patient){
-        const p1 = app1.patient;
-        const p2 = app2.patient;
-        if(p1.id !== p2.id && (p1.id !== ID_EMPTY && p2.id !== "")){
-            console.log(`patient_id: ${p1.id} : ${p2.id}`)
-            return false;
-        }
-        if(p1.lastName !== p2.lastName){
-            console.log(`patient_name: ${p1.lastName} : ${p2.lastName}`)
-            return false;
-        }
-        if(p1.firstName !== p2.firstName){
-            console.log(`patient_name: ${p1.firstName} : ${p2.firstName}`)
-            return false;
-        }
-    }
-    if(app1.facility.id !== app2.facility.id){
-        console.log(`facilityId: ${app1.facility.id} : ${app2.facility.id}`)
-        return false;
-    }
-    if(app1.department && app2.department){
-        const p1 = app1.department;
-        const p2 = app2.department;
-        if(p1.id !== p2.id){
-            console.log(`department_id: ${p1.id} : ${p2.id}`)
-            return false;
-        }
-        if(p1.name !== p2.name){
-            console.log(`department_name: ${p1.name} : ${p2.name}`)
-            return false;
-        }
-    }
-    if(app1.dr && app2.dr){
-        const p1 = app1.dr;
-        const p2 = app2.dr;
-        if(p1.id !== p2.id){
-            console.log(`dr_id: ${p1.id} : ${p2.id}`)
-            return false;
-        }
-        if(p1.name !== p2.name){
-            console.log(`dr_name: ${p1.name} : ${p2.name}`)
-            return false;
-        }
-    }
-    if(app1.facPatientId !== app2.facPatientId){
-        console.log(`facPatientId: ${app1.facPatientId} : ${app2.facPatientId}`)
-        return false;
-    }
-    return true;
+    return a;
 }
-function compare2(app1: Appointment, app2: Appointment): boolean {
-    //if(app1.id !== app2.id){
-    //    console.log(`id: ${app1.id} : ${app2.id}`)
-    //    return false;
-    //}
-    if(app1.date !== app2.date){
-        console.log(`date: ${app1.date} : ${app2.date}`)
-        return false;
-    }
-    if(app1.memo !== app2.memo){
-        console.log(`memo: ${app1.memo} : ${app2.memo}`)
-        return false;
-    }
-    if(app1.personInCharge && app2.personInCharge){
-        const p1 = app1.personInCharge;
-        const p2 = app2.personInCharge;
-        if(p1.id !== p2.id){
-            console.log(`personInCharge_id: ${p1.id} : ${p2.id}`)
-            return false;
-        }
-        if(p1.name !== p2.name){
-            console.log(`personInCharge_name: ${p1.name} : ${p2.name}`)
-            return false;
-        }
-    }
-    if(app1.patient && app2.patient){
-        const p1 = app1.patient;
-        const p2 = app2.patient;
-        if(p1.id !== p2.id){
-            console.log(`patient_id: ${p1.id} : ${p2.id}`)
-            return false;
-        }
-        if(p1.lastName !== p2.lastName){
-            console.log(`patient_lastname: ${p1.lastName} : ${p2.lastName}`)
-            return false;
-        }
-        if(p1.firstName !== p2.firstName){
-            console.log(`patient_firstname: ${p1.firstName} : ${p2.firstName}`)
-            return false;
-        }
-    }
-    if(app1.facility && app2.facility){
-        const p1 = app1.facility;
-        const p2 = app2.facility;
-        if(p1.id !== p2.id){
-            console.log(`facility_id: ${p1.id} : ${p2.id}`)
-            return false;
-        }
-        if(p1.name !== p2.name){
-            console.log(`facility_name: ${p1.name} : ${p2.name}`)
-            return false;
-        }
-    }
-    if(app1.facilityDr !== app2.facilityDr){
-        console.log(`facilityDr: ${app1.facilityDr} : ${app2.facilityDr}`)
-        return false;
-    }
-    if(app1.facilityDept && app2.facilityDept){
-        if(app1.facilityDept !== app2.facilityDept){
-            console.log(`facilityDept_id: ${app1.facilityDept} : ${app2.facilityDept}`)
-            return false;
-        }
-    }
-    if(app1.department && app2.department){
-        const p1 = app1.department;
-        const p2 = app2.department;
-        if(p1.id !== p2.id){
-            console.log(`department_id: ${p1.id} : ${p2.id}`)
-            return false;
-        }
-        if(p1.name !== p2.name){
-            console.log(`department_name: ${p1.name} : ${p2.name}`)
-            return false;
-        }
-    }
-    if(app1.dr && app2.dr){
-        const p1 = app1.dr;
-        const p2 = app2.dr;
-        if(p1.id !== p2.id){
-            console.log(`dr_id: ${p1.id} : ${p2.id}`)
-            return false;
-        }
-        if(p1.name !== p2.name){
-            console.log(`dr_name: ${p1.name} : ${p2.name}`)
-            return false;
-        }
-    }
-    if(app1.means && app2.means){
-        if(app1.means !== app2.means){
-            console.log(`means_id: ${app1.means} : ${app2.means}`)
-            return false;
-        }
-    }
-    if(app1.time !== app2.time){
-        console.log(`time: ${app1.time} : ${app2.time}`)
-        return false;
-    }
-    if(app1.appDisplay !== app2.appDisplay){
-        console.log(`appDisplay: ${app1.appDisplay} : ${app2.appDisplay}`)
-        return false;
-    }
-    return true;
-}
+
 
 Kv.test = true;
 
-Deno.test("webappointment registration", async (t) => {
-    await t.step("prepare", async () => {
+describe("webappointment registration", () => {
+    test("prepare", async () => {
         const repo = new WebReservationRepository(BASE);
         await repo.insert(reservation);
         await repo.insert(reservation2);
@@ -515,7 +354,7 @@ Deno.test("webappointment registration", async (t) => {
         await repo.insert(reservation5);
         await repo.insert(reservation6);
     });
-    await t.step("insert", async () => {
+    test("insert", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         const appservice = new AppointmentService(new AppointmentRepository(BASE));
@@ -534,58 +373,58 @@ Deno.test("webappointment registration", async (t) => {
         if(res.ok){
             appointment3.id = res.data.id;
         }else{
-            fail();
+            expect.fail();
         }
         res = await usecase.insert(appointment2);
         if(res.ok){
             appointment4.id = res.data.id;
         }else{
-            fail();
+            expect.fail();
         }
         res = await usecase.insert(appointment5);
         if(res.ok){
             appointment5.id = res.data.id;
         }else{
-            fail();
+            expect.fail();
         }
         res = await usecase.insert(appointment6);
         if(!res.ok){
           console.log(res.errors);
         }
-        assertFalse(res.ok);
+        expect(res.ok).toBe(false);
         res = await usecase.insert(appointment_required);
         if(!res.ok){
           console.log(res.errors);
         }
-        assertFalse(res.ok);
+        expect(res.ok).toBe(false);
         res = await usecase.insert(appointment_nodate);
         if(res.ok){
             appointment_nodate2.id = res.data.id;
         }else{
-            fail();
+            expect.fail();
         }
         res = await usecase.insert(appointment_nodate1);
         if(res.ok){
             appointment_nodate3.id = res.data.id;
         }else{
-            fail();
+            expect.fail();
         }
         res = await usecase.insert(appointment_noid);
         if(res.ok){
             appointment_noid.id = res.data.id;
             appointment_noid2.id = res.data.id;
         }else{
-            fail();
+            expect.fail();
         }
         res = await usecase.insert(appointment_noid1);
         if(res.ok){
             appointment_noid3.id = res.data.id;
         }else{
-            fail();
+            expect.fail();
         }
     });
 
-    await t.step("update", async () => {
+    test("update", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         const usecase =
@@ -603,82 +442,82 @@ Deno.test("webappointment registration", async (t) => {
         if(!res.ok){
             console.log(res.errors!);
         }
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         res = await usecase.update(appointment4);
         if(!res.ok){
             console.log(res.errors!);
         }
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         res = await usecase.update(appointment_nodate2);
         if(!res.ok){
             console.log(res.errors!);
         }
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         res = await usecase.update(appointment_nodate3);
         if(!res.ok){
             console.log(res.errors!);
         }
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         res = await usecase.update(appointment_noid2);
         if(!res.ok){
             console.log(res.errors!);
         }
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         //枠無しのため失敗する
         res = await usecase.update(appointment_noid3);
         if(!res.ok){
             console.log(res.errors!);
         }
-        assertFalse(res.ok);
+        expect(res.ok).toBe(false);
     });
 
-    await t.step("count check", async () => {
+    test("count check", async () => {
         const repo = new WebReservationRepository(BASE);
         let res = await repo.read(reservation.dept, reservation.dr, reservation.date, reservation.time);
         if(res){
-            assert(res.cnt === 1);
+            expect(res.cnt).toBe(1);
         }else{
             console.log("res1");
-            fail();
+            expect.fail();
         }
         res = await repo.read(reservation2.dept, reservation2.dr, reservation2.date, reservation2.time);
         if(res){
-            assert(res.cnt === 1);
+            expect(res.cnt).toBe(1);
         }else{
             console.log("res2");
-            fail();
+            expect.fail();
         }
         res = await repo.read(reservation3.dept, reservation3.dr, reservation3.date, reservation3.time);
         if(res){
-            assert(res.cnt === 1);
+            expect(res.cnt).toBe(1);
         }else{
             console.log("res3");
-            fail();
+            expect.fail();
         }
         res = await repo.read(reservation4.dept, reservation4.dr, reservation4.date, reservation4.time);
         if(res){
-            assert(res.cnt === 3);
+            expect(res.cnt).toBe(3);
         }else{
             console.log("res4");
-            fail();
+            expect.fail();
         }
         res = await repo.read(reservation5.dept, reservation5.dr, reservation5.date, reservation5.time);
         if(res){
-            assert(res.cnt === 3);
+            expect(res.cnt).toBe(3);
         }else{
             console.log("res5");
-            fail();
+            expect.fail();
         }
         res = await repo.read(reservation6.dept, reservation6.dr, reservation6.date, reservation6.time);
         if(res){
-            assert(res.cnt === 3);
+            expect(res.cnt).toBe(3);
         }else{
             console.log("res6");
-            fail();
+            expect.fail();
         }
     });
 
-    await t.step("list", async () => {
+    test("list", async () => {
         const apprepo = new AppointmentRepository(BASE);
         const appservice = new AppointmentService(apprepo);
         const repo = new WebAppRepository(BASE);
@@ -687,188 +526,190 @@ Deno.test("webappointment registration", async (t) => {
         if(res.length === 2){
             for(const a of res){
                 if(a.id === appointment3.id){
-                    assert(compare(appointment3, a));
+                    expect(appointment3).toEqual(a);
                 }else{
-                    assert(compare(appointment_noid2, a));
+                    expect(appointment_noid2).toEqual(a);
                 }
             }
         }else{
             console.log(`list1: ${res.length}`)
-            fail();
+            expect.fail();
         }
         res = await service.getList({fromDate:"2024-06-01"});
         if(res.length === 6){
-            for(const a of res){
+            for(let a of res){
+                a = convertEmpty(a);
                 if(a.id === appointment3.id){
-                    assert(compare(appointment3, a));
+                    expect(appointment3).toEqual(a);
                 }else if(a.id === appointment4.id){
-                    assert(compare(appointment4, a));
+                    expect(appointment4).toEqual(a);
                 }else if(a.id === appointment5.id){
-                    assert(compare(appointment5, a));
+                    expect(appointment5).toEqual(a);
                 }else if(a.id === appointment_noid1.id){
-                    assert(compare(appointment_noid1, a));
+                    expect(appointment_noid1).toEqual(a);
                 }else if(a.id === appointment_noid2.id){
-                    assert(compare(appointment_noid2, a));
+                    expect(appointment_noid2).toEqual(a);
                 }else if(a.id === appointment_nodate3.id){
-                    assert(compare(appointment_nodate3, a));
+                    expect(appointment_nodate3).toEqual(a);
                 }else{
-                    fail();
+                    expect.fail();
                 }
             }
         }else{
             console.log(`list2: ${res.length}`)
-            fail();
+            expect.fail();
         }
         let res2 = await appservice.getListByDate("2024-06-07", "2024-06-07");
         if(res2.length === 2){
             for(const a of res2){
                 if(a.id === appointment3.id){
-                    assert(compare2(toAppointment(appointment3), a));
+                    expect(toAppointment(appointment3)).toEqual(a);
                 }else if(a.id === appointment_noid2.id){
-                    assert(compare2(toAppointment(appointment_noid2), a));
+                    expect(toAppointment(appointment_noid2)).toEqual(a);
                 }else{
-                    fail();
+                    expect.fail();
                 }
             }
         }else{
             console.log(`list3: ${res.length}`)
-            fail();
+            expect.fail();
         }
         res2 = await appservice.getListByDate("2024-06-01", "2024-07-07");
         if(res2.length === 5){
             for(const a of res2){
                 if(a.id === appointment3.id){
-                    assert(compare2(toAppointment(appointment3), a));
+                    expect(toAppointment(appointment3)).toEqual(a);
                 }else if(a.id === appointment4.id){
-                    assert(compare2(toAppointment(appointment4), a));
+                    expect(toAppointment(appointment4)).toEqual(a);
                 }else if(a.id === appointment5.id){
-                    assert(compare2(toAppointment(appointment5), a));
+                    expect(toAppointment(appointment5)).toEqual(a);
                 }else if(a.id === appointment_noid2.id){
-                    assert(compare2(toAppointment(appointment_noid2), a));
+                    expect(toAppointment(appointment_noid2)).toEqual(a);
                 }else if(a.id === appointment_nodate3.id){
-                    assert(compare2(toAppointment(appointment_nodate3), a));
+                    expect(toAppointment(appointment_nodate3)).toEqual(a);
                 }else{
-                    fail();
+                    expect.fail();
                 }
             }
         }else{
             console.log(`list4: ${res2.length}`)
-            fail();
+            expect.fail();
         }
         let res3 = await apprepo.list({fromDate:"2024-06-07", toDate:"2024-06-07"});
         if(res3.length === 2){
             for(const a of res3){
                 if(a.id === appointment3.id){
-                    assert(compare2(toAppointment(appointment3), a));
+                    expect(toAppointment(appointment3)).toEqual(a);
                 }else if(a.id === appointment_noid2.id){
-                    assert(compare2(toAppointment(appointment_noid2), a));
+                    expect(toAppointment(appointment_noid2)).toEqual(a);
                 }else{
-                    fail();
+                    expect.fail();
                 }
             }
         }else{
             console.log(`list5: ${res3.length}`)
-            fail();
+            expect.fail();
         }
         res3 = await apprepo.list({fromDate:"2024-06-01"});
         if(res3.length === 5){
             for(const a of res3){
                 if(a.id === appointment3.id){
-                    assert(compare2(toAppointment(appointment3), a));
+                    expect(toAppointment(appointment3)).toEqual(a);
                 }else if(a.id === appointment4.id){
-                    assert(compare2(toAppointment(appointment4), a));
+                    expect(toAppointment(appointment4)).toEqual(a);
                 }else if(a.id === appointment5.id){
-                    assert(compare2(toAppointment(appointment5), a));
+                    expect(toAppointment(appointment5)).toEqual(a);
                 }else if(a.id === appointment_noid2.id){
-                    assert(compare2(toAppointment(appointment_noid2), a));
+                    expect(toAppointment(appointment_noid2)).toEqual(a);
                 }else if(a.id === appointment_nodate3.id){
-                    assert(compare2(toAppointment(appointment_nodate3), a));
+                    expect(toAppointment(appointment_nodate3)).toEqual(a);
                 }else{
-                    fail();
+                    expect.fail();
                 }
             }
         }else{
             console.log(`list6: ${res3.length}`)
-            fail();
+            expect.fail();
         }
     })
 
-    await t.step("patient", async () => {
+    test("patient", async () => {
         const apprepo = new AppointmentRepository(BASE);
         const appservice = new AppointmentService(apprepo);
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         const res = await service.getList({patientId: patient.id});
         if(res.length === 2){
-            for(const a of res){
+            for(let a of res){
+                a = convertEmpty(a);
                 if(a.id === appointment3.id){
-                    assert(compare(appointment3, a));
+                    expect(appointment3).toEqual(a);
                 }else{
-                    assert(compare(appointment_nodate2, a));
+                    expect(appointment_nodate2).toEqual(a);
                 }
             }
         }else{
             console.log(`list1: ${res.length}`)
-            fail();
+            expect.fail();
         }
         const res2 = await appservice.getListByPatient(patient4.id);
         if(res2.length === 1){
-            assert(compare2(toAppointment(appointment_noid2), res2[0]));
+            expect(toAppointment(appointment_noid2)).toEqual(res2[0]);
         }
         const res3 = await service.getList({patientId: patient6.id});
         if(res3.length === 1){
             for(const a of res3){
-                assert(compare(appointment_nodate3, a));
+                expect(appointment_nodate3).toEqual(a);
             }
         }else{
             console.log(`list2: ${res3.length}`)
-            fail();
+            expect.fail();
         }
     })
 
-    await t.step("facility", async () => {
+    test("facility", async () => {
         const apprepo = new AppointmentRepository(BASE);
         const appservice = new AppointmentService(apprepo);
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         const res = await service.getList({facilityId: facility2.id});
         if(res.length === 1){
-            assert(compare(appointment5, res[0]));
+            expect(appointment5).toEqual(res[0]);
         }else{
             console.log(`list1: ${res.length}`)
-            fail();
+            expect.fail();
         }
         const res2 = await appservice.get(res[0].id);
-        if(res2){
-            assert(compare2(toAppointment(appointment5), res2));
-        }
+        expect(toAppointment(appointment5)).toEqual(res2);
     })
 
-    await t.step("consult", async () => {
+    test("consult", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         const res = await service.getConsultation(facility.id);
         if(res.length === 1){
-            assert(compare(appointment_nodate2, res[0]));
+            res[0] = convertEmpty(res[0]);
+            expect(appointment_nodate2).toEqual(res[0]);
         }else{
             console.log(`list1: ${res.length}`)
-            fail();
+            expect.fail();
         }
     })
 
-    await t.step("noid", async () => {
+    test("noid", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         const res = await service.getNoID();
         if(res.length === 1){
-            assert(compare(appointment_noid1, res[0]));
+            res[0] = convertEmpty(res[0]);
+            expect(appointment_noid1).toEqual(res[0]);
         }else{
             console.log(`list1: ${res.length}`)
-            fail();
+            expect.fail();
         }
     })
 
-    await t.step("delete", async () => {
+    test("delete", async () => {
         const repo = new WebAppRepository(BASE);
         const service = new WebAppService(repo);
         const usecase =
@@ -884,38 +725,38 @@ Deno.test("webappointment registration", async (t) => {
             );
         await usecase.delete(appointment3);
         let res = await repo.read(appointment3.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         let res2 = await service.get(appointment3.id);
-        assertFalse(res2);
+        expect(res2).toBeUndefined();
         await usecase.delete(appointment4);
         res = await repo.read(appointment4.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         res2 = await service.get(appointment4.id);
-        assertFalse(res2);
+        expect(res2).toBeUndefined();
         await usecase.delete(appointment5);
         res = await repo.read(appointment5.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         res2 = await service.get(appointment5.id);
-        assertFalse(res2);
+        expect(res2).toBeUndefined();
         await usecase.delete(appointment_nodate2);
         res = await repo.read(appointment_nodate2.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         await usecase.delete(appointment_nodate3);
         res = await repo.read(appointment_nodate3.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         res2 = await service.get(appointment_nodate3.id);
-        assertFalse(res2);
-        assertFalse(res);
+        expect(res2).toBeUndefined();
+        expect(res).toBeUndefined();
         await usecase.delete(appointment_noid2);
         res = await repo.read(appointment_noid2.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         res2 = await service.get(appointment_noid2.id);
-        assertFalse(res2);
+        expect(res2).toBeUndefined();
         await usecase.delete(appointment_noid3);
         res = await repo.read(appointment_noid3.id);
     });
 
-    await t.step("cleanup", async () => {
+    test("cleanup", async () => {
         const repo = new WebReservationRepository(BASE);
         await repo.delete(reservation);
         await repo.delete(reservation2);

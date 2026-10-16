@@ -1,48 +1,26 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { describe, test, expect } from "vitest"
 import { WebNoticeRepository } from "../infra/webNoticeRepository.ts"
 import { WebNoticeService } from "./webNoticeService.ts"
-import { type WebNotice, NOTICE_PAGES } from "./webNotice.ts"
+import { NOTICE_PAGES } from "./webNotice.ts"
 import { notice, notice2, notice3, notice4 } from "../infra/testdata/webNotice.ts"
 import { BASE } from "../infra/testdata/settings.ts"
 import { Kv } from "../infra/kv.ts"
 
-function compare(u1: WebNotice, u2: WebNotice): boolean {
-    if(u1.id !== u2.id){
-        return false;
-    }
-    if(u1.page !== u2.page){
-        return false;
-    }
-    if(u1.message !== u2.message){
-        return false;
-    }
-    if(u1.fromDate !== u2.fromDate){
-        return false;
-    }
-    if(u1.toDate !== u2.toDate){
-        return false;
-    }
-    if(u1.importance !== u2.importance){
-        return false;
-    }
-    return true;
-}
-
 Kv.test = true;
 
-Deno.test("webnotice service", async (t) => {
-    await t.step("insert", async()=>{
+describe("webnotice service", () => {
+    test("insert", async()=>{
         const repo = new WebNoticeRepository(BASE);
         const service = new WebNoticeService(repo);
         let res = await service.insert(notice);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         let list = await service.getAll();
         if(!list[0].id){
-            fail("id is not set");
+            expect.fail("id is not set");
         }
         notice3.id = list[0].id;
         res = await service.insert(notice2);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
         list = await service.getAll();
         for(const a of list){
             if(a.id !== notice3.id){
@@ -50,75 +28,63 @@ Deno.test("webnotice service", async (t) => {
             }
         }
         res = await service.insert(notice4);
-        assertFalse(res.ok);
+        expect(res.ok).toBe(false);
     });
 
-    await t.step("update", async () => {
+    test("update", async () => {
         const repo = new WebNoticeRepository(BASE);
         const service = new WebNoticeService(repo);
         const today = new Date();
         notice3.toDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
             .toISOString().split("T")[0];
         const res = await service.update(notice3);
-        assert(res.ok);
+        expect(res.ok).toBe(true);
     });
 
-    await t.step("read", async () => {
+    test("read", async () => {
         const repo = new WebNoticeRepository(BASE);
         const service = new WebNoticeService(repo);
         let res = await service.get(notice3.id);
-        if(res){
-            assert(compare(notice3, res));
-        }else{
-            fail();
-        }
+        expect(notice3).toEqual(res);
         res = await service.get(notice2.id);
-        if(res){
-            assert(compare(notice2, res));
-        }else{
-            fail();
-        }
+        expect(notice2).toEqual(res);
         res = await service.get(notice4.id);
-        if(res){
-            fail();
-        }else{
-            assert(true);
-        }
+        expect(res).toBeUndefined();
     });
 
-    await t.step("list", async () => {
+    test("list", async () => {
         const repo = new WebNoticeRepository(BASE);
         const service = new WebNoticeService(repo);
         const res = await service.getList(NOTICE_PAGES[1]);
         if(res.length === 1){
-            assert(compare(notice3, res[0]));
+            expect(notice3).toEqual(res[0]);
         }else{
             console.log(`list: ${res.length}`)
-            fail();
+            expect.fail();
         }
     });
 
-    await t.step("all", async () => {
+    test("all", async () => {
         const repo = new WebNoticeRepository(BASE);
         const service = new WebNoticeService(repo);
         const res = await service.getAll();
         if(res.length === 2){
-            assert(compare(notice2, res[0]));
-            assert(compare(notice3, res[1]));
+            expect(notice2).toEqual(res[0]);
+            expect(notice3).toEqual(res[1]);
         }else{
             console.log(`all: ${res.length}`)
-            fail();
+            expect.fail();
         }
     });
 
-    await t.step("delete", async () => {
+    test("delete", async () => {
         const repo = new WebNoticeRepository(BASE);
         const service = new WebNoticeService(repo);
         await service.delete(notice3);
         let res = await repo.read(notice3.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
         await service.delete(notice2);
         res = await repo.read(notice2.id);
-        assertFalse(res);
+        expect(res).toBeUndefined();
     });
 });

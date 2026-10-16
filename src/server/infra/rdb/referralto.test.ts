@@ -1,3 +1,4 @@
+import { describe, test } from "vitest"
 import { ReferralToRepository } from "./referraltoRepository.ts"
 import { insert, update, read, list, patientList, del, prepare, cleanUp } from "../testdata/referralTo.ts"
 import { BASE } from "../testdata/settings.ts"
@@ -10,19 +11,19 @@ import { UserRepository } from "./userRepository.ts"
 
 Db.test = true;
 
-Deno.test("referralto repository rdb", async (t) => {
+describe("referralto repository rdb", () => {
   const repo = new ReferralToRepository(BASE);
   const repoUser = new UserRepository(BASE);
   const repoPat = new PatientRepository(BASE);
   const repoDept = new DepartmentRepository(BASE);
   const repoDr = new DrRepository(BASE);
   const repoFac = new FacilityRepository(BASE);
-  await t.step("prepare", async () => {await prepare(repoUser, repoPat, repoDept, repoDr, repoFac);});
-  await t.step("insert", async () => {await insert(repo);});
-  await t.step("update", async () => {await update(repo);});
-  await t.step("read", async () => {await read(repo);});
-  await t.step("list", async () => {await list(repo);});
-  await t.step("patient", async () => {await patientList(repo);});
-  await t.step("del", async () => {await del(repo);});
-  await t.step("cleanUp", async () => {await cleanUp(repoUser, repoPat, repoDept, repoDr, repoFac);});
+  test("prepare", async () => {await prepare(repoUser, repoPat, repoDept, repoDr, repoFac);});
+  test("insert", async () => {await insert(repo);});
+  test("update", async () => {await update(repo);});
+  test("read", async () => {await read(repo);});
+  test("list", async () => {await list(repo);});
+  test("patient", async () => {await patientList(repo);});
+  test("del", async () => {await del(repo);});
+  test("cleanUp", async () => {await cleanUp(repoUser, repoPat, repoDept, repoDr, repoFac);});
 });

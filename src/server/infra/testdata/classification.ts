@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { expect } from "vitest"
 import type { IClassificationRepository } from "../../domain/classificationService.ts"
 import type { Classification } from "../../domain/classification.ts"
 
@@ -23,69 +23,51 @@ export const classification4: Classification = {
   done: false,
 }
 
-function compare(u1: Classification, u2: Classification): boolean {
-  if(u1.id !== u2.id){
-    return false;
-  }
-  if(u1.name !== u2.name){
-    return false;
-  }
-  return true;
-}
-
 export async function insert(repo: IClassificationRepository){
   let res = await repo.insert(classification1);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(classification2);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(classification4);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function update(repo: IClassificationRepository){
   const res = await repo.update(classification3);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function read(repo: IClassificationRepository){
   let res = await repo.read(classification1.id);
-  if(res){
-    assert(compare(classification3, res));
-  }else{
-    fail();
-  }
+  expect(classification3).toEqual(res);
   res = await repo.read(classification2.id);
-  if(res){
-    assert(compare(classification2, res));
-  }else{
-    fail();
-  }
+  expect(classification2).toEqual(res);
 }
 export async function all(repo: IClassificationRepository){
   const res = await repo.all();
   if(res.length === 3){
     for(const r of res){
       if(r.id === classification3.id) {
-        assert(compare(classification3, r));
+        expect(classification3).toEqual(r);
       }else if(r.id === classification2.id) {
-        assert(compare(classification2, r));
+        expect(classification2).toEqual(r);
       }else if(r.id === classification4.id) {
-        assert(compare(classification4, r));
+        expect(classification4).toEqual(r);
       }else{
-        fail();
+        expect.fail();
       }
     }
   }else{
     console.log(`all: ${res.length}`);
-    fail();
+    expect.fail();
   }
 }
 export async function del(repo: IClassificationRepository){
   await repo.delete(classification1);
   let res = await repo.read(classification1.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(classification2);
   res = await repo.read(classification2.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(classification4);
   res = await repo.read(classification4.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
 }

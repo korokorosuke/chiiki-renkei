@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { expect } from "vitest"
 import type { IAppointmentRepository } from "../../domain/appointmentService.ts"
 import type { IReplyRepository } from "../../domain/replyService.ts"
 import type { Reply } from "../../domain/reply.ts"
@@ -31,7 +31,7 @@ export const reply: Reply = {
   id: "1-1",
   refId: referral.id,
   date: "2024-06-07",
-  department: department,
+  department: {id: department.id, name: department.name},
   dr: dr,
   classification: classification1,
   personInCharge: toUser(user),
@@ -43,7 +43,7 @@ export const reply2: Reply = {
   id: "2-1",
   refId: referral2.id,
   date: "2024-06-08",
-  department: department2,
+  department: {id: department2.id, name: department2.name},
   dr: dr,
   classification: classification1,
   personInCharge: toUser(user),
@@ -55,7 +55,7 @@ export const reply3: Reply = {
   id: "1-2",
   refId: referral.id,
   date: "2024-06-14",
-  department: department,
+  department: {id: department.id, name: department.name},
   dr: dr,
   classification: classification2,
   personInCharge: toUser(user),
@@ -67,7 +67,7 @@ export const reply4: Reply = {
   id: "1-2",
   refId: referral.id,
   date: "2024-06-15",
-  department: department,
+  department: {id: department.id, name: department.name},
   dr: dr,
   classification: classification1,
   personInCharge: toUser(user),
@@ -76,56 +76,13 @@ export const reply4: Reply = {
   updatedAt: "2024-06-07T12:34:56Z",
 }
 
-function compare(r1: Reply, r2: Reply): boolean {
-  if(r1.id !== r2.id){
-    console.log(`id: ${r1.id} : ${r2.id}`);
-    return false;
+function omitTimestamps(val: Reply|undefined): Omit<Reply, "updatedAt">|undefined {
+  if(val){
+    const {updatedAt, ...value} = val;
+    return value;
+  }else{
+    return undefined;
   }
-  if(r1.date !== r2.date){
-    console.log(`date: ${r1.date} : ${r2.date}`);
-    return false;
-  }
-  if(r1.memo !== r2.memo){
-    console.log(`memo: ${r1.memo} : ${r2.memo}`);
-    return false;
-  }
-  if(r1.personInCharge && r2.personInCharge){
-    const p1 = r1.personInCharge;
-    const p2 = r2.personInCharge;
-    if(p1.id !== p2.id){
-      console.log(`personInCharge_id: ${p1.id} : ${p2.id}`);
-      return false;
-    }
-    if(p1.name !== p2.name){
-      console.log(`personInCharge_name: ${p1.name} : ${p2.name}`);
-      return false;
-    }
-  }
-  if(r1.department && r2.department){
-    const p1 = r1.department;
-    const p2 = r2.department;
-    if(p1.id !== p2.id){
-      console.log(`department_id: ${p1.id} : ${p2.id}`);
-      return false;
-    }
-    if(p1.name !== p2.name){
-      console.log(`department_name: ${p1.name} : ${p2.name}`);
-      return false;
-    }
-  }
-  if(r1.dr && r2.dr){
-    const p1 = r1.dr;
-    const p2 = r2.dr;
-    if(p1.id !== p2.id){
-      console.log(`dr_id: ${p1.id} : ${p2.id}`);
-      return false;
-    }
-    if(p1.name !== p2.name){
-      console.log(`dr_name: ${p1.name} : ${p2.name}`);
-      return false;
-    }
-  }
-  return true;
 }
 
 export async function prepare(repoApp: IAppointmentRepository,
@@ -156,34 +113,34 @@ export async function prepare(repoApp: IAppointmentRepository,
 }
 export async function insert(repo: IReplyRepository){
   let res = await repo.insert(reply);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(reply2);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(reply3);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function update(repo: IReplyRepository){
   const res = await repo.update(reply4);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function read(repo: IReplyRepository){
   let res = await repo.read(reply.id);
   if(res){
-    assert(compare(reply, res.replies[0]));
+    expect(omitTimestamps(reply)).toEqual(omitTimestamps(res.replies[0]));
   }else{
-    fail();
+    expect.fail();
   }
   res = await repo.read(reply2.id);
   if(res){
-    assert(compare(reply2, res.replies[0]));
+    expect(omitTimestamps(reply2)).toEqual(omitTimestamps(res.replies[0]));
   }else{
-    fail();
+    expect.fail();
   }
   res = await repo.read(reply4.id);
   if(res){
-    assert(compare(reply4, res.replies[0]));
+    expect(omitTimestamps(reply4)).toEqual(omitTimestamps(res.replies[0]));
   }else{
-    fail();
+    expect.fail();
   }
 }
 export async function list(repo: IReplyRepository){
@@ -192,13 +149,13 @@ export async function list(repo: IReplyRepository){
     for(const ref of res){
       for(const rep of ref.replies){
         if(rep.id === reply.id){
-          assert(compare(reply, rep));
+          expect(omitTimestamps(reply)).toEqual(omitTimestamps(rep));
         }else if(rep.id === reply2.id){
-          assert(compare(reply2, rep));
+          expect(omitTimestamps(reply2)).toEqual(omitTimestamps(rep));
         }else if(rep.id === reply4.id){
-          assert(compare(reply4, rep));
+          expect(omitTimestamps(reply4)).toEqual(omitTimestamps(rep));
         }else{
-          assert(ref.id === referral3.id);
+          expect(ref.id === referral3.id);
         }
       }
     }
@@ -207,28 +164,28 @@ export async function list(repo: IReplyRepository){
       console.log(rep);
     }
     console.log(`list1: ${res.length}`);
-    fail();
+    expect.fail();
   }
 }
 export async function del(repo: IReplyRepository, repoApp: IAppointmentRepository){
   await repoApp.delete(referral);
   let res = await repoApp.read(referral.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repoApp.delete(referral3);
   res = await repoApp.read(referral3.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repoApp.delete(referral2);
   res = await repoApp.read(referral2.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(reply);
   let res2 = await repo.read(reply.id);
-  assertFalse(res2);
+  expect(res2).toBeUndefined();
   await repo.delete(reply2);
   res2 = await repo.read(reply2.id);
-  assertFalse(res2);
+  expect(res2).toBeUndefined();
   await repo.delete(reply4);
   res2 = await repo.read(reply4.id);
-  assertFalse(res2);
+  expect(res2).toBeUndefined();
 }
 export async function cleanUp(repoUser: IUserRepository, repoPat: IPatientRepository,
     repoDept: IDepartmentRepository, repoDr: IDrRepository, repoFac: IFacilityRepository,

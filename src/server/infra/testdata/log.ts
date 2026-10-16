@@ -1,4 +1,4 @@
-import { assert } from "@std/assert"
+import { expect } from "vitest"
 import type { ILogRepository } from "../../domain/logService.ts"
 import type { ILogListRepository } from "../../domain/logListService.ts"
 import type { Log } from "../../domain/log.ts"
@@ -45,30 +45,30 @@ export const log4: Log = {
 export async function write(repo: ILogRepository){
   log1.datetime = getNowWithMS();
   let res = await repo.write(log1);
-  assert(res);
+  expect(res).toBe(true);
   log2.datetime = getNowWithMS();
   res = await repo.write(log2);
-  assert(res);
+  expect(res).toBe(true);
   log3.datetime = getNowWithMS();
   res = await repo.write(log3);
-  assert(res);
+  expect(res).toBe(true);
   log4.datetime = getNowWithMS();
   res = await repo.write(log4);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function list(repo: ILogListRepository){
   const res = await repo.list("", BASE_DATETIME, "", "", "", true);
-  assert(res.length === 4);
+  expect(res.length).toBe(4);
   const res0 = await repo.list("", BASE_DATETIME, "", "", "", false);
-  assert(res0.length === 3);
+  expect(res0.length).toBe(3);
   const res1 = await repo.list("info", BASE_DATETIME, "", "", "", true);
-  assert(res1.length === 2);
+  expect(res1.length).toBe(2);
   const res2 = await repo.list("", BASE_DATETIME, "", "0001", "", true);
-  assert(res2.length === 2);
+  expect(res2.length).toBe(2);
   const res3 = await repo.list("", BASE_DATETIME, "", "", "A", true);
-  assert(res3.length === 2);
+  expect(res3.length).toBe(2);
   const res4 = await repo.list("fatal", BASE_DATETIME, "", "", "A", true);
-  assert(res4.length === 1);
+  expect(res4.length).toBe(1);
   const res5 = await repo.list("error", BASE_DATETIME, getNowWithMS(), "0001", "B", true);
-  assert(res5.length === 1);
+  expect(res5.length).toBe(1);
 }

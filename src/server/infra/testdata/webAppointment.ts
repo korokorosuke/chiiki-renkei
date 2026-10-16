@@ -1,4 +1,4 @@
-import { assert, assertFalse, fail } from "@std/assert"
+import { expect } from "vitest"
 import type { IWebAppRepository } from "../../domain/webAppointmentService.ts"
 import type { IPatientRepository } from "../../domain/patientService.ts"
 import type { IWebDepartmentRepository } from "../../domain/webDepartmentService.ts"
@@ -152,72 +152,17 @@ const appointment8: WebAppointment = {
   updatedAt: "2024-06-07 12:34:56",
 }
 
-function compare(app1: WebAppointment, app2: WebAppointment): boolean {
-  if(app1.id !== app2.id){
-    console.log(`id: ${app1.id} : ${app2.id}`);
-    return false;
-  }
-  if(app1.date !== app2.date){
-    console.log(`date: ${app1.date} : ${app2.date}`);
-    return false;
-  }
-  if(app1.time !== app2.time){
-    console.log(`time: ${app1.time} : ${app2.time}`);
-    return false;
-  }
-  if(app1.mainComplaint !== app2.mainComplaint){
-    console.log(`mainComplaint: ${app1.mainComplaint} : ${app2.mainComplaint}`);
-    return false;
-  }
-  if(app1.patient && app2.patient){
-    const p1 = app1.patient;
-    const p2 = app2.patient;
-    if(p1.id !== p2.id){
-      console.log(`patient_id: ${p1.id} : ${p2.id}`);
-      return false;
+function omitData(val: WebAppointment|undefined): Omit<WebAppointment, "updatedAt"|"updatedBy"|"createdAt"|"createdBy">|undefined {
+  if(val){
+    const {createdAt, createdBy, updatedAt, updatedBy, force, ...value} = val;
+    let app: Omit<WebAppointment, "updatedAt"|"updatedBy"|"createdAt"|"createdBy">
+    if(val.force){
+      app = {...value, force: true};
     }
-    if(p1.lastName !== p2.lastName){
-      console.log(`patient_name: ${p1.lastName} : ${p2.lastName}`);
-      return false;
-    }
-    if(p1.firstName !== p2.firstName){
-      console.log(`patient_name: ${p1.firstName} : ${p2.firstName}`);
-      return false;
-    }
+    app = value;
+    return app;
   }
-  if(app1.facility.id !== app2.facility.id){
-    console.log(`facilityId: ${app1.facility.id} : ${app2.facility.id}`);
-    return false;
-  }
-  if(app1.department && app2.department){
-    const p1 = app1.department;
-    const p2 = app2.department;
-    if(p1.id !== p2.id){
-      console.log(`department_id: ${p1.id} : ${p2.id}`);
-      return false;
-    }
-    if(p1.name !== p2.name){
-      console.log(`department_name: ${p1.name} : ${p2.name}`);
-      return false;
-    }
-  }
-  if(app1.dr && app2.dr){
-    const p1 = app1.dr;
-    const p2 = app2.dr;
-    if(p1.id !== p2.id){
-      console.log(`dr_id: ${p1.id} : ${p2.id}`);
-      return false;
-    }
-    if(p1.name !== p2.name){
-      console.log(`dr_name: ${p1.name} : ${p2.name}`);
-      return false;
-    }
-  }
-  if(app1.facPatientId !== app2.facPatientId){
-    console.log(`facPatientId: ${app1.facPatientId} : ${app2.facPatientId}`);
-    return false;
-  }
-  return true;
+  return undefined;
 }
 
 export async function prepare(
@@ -242,94 +187,82 @@ export async function prepare(
 
 export async function insert(repo: IWebAppRepository){
   let res = await repo.insert(appointment);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(appointment2);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(appointment5);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.insert(appointment7);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function update(repo: IWebAppRepository){
   let res = await repo.update(appointment3);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.update(appointment4);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.update(appointment6);
-  assert(res);
+  expect(res).toBe(true);
   res = await repo.update(appointment8);
-  assert(res);
+  expect(res).toBe(true);
 }
 export async function read(repo: IWebAppRepository){
   let res = await repo.read(appointment3.id);
-  if(res){
-    assert(compare(appointment3, res));
-  }else{
-    console.log("1");
-    console.log(res);
-    fail();
-  }
+  expect(omitData(appointment3)).toEqual(omitData(res));
   res = await repo.read(appointment4.id);
-  if(res){
-    assert(compare(appointment4, res));
-  }else{
-    console.log("2");
-    console.log(res);
-    fail();
-  }
+  expect(omitData(appointment4)).toEqual(omitData(res));
 }
 export async function list(repo: IWebAppRepository){
   let res = await repo.list({fromDate:"2024-06-07", toDate: "2024-06-07"});
   if(res.length === 1){
-    assert(compare(appointment3, res[0]));
+    expect(omitData(appointment3)).toEqual(omitData(res[0]));
   }else{
     console.log(res[0]);
     console.log(res[1]);
     console.log(`list1: ${res.length}`)
-    fail();
+    expect.fail();
   }
   res = await repo.list({fromDate:"2024-06-01"});
   if(res.length === 4){
     for(const r of res){
       if(r.id === appointment3.id){
-        assert(compare(appointment3, r));
+        expect(omitData(appointment3)).toEqual(omitData(r));
       }else if(r.id === appointment4.id){
-        assert(compare(appointment4, r));
+        expect(omitData(appointment4)).toEqual(omitData(r));
       }else if(r.id === appointment6.id){
-        assert(compare(appointment6, r));
+        expect(omitData(appointment6)).toEqual(omitData(r));
       }else if(r.id === appointment8.id){
-        assert(compare(appointment8, r));
+        expect(omitData(appointment8)).toEqual(omitData(r));
       }else{
-        fail();
+        expect.fail();
       }
     }
   }else{
     console.log(`list2: ${res.length}`)
-    fail();
+    expect.fail();
   }
 }
 export async function patientList(repo: IWebAppRepository){
   const res = await repo.list({patientId: appointment3.patient.id});
   if(res.length === 1){
-    assert(compare(appointment3, res[0]));
+    expect(omitData(appointment3)).toEqual(omitData(res[0]));
   }else{
     console.log(`list1: ${res.length}`)
-    fail();
+    expect.fail();
   }
 }
 export async function del(repo: IWebAppRepository){
   await repo.delete(appointment3);
   let res = await repo.read(appointment3.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(appointment2);
   res = await repo.read(appointment2.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(appointment6);
   res = await repo.read(appointment6.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
   await repo.delete(appointment8);
   res = await repo.read(appointment8.id);
-  assertFalse(res);
+  expect(res).toBeUndefined();
 }
 export async function cleanUp(
     repoUser?: IUserRepository, repoPat?: IPatientRepository,
