@@ -18,11 +18,14 @@
     "@tanstack/solid-router-devtools": "^1.167.2",
     "@tanstack/solid-router-ssr-query": "^1.167.3",
     "@tanstack/solid-start": "^1.168.57",
-    "@std/crypto": "npm:@jsr/std__crypto@1.1.0",
-    "@std/encoding": "npm:@jsr/std__encoding@1.0.11",
-    "@std/uuid": "npm:@jsr/std__uuid@1.1.2",
     "nitro": "npm:nitro@3.0.260903-beta",
-    "solid-js": "^1.9.17"
+    "solid-js": "^1.9.17",
+    "@pandacss/dev": "1.12.1",
+    "zod": "^4.6.5",
+    "drizzle-kit": "^1.0.0-rc.4",
+    "drizzle-orm": "^1.0.0-rc.4",
+    "pg": "^8.23.1",
+    "uuidv7": "^1.2.1"
   },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.10",

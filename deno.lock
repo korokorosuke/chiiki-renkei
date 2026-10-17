@@ -1,22 +1,6 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@std/assert@^1.0.19": "1.0.19",
-    "jsr:@std/bytes@^1.0.6": "1.0.6",
-    "jsr:@std/crypto@1.1.0": "1.1.0",
-    "jsr:@std/crypto@^1.1.0": "1.1.0",
-    "jsr:@std/csv@1.0.6": "1.0.6",
-    "jsr:@std/encoding@1.0.11": "1.0.11",
-    "jsr:@std/fs@1.0.24": "1.0.24",
-    "jsr:@std/internal@^1.0.12": "1.0.14",
-    "jsr:@std/internal@^1.0.14": "1.0.14",
-    "jsr:@std/path@^1.1.5": "1.1.6",
-    "jsr:@std/streams@1.2.0": "1.2.0",
-    "jsr:@std/streams@^1.0.9": "1.2.0",
-    "jsr:@std/uuid@1.1.2": "1.1.2",
-    "npm:@jsr/std__crypto@1.1.0": "1.1.0",
-    "npm:@jsr/std__encoding@1.0.11": "1.0.11",
-    "npm:@jsr/std__uuid@1.1.2": "1.1.2",
     "npm:@pandacss/dev@1.12.1": "1.12.1_jsdom@30.1.2_typescript@7.0.2",
     "npm:@solidjs/testing-library@~0.8.10": "0.8.10_solid-js@1.9.17",
     "npm:@tanstack/devtools-vite@~0.8.5": "0.8.5_vite@8.3.4_@emnapi+core@1.11.3_@emnapi+runtime@1.11.3",
@@ -28,70 +12,19 @@
     "npm:@tanstack/solid-router-ssr-query@^1.167.3": "1.167.3_@tanstack+solid-query@5.104.1_@tanstack+solid-router@1.170.38_solid-js@1.9.17",
     "npm:@tanstack/solid-router@^1.170.38": "1.170.38_solid-js@1.9.17",
     "npm:@tanstack/solid-start@^1.168.57": "1.168.57_solid-js@1.9.17_vite@8.3.4_vite-plugin-solid@2.11.14",
-    "npm:drizzle-kit@1.0.0-rc.4": "1.0.0-rc.4",
-    "npm:drizzle-orm@1.0.0-rc.4": "1.0.0-rc.4_pg@8.23.1_zod@4.6.5",
+    "npm:drizzle-kit@^1.0.0-rc.4": "1.0.0-rc.5-ab785fc",
+    "npm:drizzle-orm@^1.0.0-rc.4": "1.0.0-rc.5-ab785fc_pg@8.23.1_zod@4.6.5",
     "npm:jsdom@^30.1.2": "30.1.2",
     "npm:nitro@3.0.260903-beta": "3.0.260903-beta",
-    "npm:pg@8.23.1": "8.23.1",
+    "npm:pg@^8.23.1": "8.23.1",
     "npm:solid-js@^1.9.17": "1.9.17",
     "npm:typescript@^7.0.2": "7.0.2",
+    "npm:uuidv7@^1.2.1": "1.2.1",
     "npm:vite-plugin-solid@^2.11.14": "2.11.14_solid-js@1.9.17_vite@8.3.4",
     "npm:vite@*": "8.3.4",
     "npm:vite@^8.3.4": "8.3.4",
     "npm:vitest@^5.0.3": "5.0.3_jsdom@30.1.2_vite@8.3.4",
-    "npm:zod@4.6.5": "4.6.5"
-  },
-  "jsr": {
-    "@std/assert@1.0.19": {
-      "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e",
-      "dependencies": [
-        "jsr:@std/internal@^1.0.12"
-      ]
-    },
-    "@std/bytes@1.0.6": {
-      "integrity": "f6ac6adbd8ccd99314045f5703e23af0a68d7f7e58364b47d2c7f408aeb5820a"
-    },
-    "@std/crypto@1.1.0": {
-      "integrity": "b8d6d0a6377a32b213af2661ed7bf1062d94feac0c57def5526a8e74a95c3ec8"
-    },
-    "@std/csv@1.0.6": {
-      "integrity": "52ef0e62799a0028d278fa04762f17f9bd263fad9a8e7f98c14fbd371d62d9fd",
-      "dependencies": [
-        "jsr:@std/streams@^1.0.9"
-      ]
-    },
-    "@std/encoding@1.0.11": {
-      "integrity": "e7cef2f0b3153bccc17431e7c864a1de03a4b6d9647389c43e08aaa775d37385"
-    },
-    "@std/fs@1.0.24": {
-      "integrity": "f3061b45b81673a2bece689da041df32d174be064c89eb6397fb5718d3fb7877",
-      "dependencies": [
-        "jsr:@std/internal@^1.0.14",
-        "jsr:@std/path"
-      ]
-    },
-    "@std/internal@1.0.14": {
-      "integrity": "291516b3d4c35024d6ffbc0a9df5bf4c64116e05b50012cf846710152d2ffdf7"
-    },
-    "@std/path@1.1.6": {
-      "integrity": "c68485c2a4dfbb5ae3cc74fae4e8c4e5d874cf8a8ed12927917235c758b46cbe",
-      "dependencies": [
-        "jsr:@std/internal@^1.0.14"
-      ]
-    },
-    "@std/streams@1.2.0": {
-      "integrity": "256b934254778f2bf45f5713b934209ff29e9b4b7fd4ec095219966813758c5f",
-      "dependencies": [
-        "jsr:@std/bytes"
-      ]
-    },
-    "@std/uuid@1.1.2": {
-      "integrity": "348b68ca357058d83e3aa463c8a72e836d7df7e9e095332b0e1ec78873b40b7a",
-      "dependencies": [
-        "jsr:@std/bytes",
-        "jsr:@std/crypto@^1.1.0"
-      ]
-    }
+    "npm:zod@^4.6.5": "4.6.5"
   },
   "npm": {
     "@asamuzakjp/css-color@7.1.3": {
@@ -333,8 +266,8 @@
         "postcss-selector-parser"
       ]
     },
-    "@drizzle-team/brocli@0.12.0": {
-      "integrity": "sha512-mlUE+rZ8CatQekLhnaiN91Iemdd+e2gFKooGlnRB3oPTL3VghLfX24dx7HrzMNeC1JrIB/0kpsfyty3f5HNfxQ=="
+    "@drizzle-team/brocli@0.12.1": {
+      "integrity": "sha512-yHwomvolVafvUXhy5TdiJVkuNCxXn+bKOs2aWiWEQh/5YaV97Oa/abJz3dmx7lxgIUsUlS1Jl4mEfvJPo3YsVw=="
     },
     "@emnapi/core@1.11.3": {
       "integrity": "sha512-zLpS5asjEb7lq8jYLq37N6XKaE41DIexlY1rF/z4/tIl3wo13Sqm28fRyfIsKZD+NZ8mM5RoKkpW/rBcuoSZSg==",
@@ -543,26 +476,6 @@
         "jsbi"
       ]
     },
-    "@jsr/std__bytes@1.0.6": {
-      "integrity": "sha512-St6yKggjFGhxS52IFLJWvkchRFbAKg2Xh8UxA4S1EGz7GJ2Ui+ssDDldj/w2c8vCxvl6qgR0HaYbKeFJNqujmA==",
-      "tarball": "https://npm.jsr.io/~/11/@jsr/std__bytes/1.0.6.tgz"
-    },
-    "@jsr/std__crypto@1.1.0": {
-      "integrity": "sha512-3k5X+V01YqCgIu3tuvS6saFVUn39p+Xe0ITMigwyoDDZsRMUsZcyjwxJpyL6TZF7NFI5Do7alSsHQElZQH1OJg==",
-      "tarball": "https://npm.jsr.io/~/11/@jsr/std__crypto/1.1.0.tgz"
-    },
-    "@jsr/std__encoding@1.0.11": {
-      "integrity": "sha512-4SmW8WXf4x4FjkxVpxbir06QYwxw/h/2+RU5A66iKXbJC9WAYCICZkH01mcOGj8FgSitF/lSTlT585RZfo8Ukg==",
-      "tarball": "https://npm.jsr.io/~/11/@jsr/std__encoding/1.0.11.tgz"
-    },
-    "@jsr/std__uuid@1.1.2": {
-      "integrity": "sha512-7s7l/gBzq85btrBUZ4wK6e2PR46mheEdADzUQbWQeRlSkz4hc9MyyQXUxb1OQ3j2xyahPPuOeyjbscsD1cbstg==",
-      "dependencies": [
-        "@jsr/std__bytes",
-        "@jsr/std__crypto"
-      ],
-      "tarball": "https://npm.jsr.io/~/11/@jsr/std__uuid/1.1.2.tgz"
-    },
     "@kobalte/core@0.13.14_solid-js@1.9.17": {
       "integrity": "sha512-SBVB1lnvYbYt2x3t7fG0lo5fGLEbHQ6PII3NDPva8vD5e2v53On84ZVQiuIk0XI/55R4GQhden7Yem+R/XR8uQ==",
       "dependencies": [
@@ -589,81 +502,6 @@
         "solid-js"
       ]
     },
-    "@libsql/client@0.17.4": {
-      "integrity": "sha512-lYayFWasDV78A+TjlEhr6ubb3odBV6OHjb+wdp8VQcyWWAEIjuwbCHaraEUS4m4yWoo0BvZo96It4VdzZRmRWw==",
-      "dependencies": [
-        "@libsql/core",
-        "@libsql/hrana-client",
-        "js-base64",
-        "libsql",
-        "promise-limit"
-      ]
-    },
-    "@libsql/core@0.17.4": {
-      "integrity": "sha512-LqF9gIvnJ38nmAH1y/ChizHqDO/MO1wLgA96XrraulEEbqXxLjleSH92YWTolbuJKgPUmGu4aJk9W3UnAcxLOQ==",
-      "dependencies": [
-        "js-base64"
-      ]
-    },
-    "@libsql/darwin-arm64@0.5.29": {
-      "integrity": "sha512-K+2RIB1OGFPYQbfay48GakLhqf3ArcbHqPFu7EZiaUcRgFcdw8RoltsMyvbj5ix2fY0HV3Q3Ioa/ByvQdaSM0A==",
-      "os": ["darwin"],
-      "cpu": ["arm64"]
-    },
-    "@libsql/darwin-x64@0.5.29": {
-      "integrity": "sha512-OtT+KFHsKFy1R5FVadr8FJ2Bb1mghtXTyJkxv0trocq7NuHntSki1eUbxpO5ezJesDvBlqFjnWaYYY516QNLhQ==",
-      "os": ["darwin"],
-      "cpu": ["x64"]
-    },
-    "@libsql/hrana-client@0.10.0": {
-      "integrity": "sha512-OoA4EMqRAC7kn7V2P6EQqRcpZf2W+AjsNIyCizBg339Tq/aMC7sRnzs3SklderhmQWAqEzvv8A2vhxVmWpkVvw==",
-      "dependencies": [
-        "@libsql/isomorphic-ws",
-        "js-base64"
-      ]
-    },
-    "@libsql/isomorphic-ws@0.1.5": {
-      "integrity": "sha512-DtLWIH29onUYR00i0GlQ3UdcTRC6EP4u9w/h9LxpUZJWRMARk6dQwZ6Jkd+QdwVpuAOrdxt18v0K2uIYR3fwFg==",
-      "dependencies": [
-        "@types/ws",
-        "ws"
-      ]
-    },
-    "@libsql/linux-arm-gnueabihf@0.5.29": {
-      "integrity": "sha512-CD4n4zj7SJTHso4nf5cuMoWoMSS7asn5hHygsDuhRl8jjjCTT3yE+xdUvI4J7zsyb53VO5ISh4cwwOtf6k2UhQ==",
-      "os": ["linux"],
-      "cpu": ["arm"]
-    },
-    "@libsql/linux-arm-musleabihf@0.5.29": {
-      "integrity": "sha512-2Z9qBVpEJV7OeflzIR3+l5yAd4uTOLxklScYTwpZnkm2vDSGlC1PRlueLaufc4EFITkLKXK2MWBpexuNJfMVcg==",
-      "os": ["linux"],
-      "cpu": ["arm"]
-    },
-    "@libsql/linux-arm64-gnu@0.5.29": {
-      "integrity": "sha512-gURBqaiXIGGwFNEaUj8Ldk7Hps4STtG+31aEidCk5evMMdtsdfL3HPCpvys+ZF/tkOs2MWlRWoSq7SOuCE9k3w==",
-      "os": ["linux"],
-      "cpu": ["arm64"]
-    },
-    "@libsql/linux-arm64-musl@0.5.29": {
-      "integrity": "sha512-fwgYZ0H8mUkyVqXZHF3mT/92iIh1N94Owi/f66cPVNsk9BdGKq5gVpoKO+7UxaNzuEH1roJp2QEwsCZMvBLpqg==",
-      "os": ["linux"],
-      "cpu": ["arm64"]
-    },
-    "@libsql/linux-x64-gnu@0.5.29": {
-      "integrity": "sha512-y14V0vY0nmMC6G0pHeJcEarcnGU2H6cm21ZceRkacWHvQAEhAG0latQkCtoS2njFOXiYIg+JYPfAoWKbi82rkg==",
-      "os": ["linux"],
-      "cpu": ["x64"]
-    },
-    "@libsql/linux-x64-musl@0.5.29": {
-      "integrity": "sha512-gquqwA/39tH4pFl+J9n3SOMSymjX+6kZ3kWgY3b94nXFTwac9bnFNMffIomgvlFaC4ArVqMnOZD3nuJ3H3VO1w==",
-      "os": ["linux"],
-      "cpu": ["x64"]
-    },
-    "@libsql/win32-x64-msvc@0.5.29": {
-      "integrity": "sha512-4/0CvEdhi6+KjMxMaVbFM2n2Z44escBRoEYpR+gZg64DdetzGnYm8mcNLcoySaDJZNaBd6wz5DNdgRmcI4hXcg==",
-      "os": ["win32"],
-      "cpu": ["x64"]
-    },
     "@napi-rs/wasm-runtime@1.1.6_@emnapi+core@1.11.3_@emnapi+runtime@1.11.3": {
       "integrity": "sha512-ZLv/JdUfkvOy9eCnnBaGfiO+XimbjebAeO+MRQqD/B+FR1tnRN0tpKSJHRbE8sFfS6aqsXZ67TQjfwfsxULVbg==",
       "dependencies": [
@@ -671,9 +509,6 @@
         "@emnapi/runtime",
         "@tybys/wasm-util"
       ]
-    },
-    "@neon-rs/load@0.0.4": {
-      "integrity": "sha512-kTPhdZyTQxB+2wpiRcFWrDcejc4JI6tkPuS7UZCG4l6Zvc5kU/gGQ/ozvHTh1XR5tS+UlfAfGuPajjzQjCiHCw=="
     },
     "@nodelib/fs.scandir@2.1.5": {
       "integrity": "sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==",
@@ -1585,12 +1420,6 @@
     "@types/node@17.0.45": {
       "integrity": "sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw=="
     },
-    "@types/ws@8.18.1": {
-      "integrity": "sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==",
-      "dependencies": [
-        "@types/node"
-      ]
-    },
     "@typescript/typescript-aix-ppc64@7.0.2": {
       "integrity": "sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==",
       "os": ["aix"],
@@ -1970,9 +1799,6 @@
     "dequal@2.0.3": {
       "integrity": "sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA=="
     },
-    "detect-libc@2.0.2": {
-      "integrity": "sha512-UX6sGumvvqSaXgdKGUsgZWqcUyIXZ/vZTrlRT/iobiKhGL0zL4d3osHj3uqllWJK+i+sixDS/3COVEOFbupFyw=="
-    },
     "detect-libc@2.1.2": {
       "integrity": "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ=="
     },
@@ -1982,8 +1808,8 @@
     "dom-accessibility-api@0.5.16": {
       "integrity": "sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg=="
     },
-    "drizzle-kit@1.0.0-rc.4": {
-      "integrity": "sha512-KZCpjRyu+oYHLj/UJogfFlOkWhHVkaEI2EOT1U3NDVXUzLoTyPjqwFxwOrlQxsY6jzRyxcz4EacqboGfhEeYrA==",
+    "drizzle-kit@1.0.0-rc.5-ab785fc": {
+      "integrity": "sha512-TSg7sK1finOxdo48O9mDfyMY3lhi/aHCVIil5TFhthyq/H/89H/3nwX5V9Gdp7HYMUGFHyWJD5iowSn98l0elw==",
       "dependencies": [
         "@drizzle-team/brocli",
         "@js-temporal/polyfill",
@@ -1993,15 +1819,13 @@
       ],
       "bin": true
     },
-    "drizzle-orm@1.0.0-rc.4_pg@8.23.1_zod@4.6.5": {
-      "integrity": "sha512-BT+pf+qoiYHqltoA88Jmf6ilGMXPlpfE0hEJKc2adRtMCAl25Swk/t5gXcWxZNAwdtf3F5gCd2FpeOyP/pT0Hw==",
+    "drizzle-orm@1.0.0-rc.5-ab785fc_pg@8.23.1_zod@4.6.5": {
+      "integrity": "sha512-28PVt0PS/+4kPa8eKr4mqP8y/YcbdOgdVcGUa6LGl2Kd2bykNWuf/WUOFoSCoynagblbcRgMO1zChLvRcWD6Tg==",
       "dependencies": [
-        "@libsql/client",
         "pg",
         "zod"
       ],
       "optionalPeers": [
-        "@libsql/client",
         "pg",
         "zod"
       ]
@@ -2254,9 +2078,6 @@
       "integrity": "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==",
       "bin": true
     },
-    "js-base64@3.8.0": {
-      "integrity": "sha512-65kvbemyZhj+ExQt1PEFyBEjL5vAHysu1lJdW1AwhhChkO8ZBPizYk/m9GVrpbS2Je1hF+UYZ+6KywqtZV8mHw=="
-    },
     "js-tokens@4.0.0": {
       "integrity": "sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ=="
     },
@@ -2324,26 +2145,6 @@
         "picocolors",
         "shell-quote"
       ]
-    },
-    "libsql@0.5.29": {
-      "integrity": "sha512-8lMP8iMgiBzzoNbAPQ59qdVcj6UaE/Vnm+fiwX4doX4Narook0a4GPKWBEv+CR8a1OwbfkgL18uBfBjWdF0Fzg==",
-      "dependencies": [
-        "@neon-rs/load",
-        "detect-libc@2.0.2"
-      ],
-      "optionalDependencies": [
-        "@libsql/darwin-arm64",
-        "@libsql/darwin-x64",
-        "@libsql/linux-arm-gnueabihf",
-        "@libsql/linux-arm-musleabihf",
-        "@libsql/linux-arm64-gnu",
-        "@libsql/linux-arm64-musl",
-        "@libsql/linux-x64-gnu",
-        "@libsql/linux-x64-musl",
-        "@libsql/win32-x64-msvc"
-      ],
-      "os": ["darwin", "linux", "win32"],
-      "cpu": ["x64", "arm64", "wasm32", "arm"]
     },
     "lightningcss-android-arm64@1.31.1": {
       "integrity": "sha512-HXJF3x8w9nQ4jbXRiNppBCqeZPIAfUo8zE/kOEGbW5NZvGc/K7nMxbhIr+YlFlHW5mpbg/YFPdbnCh1wAXCKFg==",
@@ -2458,7 +2259,7 @@
     "lightningcss@1.31.1": {
       "integrity": "sha512-l51N2r93WmGUye3WuFoN5k10zyvrVs0qfKBhyC5ogUQ6Ew6JUSswh78mbSO+IU3nTWsyOArqPCcShdQSadghBQ==",
       "dependencies": [
-        "detect-libc@2.1.2"
+        "detect-libc"
       ],
       "optionalDependencies": [
         "lightningcss-android-arm64@1.31.1",
@@ -2477,7 +2278,7 @@
     "lightningcss@1.33.0": {
       "integrity": "sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==",
       "dependencies": [
-        "detect-libc@2.1.2"
+        "detect-libc"
       ],
       "optionalDependencies": [
         "lightningcss-android-arm64@1.33.0",
@@ -2818,9 +2619,6 @@
         "react-is"
       ]
     },
-    "promise-limit@2.7.0": {
-      "integrity": "sha512-7nJ6v5lnJsXwGprnGXga4wx6d1POjvi5Qmf1ivTRxTjH4Z/9Czja/UCMLVmB9N93GeWOU93XaFaEt6jbuoagNw=="
-    },
     "punycode@2.3.1": {
       "integrity": "sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg=="
     },
@@ -3152,6 +2950,10 @@
     "util-deprecate@1.0.2": {
       "integrity": "sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw=="
     },
+    "uuidv7@1.2.1": {
+      "integrity": "sha512-4kPkK3/XTQW9Hbm4CaqfICn+kY9LJtDVEOfgsRRra/+n2Ofg4NqzRFceAkxvQ/Ud/6BpHOPzj8cirqM7TzTN5Q==",
+      "bin": true
+    },
     "vite-plugin-solid@2.11.14_solid-js@1.9.17_vite@8.3.4": {
       "integrity": "sha512-7ZVBt8rpoyqmlwin2kRIUveaHoF6/kulY7gsnD+qFh4nS29V4OPAnw+ojoAspXIjObiL9o1xh9a/nTuYHm02Rw==",
       "dependencies": [
@@ -3301,24 +3103,13 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/assert@^1.0.19",
-      "jsr:@std/crypto@1.1.0",
       "jsr:@std/csv@1.0.6",
-      "jsr:@std/encoding@1.0.11",
       "jsr:@std/fs@1.0.24",
-      "jsr:@std/streams@1.2.0",
-      "jsr:@std/uuid@1.1.2",
-      "npm:@pandacss/dev@1.12.1",
-      "npm:drizzle-kit@1.0.0-rc.4",
-      "npm:drizzle-orm@1.0.0-rc.4",
-      "npm:pg@8.23.1",
-      "npm:zod@4.6.5"
+      "jsr:@std/streams@1.2.0"
     ],
     "packageJson": {
       "dependencies": [
-        "npm:@jsr/std__crypto@1.1.0",
-        "npm:@jsr/std__encoding@1.0.11",
-        "npm:@jsr/std__uuid@1.1.2",
+        "npm:@pandacss/dev@1.12.1",
         "npm:@solidjs/testing-library@~0.8.10",
         "npm:@tanstack/devtools-vite@~0.8.5",
         "npm:@tanstack/router-cli@^1.167.40",
@@ -3329,13 +3120,18 @@
         "npm:@tanstack/solid-router-ssr-query@^1.167.3",
         "npm:@tanstack/solid-router@^1.170.38",
         "npm:@tanstack/solid-start@^1.168.57",
+        "npm:drizzle-kit@^1.0.0-rc.4",
+        "npm:drizzle-orm@^1.0.0-rc.4",
         "npm:jsdom@^30.1.2",
         "npm:nitro@3.0.260903-beta",
+        "npm:pg@^8.23.1",
         "npm:solid-js@^1.9.17",
         "npm:typescript@^7.0.2",
+        "npm:uuidv7@^1.2.1",
         "npm:vite-plugin-solid@^2.11.14",
         "npm:vite@^8.3.4",
-        "npm:vitest@^5.0.3"
+        "npm:vitest@^5.0.3",
+        "npm:zod@^4.6.5"
       ]
     }
   }

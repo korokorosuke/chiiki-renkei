@@ -1,4 +1,4 @@
-import { v7 } from "@std/uuid"
+import { uuidv7 } from "uuidv7"
 import { ok, ng, type Result } from "../lib/response.ts"
 import type { ValidationResult } from "../lib/validation.ts"
 import { getNow } from "../lib/datetime.ts"
@@ -29,7 +29,7 @@ interface IUpdatedAt{
 }
 
 export function generateId(): string{
-    return v7.generate();
+    return uuidv7();
 }
 
 export function setId(val: IIdentifiable): void{

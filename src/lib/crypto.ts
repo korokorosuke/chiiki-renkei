@@ -1,6 +1,4 @@
-import { crypto } from "@std/crypto"
-
-export const version = "0.0.5";
+export const version = "0.1.0";
 
 interface keyinfo{
 	salt: Uint8Array,
@@ -62,7 +60,7 @@ export class Crypto{
 		return await crypto.subtle.decrypt({name: "AES-GCM", iv: iv}, key, encval);
 	}
 
-	static async decryptText(key: CryptoKey, iv: Uint8Array<ArrayBuffer>, encval: ArrayBuffer): Promise<string> {
+	static async decryptToText(key: CryptoKey, iv: Uint8Array<ArrayBuffer>, encval: ArrayBuffer): Promise<string> {
 		const val = await Crypto.decrypt(key, iv, encval);
 		const x = new Uint8Array(val);
 		return Crypto.decode(x);
