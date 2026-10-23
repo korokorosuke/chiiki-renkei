@@ -1,11 +1,10 @@
 import { createServerFn, createServerOnlyFn } from "@tanstack/solid-start"
-import { redirect } from "@tanstack/solid-router"
 import { StatisticsService } from "../domain/statisticsService.ts"
 import { AppointmentService } from "../domain/appointmentService.ts"
 import { ReferralToService } from "../domain/referraltoService.ts"
 import { ReplyListService } from "../domain/replyService.ts"
 import { AppointmentRepository, ReplyRepository, ReferralToRepository } from "../infra/allRepository.ts"
-import { authenticate, Auth, Role } from "../lib/auth.ts"
+import { authenticateOrRedirect, Auth, Role } from "../lib/auth.ts"
 import { type Condition, validate } from "../domain/statistics.ts"
 import type { Referral } from "../domain/referral.ts"
 import type { ReferralTo } from "../domain/referralto.ts"
@@ -33,13 +32,7 @@ const getCondition = createServerOnlyFn((condition: Condition): Condition => {
 export const getReferrals = createServerFn({ method: "GET" })
   .validator((data : {condition: Condition}) => data)
   .handler(async ({ data }): Promise<Referral[]> => {
-    const auth = await authenticate(AUTH_READ);
-    if(!auth.ok){
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
-    }
+    const auth = await authenticateOrRedirect(AUTH_READ);
     const cond = getCondition(data.condition);
     if(!validate(cond).ok){
       return [];
@@ -54,13 +47,7 @@ export const getReferrals = createServerFn({ method: "GET" })
 export const getReferralTos = createServerFn({ method: "GET" })
   .validator((data : {condition: Condition}) => data)
   .handler(async ({ data }): Promise<ReferralTo[]> => {
-    const auth = await authenticate(AUTH_READ);
-    if(!auth.ok){
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
-    }
+    const auth = await authenticateOrRedirect(AUTH_READ);
     const cond = getCondition(data.condition);
     if(!validate(cond).ok){
       return [];
@@ -75,13 +62,7 @@ export const getReferralTos = createServerFn({ method: "GET" })
 export const getReplies = createServerFn({ method: "GET" })
   .validator((data : {condition: Condition}) => data)
   .handler(async ({ data }): Promise<Referral[]> => {
-    const auth = await authenticate(AUTH_READ);
-    if(!auth.ok){
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
-    }
+    const auth = await authenticateOrRedirect(AUTH_READ);
     const cond = getCondition(data.condition);
     if(!validate(cond).ok){
       return [];

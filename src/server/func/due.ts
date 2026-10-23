@@ -1,9 +1,8 @@
 import { createServerFn } from "@tanstack/solid-start"
-import { redirect } from "@tanstack/solid-router"
 import { DueService } from "../domain/dueService.ts"
 import { DueRepository } from "../infra/allRepository.ts"
 import type { Due } from "../domain/due.ts"
-import { authenticate, Auth, Role } from "../lib/auth.ts"
+import { authenticateOrRedirect, Auth, Role } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
 import { LoggingMiddleware } from "../middleware/logging.ts"
 import { FatalError } from "../lib/types.ts"
@@ -17,38 +16,24 @@ const AUTH_WRITE = {auth: Auth.MASTER, role: Role.WRITE};
 
 export const getAllDues = createServerFn({ method: "GET" })
   .handler(async (): Promise<Due[]> => {
-    const auth = await authenticate(AUTH_READ_ALL);
-    if(auth.ok){
-      const service = new DueService(new DueRepository(auth.user.base));
-      return await service.getAll();
-    }else{
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
-    }
+    const auth = await authenticateOrRedirect(AUTH_READ_ALL);
+    const service = new DueService(new DueRepository(auth.user.base));
+    return await service.getAll();
 });
 
 export const insert = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
   .validator((data : {due: Due}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    const auth = await authenticate(AUTH_WRITE);
-    if(auth.ok){
-      try{
-        const service = new DueService(new DueRepository(auth.user.base));
-        return await service.insert(data.due);
-      }catch(e){
-        if(e instanceof FatalError){
-          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
-        }
-        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+    const auth = await authenticateOrRedirect(AUTH_WRITE);
+    try{
+      const service = new DueService(new DueRepository(auth.user.base));
+      return await service.insert(data.due);
+    }catch(e){
+      if(e instanceof FatalError){
+        await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
       }
-    }else{
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
+      return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
     }
 });
 
@@ -56,22 +41,15 @@ export const update = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
   .validator((data : {due: Due}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    const auth = await authenticate(AUTH_WRITE);
-    if(auth.ok){
-      try{
-        const service = new DueService(new DueRepository(auth.user.base));
-        return await service.update(data.due);
-      }catch(e){
-        if(e instanceof FatalError){
-          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
-        }
-        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+    const auth = await authenticateOrRedirect(AUTH_WRITE);
+    try{
+      const service = new DueService(new DueRepository(auth.user.base));
+      return await service.update(data.due);
+    }catch(e){
+      if(e instanceof FatalError){
+        await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
       }
-    }else{
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
+      return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
     }
 })
 
@@ -79,21 +57,14 @@ export const del = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
   .validator((data : {due: Due}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    const auth = await authenticate(AUTH_WRITE);
-    if(auth.ok){
-      try{
-        const service = new DueService(new DueRepository(auth.user.base));
-        return await service.delete(data.due);
-      }catch(e){
-        if(e instanceof FatalError){
-          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
-        }
-        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+    const auth = await authenticateOrRedirect(AUTH_WRITE);
+    try{
+      const service = new DueService(new DueRepository(auth.user.base));
+      return await service.delete(data.due);
+    }catch(e){
+      if(e instanceof FatalError){
+        await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
       }
-    }else{
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
+      return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
     }
 });

@@ -1,3 +1,4 @@
+import { redirect } from "@tanstack/solid-router"
 import { type SessionData, getSessionData } from "./session.ts"
 import { AuthService } from "../domain/authService.ts"
 import type { AuthUser } from "../domain/user.ts"
@@ -40,6 +41,17 @@ export async function authenticate(authoptions: AuthOption | AuthOption[]): Prom
     }else{
         return {ok: false, errors: res.errors};
     }
+}
+
+export async function authenticateOrRedirect(authoptions: AuthOption | AuthOption[]): Promise<Ok> {
+    const res = await authenticate(authoptions);
+    if(res.ok){
+        return res;
+    }
+    throw redirect({
+      // @ts-ignore: なんかエラーになるため
+      to: '/login'
+    });
 }
 
 export async function verify(authoptions?: AuthOption[]): Promise<AuthResult> {

@@ -1,8 +1,7 @@
 import { createServerFn } from "@tanstack/solid-start"
-import { redirect } from "@tanstack/solid-router"
 import { LogListService } from "../domain/logListService.ts"
 import { LogRepository } from "../infra/allRepository.ts"
-import { authenticate, Auth, Role } from "../lib/auth.ts"
+import { authenticateOrRedirect, Auth, Role } from "../lib/auth.ts"
 import type { Log, LogLevel } from "../domain/log.ts"
 import { type Result, ok, ng } from "../lib/response.ts"
 import { checkAndWrite, writeLogWithBase as writeLog, checkLevel } from "../lib/log.ts"
@@ -53,16 +52,9 @@ export const writeLogWithBase = createServerFn({ method: "POST" })
 export const getList = createServerFn({ method: "GET" })
   .validator((data : {level: string, fromDate: string, toDate: string, userId: string, patientId: string}) => data)
   .handler(async ({ data }): Promise<Log[]> => {
-    const auth = await authenticate(AUTH_READ);
-    if(auth.ok){
-      const service = new LogListService(new LogRepository(auth.user.base));
-      const res = await service.list(data.level, data.fromDate, data.toDate, data.userId, data.patientId,
-        auth.user.authLog === 2);
-      return res;
-    }else{
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
-    }
+    const auth = await authenticateOrRedirect(AUTH_READ);
+    const service = new LogListService(new LogRepository(auth.user.base));
+    const res = await service.list(data.level, data.fromDate, data.toDate, data.userId, data.patientId,
+      auth.user.authLog === 2);
+    return res;
 });

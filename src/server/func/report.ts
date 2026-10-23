@@ -1,9 +1,8 @@
 import { createServerFn } from "@tanstack/solid-start"
-import { redirect } from "@tanstack/solid-router"
 import { ReportService } from "../domain/reportService.ts"
 import { AppointmentService } from "../domain/appointmentService.ts"
 import { AppointmentRepository } from "../infra/allRepository.ts"
-import { authenticate, Auth, Role } from "../lib/auth.ts"
+import { authenticateOrRedirect, Auth, Role } from "../lib/auth.ts"
 import { type Condition, validate } from "../domain/report.ts"
 import type { Appointment } from "../domain/appointment.ts"
 import { info } from "./log.ts"
@@ -17,13 +16,7 @@ export interface AppointmentPrint extends Appointment {
 export const getAppointments = createServerFn({ method: "GET" })
   .validator((data : {condition: Condition}) => data)
   .handler(async ({ data }): Promise<AppointmentPrint[]> => {
-    const auth = await authenticate(AUTH_READ);
-    if(!auth.ok){
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
-    }
+    const auth = await authenticateOrRedirect(AUTH_READ);
     if(!validate(data.condition).ok){
       return [];
     }

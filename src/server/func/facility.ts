@@ -1,9 +1,8 @@
 import { createServerFn, createServerOnlyFn } from "@tanstack/solid-start"
-import { redirect } from "@tanstack/solid-router"
 import { FacilityService } from "../domain/facilityService.ts"
 import { FacilityRepository } from "../infra/allRepository.ts"
 import type { Facility, Fac } from "../domain/facility.ts"
-import { authenticate, Auth, Role, verify } from "../lib/auth.ts"
+import { authenticateOrRedirect, Auth, Role, verify } from "../lib/auth.ts"
 import { type Result, ng } from "../lib/response.ts"
 import { toFac } from "../lib/types.ts"
 import { LoggingMiddleware } from "../middleware/logging.ts"
@@ -16,19 +15,12 @@ const AUTH_WRITE = {auth: Auth.FACILITY, role: Role.WRITE};
 export const getFacilities = createServerFn({ method: "GET" })
   .validator((data : {name: string}) => data)
   .handler(async ({ data }): Promise<Facility[]> => {
-    const auth = await authenticate(AUTH_READ);
-    if(auth.ok){
-      if(data.name){
-        const service = new FacilityService(new FacilityRepository(auth.user.base));
-        return await service.getList({name: data.name});
-      }
-      return [];
-    }else{
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
+    const auth = await authenticateOrRedirect(AUTH_READ);
+    if(data.name){
+      const service = new FacilityService(new FacilityRepository(auth.user.base));
+      return await service.getList({name: data.name});
     }
+    return [];
 });
 
 const getFacilityMain =  createServerOnlyFn(
@@ -43,33 +35,19 @@ const getFacilityMain =  createServerOnlyFn(
 export const getFacility = createServerFn({ method: "GET" })
   .validator((data : {id: string}) => data)
   .handler(async ({ data }): Promise<Facility | undefined> => {
-    const auth = await authenticate(AUTH_READ);
-    if(auth.ok){
-      return await getFacilityMain(data.id, auth.user.base);
-    }else{
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
-    }
+    const auth = await authenticateOrRedirect(AUTH_READ);
+    return await getFacilityMain(data.id, auth.user.base);
 });
 
 export const getFac = createServerFn({ method: "GET" })
   .validator((data : {id: string}) => data)
   .handler(async ({ data }): Promise<Fac | undefined> => {
-    const auth = await authenticate(AUTH_READ);
-    if(auth.ok){
-      const facility = await getFacilityMain(data.id, auth.user.base);
-      if(facility){
-        return toFac(facility);
-      }
-      return undefined;
-    }else{
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
+    const auth = await authenticateOrRedirect(AUTH_READ);
+    const facility = await getFacilityMain(data.id, auth.user.base);
+    if(facility){
+      return toFac(facility);
     }
+    return undefined;
 });
 
 export const getUserFac = createServerFn({ method: "GET" })
@@ -81,35 +59,23 @@ export const getUserFac = createServerFn({ method: "GET" })
       if(facility){
         return toFac(facility);
       }
-      return undefined;
-    }else{
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
     }
+    return undefined;
 });
 
 export const insert = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
   .validator((data : {facility: Facility}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    const auth = await authenticate(AUTH_WRITE);
-    if(auth.ok){
-      try{
-        const service = new FacilityService(new FacilityRepository(auth.user.base));
-        return await service.insert(data.facility);
-      }catch(e){
-        if(e instanceof FatalError){
-          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
-        }
-        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+    const auth = await authenticateOrRedirect(AUTH_WRITE);
+    try{
+      const service = new FacilityService(new FacilityRepository(auth.user.base));
+      return await service.insert(data.facility);
+    }catch(e){
+      if(e instanceof FatalError){
+        await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
       }
-    }else{
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
+      return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
     }
 });
 
@@ -117,22 +83,15 @@ export const update = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
   .validator((data : {facility: Facility}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    const auth = await authenticate(AUTH_WRITE);
-    if(auth.ok){
-      try{
-        const service = new FacilityService(new FacilityRepository(auth.user.base));
-        return await service.update(data.facility);
-      }catch(e){
-        if(e instanceof FatalError){
-          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
-        }
-        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+    const auth = await authenticateOrRedirect(AUTH_WRITE);
+    try{
+      const service = new FacilityService(new FacilityRepository(auth.user.base));
+      return await service.update(data.facility);
+    }catch(e){
+      if(e instanceof FatalError){
+        await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
       }
-    }else{
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
+      return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
     }
 });
 
@@ -140,21 +99,14 @@ export const del = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
   .validator((data : {facility: Facility}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    const auth = await authenticate(AUTH_WRITE);
-    if(auth.ok){
-      try{
-        const service = new FacilityService(new FacilityRepository(auth.user.base));
-        return await service.delete(data.facility);
-      }catch(e){
-        if(e instanceof FatalError){
-          await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
-        }
-        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+    const auth = await authenticateOrRedirect(AUTH_WRITE);
+    try{
+      const service = new FacilityService(new FacilityRepository(auth.user.base));
+      return await service.delete(data.facility);
+    }catch(e){
+      if(e instanceof FatalError){
+        await fatal(e.title, e.details, auth.user.base, auth.user.id, e.patientId);
       }
-    }else{
-      throw redirect({
-        // @ts-ignore: なんかエラーになるため
-        to: '/login'
-      });
+      return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
     }
 });
