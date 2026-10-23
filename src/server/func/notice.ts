@@ -9,12 +9,20 @@ import { LoggingMiddleware } from "../middleware/logging.ts"
 import { FatalError } from "../lib/types.ts"
 import { fatal } from "../lib/log.ts"
 
-const AUTH_READ = {auth: Auth.MASTER, role: Role.READ};
+const AUTH_READ = [
+  {auth: Auth.FACILITY, role: Role.READ},
+  {auth: Auth.REFERRAL, role: Role.READ},
+  {auth: Auth.APPOINT, role: Role.READ},
+  {auth: Auth.STATISTICS, role: Role.READ},
+  {auth: Auth.MASTER, role: Role.READ},
+  {auth: Auth.LOG, role: Role.READ}
+];
+const AUTH_READ_ALL = {auth: Auth.MASTER, role: Role.READ};
 const AUTH_WRITE = {auth: Auth.MASTER, role: Role.WRITE};
 
 export const getAllNotices = createServerFn({ method: "GET" })
   .handler(async (): Promise<Notice[]> => {
-    const auth = await authenticate(AUTH_READ);
+    const auth = await authenticate(AUTH_READ_ALL);
     if(auth.ok){
       const service = new NoticeService(new NoticeRepository(auth.user.base));
       return await service.getAll();
@@ -43,7 +51,7 @@ export const getLoginNotices = createServerFn({ method: "GET" })
 
 export const getMenuNotices = createServerFn({ method: "GET" })
   .handler(async (): Promise<Notice[]> => {
-    const auth = await authenticate(AUTH_WRITE);
+    const auth = await authenticate(AUTH_READ);
     if(auth.ok){
       return await getList(auth.user.base, "メニュー");
     }else{
