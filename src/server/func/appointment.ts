@@ -14,10 +14,10 @@ import { LoggingMiddleware } from "../middleware/logging.ts"
 import { FatalError } from "../lib/types.ts"
 import { fatal } from "../lib/log.ts"
 
-const AUTH_READ = {auth: Auth.APPOINT, role: Role.READ};
+const AUTH_READ = {auth: Auth.REFERRAL, role: Role.READ};
 const AUTH_DATE_READ = {auth: Auth.STATISTICS, role: Role.READ};
 const AUTH_WRITE = [
-  {auth: Auth.APPOINT, role: Role.WRITE},
+  {auth: Auth.REFERRAL, role: Role.WRITE},
   {auth: Auth.WEB, role: Role.READ}
 ];
 

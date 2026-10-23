@@ -85,7 +85,7 @@ function checkMulti(authoptions: AuthOption[], user: AuthUser): boolean {
 function check(auth: Auth, role: Role, user: AuthUser): boolean {
     if(auth === Auth.REFERRAL){
         return user.authReferral >= role;
-    }else if(auth === Auth.APPOINT){
+    }else if(auth === Auth.ACTIVITY){
         return user.authActivity >= role;
     }else if(auth === Auth.FACILITY){
         return user.authFacility >= role;
@@ -112,7 +112,7 @@ export const enum Auth {
     WEB = "web",
     STATISTICS = "statistics",
     REFERRAL = "referral",
-    APPOINT = "appoint",
+    ACTIVITY = "activity",
     FACILITY = "facility",
     LOG = "log"
 }

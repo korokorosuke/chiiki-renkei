@@ -8,8 +8,8 @@ import { LoggingMiddleware } from "../middleware/logging.ts"
 import { FatalError } from "../lib/types.ts"
 import { fatal } from "../lib/log.ts"
 
-const AUTH_READ = {auth: Auth.APPOINT, role: Role.READ};
-const AUTH_WRITE = {auth: Auth.APPOINT, role: Role.WRITE};
+const AUTH_READ = {auth: Auth.ACTIVITY, role: Role.READ};
+const AUTH_WRITE = {auth: Auth.ACTIVITY, role: Role.WRITE};
 
 export const getInquiries = createServerFn({ method: "GET" })
   .validator((data : {patientId?: string, facilityId?: string, fromDate?: string, toDate?: string}) => data)

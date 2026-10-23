@@ -11,7 +11,7 @@ import { fatal } from "../lib/log.ts"
 const AUTH_READ = [
   {auth: Auth.FACILITY, role: Role.READ},
   {auth: Auth.REFERRAL, role: Role.READ},
-  {auth: Auth.APPOINT, role: Role.READ},
+  {auth: Auth.ACTIVITY, role: Role.READ},
   {auth: Auth.STATISTICS, role: Role.READ},
   {auth: Auth.MASTER, role: Role.READ},
   {auth: Auth.LOG, role: Role.READ}

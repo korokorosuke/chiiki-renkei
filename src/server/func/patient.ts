@@ -9,7 +9,7 @@ import { FatalError } from "../lib/types.ts"
 import { fatal } from "../lib/log.ts"
 
 const AUTH_READ = [
-  {auth: Auth.APPOINT, role: Role.READ},
+  {auth: Auth.ACTIVITY, role: Role.READ},
   {auth: Auth.REFERRAL, role: Role.READ},
 ];
 const AUTH_READ_ALL = {auth: Auth.MASTER, role: Role.READ};
