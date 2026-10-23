@@ -61,7 +61,6 @@ function App() {
   const [message, setMessage] = createSignal("　");
   const [base, setBase] = createSignal("");
   const [baseInfo, setBaseInfo] = createSignal<Base|undefined>();
-  const [visible, setVisible] = createSignal(true);
   const [disabled, setDisabled] = createSignal(false);
 
   let input: HTMLInputElement | undefined;
@@ -71,7 +70,6 @@ function App() {
 
   if(paramBase){
     setBase(paramBase);
-    setVisible(false);
   }else{
     const base = getLocalStorage(STORAGE_KEY);
     if(base){
@@ -186,13 +184,6 @@ function App() {
               value={password()} onChange={(e)=>setPassword(e.target.value)}
               required placeholder="パスワード" onKeyUp={handleKeyUp} />
           </div>
-          <Show when={visible()}>
-          <div class={ css({ marginTop: "1rem" }) }>
-            <input type="text" class={ inputStyle }
-              value={base()} onChange={(e)=>setBase(e.target.value)}
-              required placeholder="施設コード" onKeyUp={handleKeyUp} />
-          </div>
-          </Show>
           <div>
             <button type="button" class={ buttonStyle }
               onClick={handleClick}
