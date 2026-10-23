@@ -187,15 +187,16 @@ function App() {
           if(res && res.name){
             facility = res;
           }else{
-            alert("施設情報が不正です。");
+            alert("ユーザーの施設情報が不正です。");
+            location.href = `/login/${user.base}`;
           }
         }).catch(()=>{
-          alert("施設情報の取得に失敗しました。")
-          location.href = `/login/${user.base}?src=${location.href}`;
+          alert("ユーザーの施設情報の取得に失敗しました。");
+          location.href = `/login/${user.base}`;
         });
       }else{
         alert("ユーザーの施設情報が登録されていません。");
-        location.href = `/login/${user.base}?src=${location.href}`;
+        location.href = `/login/${user.base}`;
       }
     }
   });
