@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/solid-start"
+import { createServerFn, createServerOnlyFn } from "@tanstack/solid-start"
 import { AnswerPasswordService, AnswerService } from "../domain/answerService.ts"
 import { QuestionnaireService } from "../domain/questionnaireService.ts"
 import { AnswerRepository, AnswerPasswordRepository, QuestionnaireRepository } from "../infra/allRepository.ts"
@@ -132,28 +132,35 @@ export const insert = createServerFn({ method: "POST" })
     }
 });
 
-export const update = createServerFn({ method: "POST" })
+const updateMain = createServerOnlyFn(async (answer: Answer, base: string, user: string|undefined): Promise<Result> => {
+  try{
+    const service = new AnswerService(new AnswerRepository(base),
+      new AnswerPasswordRepository(base));
+    return await service.update(answer);
+  }catch(e){
+    if(e instanceof FatalError){
+      await fatal(e.title, e.details, base, user, e.patientId);
+    }
+    return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
+  }
+});
+
+export const updateNoAuth = createServerFn({ method: "POST" })
   .middleware([LoggingMiddleware])
   .validator((data : {answer: Answer, base: string}) => data)
   .handler(async ({ data }): Promise<Result> => {
-    let auth;
-    if(!data.base){
-      auth = await authenticateOrRedirect(AUTH_WRITE);
-      data.base = auth.user.base;
-    }
     if(data.base){
-      try{
-        const service = new AnswerService(new AnswerRepository(data.base),
-          new AnswerPasswordRepository(data.base));
-        return await service.update(data.answer);
-      }catch(e){
-        if(e instanceof FatalError){
-          await fatal(e.title, e.details, data.base, auth ? auth.user.id : undefined, e.patientId);
-        }
-        return ng(["処理が失敗しました。管理者にお問い合わせください。"]);
-      }
+      return await updateMain(data.answer, data.base, undefined);
     }
-    return ng(["登録に失敗しました。"]);
+    return ng(["施設情報がありません。"]);
+});
+
+export const update = createServerFn({ method: "POST" })
+  .middleware([LoggingMiddleware])
+  .validator((data : {answer: Answer}) => data)
+  .handler(async ({ data }): Promise<Result> => {
+    const auth = await authenticateOrRedirect(AUTH_WRITE);
+    return await updateMain(data.answer, auth.user.base, auth.user.id);
 });
 
 export const del = createServerFn({ method: "POST" })

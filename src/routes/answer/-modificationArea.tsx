@@ -1,6 +1,6 @@
 import { createSignal, Show, For, onMount, type Accessor, type Setter } from "solid-js"
 import { ErrorArea, setErrors } from "../../components/ErrorArea.tsx"
-import { update } from "../../server/func/answer.ts"
+import { updateNoAuth } from "../../server/func/answer.ts"
 import type { Answer } from "../../server/domain/answer.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
 import { button, input, area } from "../../styled-system/recipes/"
@@ -37,7 +37,7 @@ export function ModificationArea(props: ViewProps){
   async function handleRegister(){
     const a = structuredClone(props.answer());
     a.items = answerItems();
-    const res = await update({data: { answer: a, base: props.base }});
+    const res = await updateNoAuth({data: { answer: a, base: props.base }});
     if(res.ok){
       props.setAnswer(a);
       props.terminateModification("register");
