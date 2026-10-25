@@ -151,7 +151,7 @@ export function WebNotice(props: Props){
             <label>区分<span class={ etc({ type: "require"}) }>*</span></label>
           </div>
           <div>
-            <select value={selected().page} class={ input( { size: "id" }) }
+            <select value={selected().page} class={ input({ size: "rem7" }) }
                 onChange={(e)=>handleChange({page: e.target.value as NoticePage})}>
               <For each={NOTICE_PAGES}>{(page)=>
                 <option value={page}>{page}</option>

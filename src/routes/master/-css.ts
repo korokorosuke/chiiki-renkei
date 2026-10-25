@@ -15,6 +15,10 @@ export const modificationAreaStyle = css({
     margin: "px.5",
   },
 
+  "& select": {
+    margin: "px.5",
+  },
+
   "& textarea": {
     margin: "px.5",
     width: "30rem",

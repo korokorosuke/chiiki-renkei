@@ -185,7 +185,8 @@ export function Dr(props: Props){
           </div>
           <div>
             <Suspense fallback={<div>読み込み中...</div>}>
-            <select value={selected().department}
+            <select class={ input({ size: "rem20" }) }
+                value={selected().department}
                 onChange={(e)=>handleChange({department: e.target.value})}>
               <For each={deptsQuery.data}>{(dept)=>
                 <option value={dept.id}>{dept.name}</option>
