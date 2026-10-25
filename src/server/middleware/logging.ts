@@ -1,8 +1,8 @@
 import { createMiddleware } from '@tanstack/solid-start'
 import { info } from '../func/log.ts'
 
-export const LoggingMiddleware = createMiddleware({ type: 'function' }).server(async ({ next }) => {
-  const res = await next();
+export const LoggingMiddleware = createMiddleware({ type: 'function' }).server(async ({ next, context }) => {
+  const res = await next({context});
   // @ts-ignore: 型チェックできない
   const { result, data, serverFnMeta: { name } } = res;
   if(result.ok){
@@ -22,8 +22,8 @@ export const LoggingMiddleware = createMiddleware({ type: 'function' }).server(a
 
 export const LoggingPatientMiddleware = createMiddleware({ type: 'function' })
     // @ts-ignore: 型チェックできない
-    .server(async ({ next, request: { headers, url } } ) => {
-  const res = await next();
+    .server(async ({ next, request: { headers, url }, context } ) => {
+  const res = await next({context});
   // @ts-ignore: 型チェックできない
   const { result, serverFnMeta: { name } } = res;
   if(result){
