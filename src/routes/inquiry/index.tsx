@@ -5,6 +5,7 @@ import { getInquiries, update, del } from "../../server/func/inquiry.ts"
 import { getAllDues } from "../../server/func/due.ts"
 import Header from "../-header.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import { toDateHHMMString, toDateString, addDays } from "../../lib/datetime.ts"
 import { toUser, initInquiry } from "../../helper/types.ts"
 import type { Inquiry } from "../../server/domain/inquiry.ts"
@@ -14,6 +15,10 @@ import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/inquiry/")({
   component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authActivity>=2);
+  },
   loader: () => {
     const dues = getAllDues();
     return { dues };

@@ -4,6 +4,7 @@ import Header from "../-header.tsx"
 import { ListArea } from "./-listArea.tsx"
 import { ViewArea } from "./-viewArea.tsx"
 import { PatientArea } from "../../components/PatientArea.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import type { Patient } from "../../server/domain/patient.ts"
 import { getPatient } from "../../server/func/patient.ts"
 import { getAnswersByPatient } from "../../server/func/answer.ts"
@@ -13,6 +14,10 @@ import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/answer/patient/{-$id}")({
   component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authReferral>=2);
+  },
   loader: async ({ params: { id } }) => {
     if(id){
       const patient = await getPatient({ data: { id } });

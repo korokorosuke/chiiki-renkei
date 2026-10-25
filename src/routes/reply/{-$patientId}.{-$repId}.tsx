@@ -9,6 +9,7 @@ import { getAllClassifications } from "../../server/func/classification.ts"
 import { getDepartments } from "../../server/func/department.ts"
 import { getPatient } from "../../server/func/patient.ts"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import type { Reply } from "../../server/domain/reply.ts"
 import type { Referral } from "../../server/domain/referral.ts"
 import type { Patient } from "../../server/domain/patient.ts"
@@ -20,6 +21,10 @@ import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/reply/{-$patientId}/{-$repId}")({
   component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authReferral>=2);
+  },
   loader: async ({ params: { patientId, repId } }) => {
     let ok = true;
     const depts = getDepartments();

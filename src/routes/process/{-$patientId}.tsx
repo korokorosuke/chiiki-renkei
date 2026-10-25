@@ -10,11 +10,16 @@ import type { Patient } from "../../server/domain/patient.ts"
 import type { Referral } from "../../server/domain/referral.ts"
 import type { ReferralTo } from "../../server/domain/referralto.ts"
 import Header from "../-header.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import { button, input, area } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/process/{-$patientId}")({
   component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authReferral>=1);
+  },
   loader: async ({ params: { patientId } }) => {
     if(patientId){
       const patient = await getPatient({ data: { id: patientId } });

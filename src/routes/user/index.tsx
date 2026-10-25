@@ -6,12 +6,19 @@ import { getAllDepartments } from "../../server/func/department.ts"
 import { getAuthUser, getUsers } from "../../server/func/user.ts"
 import Header from "../-header.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import type { AuthUser } from "../../server/domain/user.ts"
 import type { Department } from "../../server/domain/department.ts"
 import { button, input, area } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/user/")({ component: App });
+export const Route = createFileRoute("/user/")({
+  component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authMaster>=2);
+  },
+});
 
 function App() {
   const [inputData, setInputData] = createSignal<string>("");

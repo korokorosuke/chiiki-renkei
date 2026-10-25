@@ -14,10 +14,17 @@ import { WebMaster } from "./-webMaster.tsx"
 import { WebNotice } from "./-webNotice.tsx"
 import { Questionnaire } from "./-questionnaire.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import { input, area } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/master/")({ component: App });
+export const Route = createFileRoute("/master/")({
+  component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authMaster>=2);
+  },
+});
 
 function App() {
   const [id, setId] = createSignal<string>("");

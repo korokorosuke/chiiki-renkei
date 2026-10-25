@@ -7,6 +7,7 @@ import { getStaffs } from "../../server/func/staff.ts"
 import { getPosts } from "../../server/func/master.ts"
 import Header from "../-header.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import type { Fac } from "../../server/domain/facility.ts"
 import type { Staff } from "../../server/domain/staff.ts"
 import { button, input, area } from "../../styled-system/recipes/"
@@ -16,6 +17,10 @@ import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/staff/")({
   component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authFacility>=2);
+  },
   loader: () => {
     const posts = getPosts();
     return { posts };

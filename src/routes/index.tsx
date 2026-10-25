@@ -17,10 +17,19 @@ import printer from "../assets/printer.svg"
 import log from "../assets/log.svg"
 import Header from "./-header.tsx"
 import { Notice } from "./-notice.tsx"
+import { authenticate } from "../helper/auth.ts"
 import { flex } from "../styled-system/patterns/"
 import { css } from "../styled-system/css/"
 
-export const Route = createFileRoute('/')({ component: Home });
+export const Route = createFileRoute('/')({
+  component: Home,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authReferral>=1||user.authActivity>=1||
+        user.authFacility>=1||user.authStatistics>=1||user.authMaster>=1||
+        user.authLog>=1);
+  },
+});
 
 type Props = {
   title: string

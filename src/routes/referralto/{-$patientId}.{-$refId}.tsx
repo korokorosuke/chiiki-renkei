@@ -8,6 +8,7 @@ import { getReferralTo, getReferralTos as getServerRefs } from "../../server/fun
 import { getDepartments } from "../../server/func/department.ts"
 import { getPatient } from "../../server/func/patient.ts"
 import { Message, setMessage as setStatusMessage , type MessageStatus} from "../../components/Message.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import type { ReferralTo } from "../../server/domain/referralto.ts"
 import type { Patient } from "../../server/domain/patient.ts"
 import type { Department } from "../../server/domain/department.ts"
@@ -16,6 +17,10 @@ import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/referralto/{-$patientId}/{-$refId}")({
   component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authReferral>=2);
+  },
   loader: async ({ params: { patientId, refId } }) => {
     const depts = getDepartments();
     let ok = true;

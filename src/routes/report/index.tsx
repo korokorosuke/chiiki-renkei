@@ -2,6 +2,7 @@ import { createSignal, For, Switch, Match, Show, onMount } from "solid-js"
 import { ListArea } from "./-listArea.tsx"
 import Header from "../-header.tsx"
 import { DoneBase } from "../report/-doneBase.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import { toDateString } from "../../lib/datetime.ts"
 import { getDepartments } from "../../server/func/department.ts"
 import { initAppointment } from "../../helper/types.ts"
@@ -14,6 +15,10 @@ import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/report/")({
   component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authReferral>=2);
+  },
   head: ()=>({
     scripts: [ { src: "/html2pdf.js" }, ],
   }),

@@ -2,13 +2,20 @@ import { createSignal, Show, onMount, For } from "solid-js"
 import { ListArea } from "./-listArea.tsx"
 import { getList } from "../../server/func/log.ts"
 import Header from "../-header.tsx"
+import { NormalDialog, showDialog } from "../../components/NormalDialog.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import { type Log, LOG_LEVEL, initialize } from "../../server/domain/log.ts"
 import { css, cx } from "../../styled-system/css/"
 import { button, input, area, etc } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
-import { NormalDialog, showDialog } from "../../components/NormalDialog.tsx"
 
-export const Route = createFileRoute("/log/")({ component: App });
+export const Route = createFileRoute("/log/")({
+  component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authLog>=1);
+  },
+});
 
 function App() {
   const [level, setLevel] = createSignal<string>("");

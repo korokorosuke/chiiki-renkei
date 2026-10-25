@@ -4,6 +4,7 @@ import { ListAreaReferralTo } from "./-listAreaReferralTo.tsx"
 import { ListAreaReply } from "./-listAreaReply.tsx"
 import Header from "../-header.tsx"
 import { DrSelect } from "../../components/DrSelect.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import { addDays, toDateString } from "../../lib/datetime.ts"
 import { initDept, initDr } from "../../helper/types.ts"
 import { getDepartments } from "../../server/func/department.ts"
@@ -17,6 +18,10 @@ import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/statistics/{-$id}")({
   component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authStatistics>=1);
+  },
   loader: () => {
     const depts = getDepartments();
     return { depts };

@@ -4,6 +4,7 @@ import { ListArea } from "./-listArea.tsx"
 import { ModificationArea } from "./-modificationArea.tsx"
 import Header from "../-header.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import { initFacility } from "../../helper/types.ts"
 import { getFacility, getFacilities } from "../../server/func/facility.ts"
 import type { Facility } from "../../server/domain/facility.ts"
@@ -12,6 +13,10 @@ import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/facility/{-$id}")({
   component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authFacility>=1);
+  },
   loader: async ({ params: { id } }) => {
     if(id){
       const f = await getFacility({data: { id }});

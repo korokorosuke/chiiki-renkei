@@ -8,6 +8,7 @@ import { ViewArea } from "./-viewArea.tsx"
 import { Details } from "./-details.tsx"
 import { Notice } from "./-notice.tsx"
 import { Completed } from "./-completed.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import { initWebAppointment, isUser } from "../../helper/webtypes.ts"
 import { toUser } from "../../helper/types.ts"
 import { Header } from "./-header.tsx"
@@ -23,6 +24,10 @@ import { createFileRoute } from "@tanstack/solid-router"
 
 export const Route = createFileRoute("/webapp/")({
   component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authWeb>=1);
+  },
   loader: () => {
     const depts = getWebDepartments();
     return { depts };

@@ -3,6 +3,7 @@ import { ListArea } from "./-listArea.tsx"
 import { ModificationArea } from "./-modificationArea.tsx"
 import Header from "../-header.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import { toDateString, addDays } from "../../lib/datetime.ts"
 import { initActivity } from "../../helper/types.ts"
 import type { Activity } from "../../server/domain/activity.ts"
@@ -11,7 +12,13 @@ import { button, area, input } from "../../styled-system/recipes/"
 import { css, cx } from "../../styled-system/css/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/activity/")({ component: App });
+export const Route = createFileRoute("/activity/")({
+  component: App,
+  beforeLoad: ({ context }) => {
+    const { base, user } = context;
+    authenticate(base, user.authActivity>=2);
+  }
+});
 
 function App() {
   const [selected, setSelected] = createSignal<Activity>(initActivity());

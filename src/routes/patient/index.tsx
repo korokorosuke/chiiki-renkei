@@ -5,11 +5,18 @@ import { initPatient } from "../../helper/types.ts"
 import { getPatient, getPatients } from "../../server/func/patient.ts"
 import Header from "../-header.tsx"
 import { Message, setMessage as setStatusMessage, type MessageStatus } from "../../components/Message.tsx"
+import { authenticate } from "../../helper/auth.ts"
 import type { Patient } from "../../server/domain/patient.ts"
 import { button, input, area } from "../../styled-system/recipes/"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/patient/")({ component: App });
+export const Route = createFileRoute("/patient/")({
+  component: App,
+  beforeLoad: ({ context }) => {
+    const { user, base } = context;
+    authenticate(base, user.authMaster>=2);
+  },
+});
 
 function App() {
   const [inputData, setInputData] = createSignal<string>("");
