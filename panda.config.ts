@@ -7,6 +7,7 @@ import { baseTokens, semanticTokens } from "./src/styles/tokens.ts"
 import { keyframes, animationStyles } from "./src/styles/animation.ts"
 
 export default defineConfig({
+  presets: ["@pandacss/preset-base", "@pandacss/preset-panda"],
   globalCss,
   staticCss: {
     css: [

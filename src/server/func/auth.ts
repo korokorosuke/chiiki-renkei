@@ -4,7 +4,7 @@ import { UserRepository, BaseRepository } from "../infra/allRepository.ts"
 import type { AuthUser } from "../domain/user.ts"
 import { AuthService } from "../domain/authService.ts"
 import { BaseService } from "../domain/baseService.ts"
-import { getSessionData, setSessionData, type SessionData } from "../lib/session.ts"
+import { getSessionData, clear, type SessionData } from "../lib/session.ts"
 import { type Result, type FetchResult, ok, okWithData, ng } from "../lib/response.ts"
 import { writeLogWithBase } from "./log.ts"
 import { Authentication } from "../usecase/authentication.ts"
@@ -40,7 +40,7 @@ export const create = createServerFn({ method: "POST" })
 export const del = createServerFn({ method: "POST" })
   .handler(async (): Promise<Result> => {
     const res = await get();
-    await setSessionData({token: "", base: undefined});
+    await clear();
     if(res.ok){
       writeLogWithBase({ data: { base: res.data.base, level: "info", title: "logout", details: "success",
         userId: res.ok ? res.data.id : undefined } });
