@@ -49,8 +49,7 @@ export async function authenticateOrRedirect(authoptions: AuthOption | AuthOptio
         return res;
     }
     throw redirect({
-      // @ts-ignore: なんかエラーになるため
-      to: '/login'
+      to: "/login/{-$base}"
     });
 }
 

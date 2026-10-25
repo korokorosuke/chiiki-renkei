@@ -46,8 +46,7 @@ export const Route = createRootRouteWithContext()({
       }
     }
     throw redirect({
-      // @ts-ignore: なんかエラーになるため
-      to: '/login',
+      to: "/login/{-$base}",
     });
   },
   head: () => ({
