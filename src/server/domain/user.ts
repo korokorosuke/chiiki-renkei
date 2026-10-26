@@ -14,9 +14,9 @@ export const userSchema = userBaseSchema.extend({
     name: z.string("名前を入力してください。")
         .min(1, "名前を入力してください。")
         .max(100, "名前は100文字までです。"),
-    department: z.string("診療科を入力してください。")
-        .min(1, "診療科を入力してください。")
-        .max(10, "診療科は10文字までです。"),
+    department: z.string("部署を入力してください。")
+        .min(1, "部署を入力してください。")
+        .max(10, "部署は10文字までです。"),
 }).required({
     id: true, name: true, department: true
 });
