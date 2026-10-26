@@ -3,7 +3,6 @@ import { UserService } from "../domain/userService.ts"
 import { UserRepository } from "./userRepository.ts"
 import type { AuthUser } from "../domain/user.ts"
 import { Kv } from "./kv.ts"
-import * as base64 from "../../lib/base64.ts"
 import { AuthService } from "../domain/authService.ts"
 import { BASE } from "./testdata/settings.ts"
 
@@ -21,8 +20,7 @@ describe("auth repository", () => {
             authMaster:2, authWeb: 0, authLog: 0,
             authReferral:2,authStatistics:1,password:"admin" };
         if(user.password){
-            user.password = base64.encode(
-                await AuthService.sha256(user.password));
+            user.password = await AuthService.hashPassword(user.password);
             await service.insert(user);
 
             const secret = await AuthService.getSecret(user.id);

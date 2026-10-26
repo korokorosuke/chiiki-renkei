@@ -28,7 +28,8 @@
     "drizzle-orm": "^1.0.0-rc.4",
     "pg": "^8.23.1",
     "iron-session": "^9.0.1",
-    "uuidv7": "^1.2.1"
+    "uuidv7": "^1.2.1",
+    "argon2": "^0.45.1"
   },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.10",

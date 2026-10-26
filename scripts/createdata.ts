@@ -27,6 +27,7 @@ import { MasterRepository } from "../src/server/infra/masterRepository.ts"
 import { MasterRepository as RdbMasterRepository } from "../src/server/infra/rdb/masterRepository.ts"
 import { BaseRepository } from "../src/server/infra/baseRepository.ts"
 import { BaseRepository as RdbBaseRepository } from "../src/server/infra/rdb/baseRepository.ts"
+import { AuthService } from "../src/server/domain/authService.ts"
 
 let BASE = "demo";
 let BASE_NAME = "デモ病院";
@@ -129,8 +130,7 @@ const user: AuthUser[] = [
     department: "20", base: BASE,
     authActivity: 2, authFacility: 2, authReferral: 2, authStatistics: 2,
     authMaster: 2, authWeb: 2, authLog: 1,
-    //Admin1!!!
-    password: "TkegoFco96X3Zqg5GGfRt29KflG0eTu6mQuJu2RQGbc=",
+    password: await AuthService.hashPassword("Admin1!!!"),
     facilityId: "",
   },
   {
@@ -138,8 +138,7 @@ const user: AuthUser[] = [
     department: "30", base: BASE,
     authActivity: 0, authFacility: 1, authReferral: 2, authStatistics: 1,
     authMaster: 0, authWeb: 0, authLog: 0,
-    //User2???
-    password: "vGqyfSoIP7R5sNBcaPMB5lcMUdQ8fznpPQp5+dgcMsY=",
+    password: await AuthService.hashPassword("User2???"),
     facilityId: "",
   },
   {
@@ -147,8 +146,7 @@ const user: AuthUser[] = [
     department: "9999", base: BASE,
     authActivity: 0, authFacility: 0, authReferral: 0, authStatistics: 0,
     authMaster: 0, authWeb: 1, authLog: 0,
-    //WebApp3###
-    password: "xdBNl3nZ44i33qrb04j+Ej7VIU2aPV/+EX89vmZK4/A=",
+    password: await AuthService.hashPassword("WebApp3###"),
     facilityId: "001",
   },
   {
@@ -156,7 +154,7 @@ const user: AuthUser[] = [
     department: "9999", base: BASE,
     authActivity: 0, authFacility: 0, authReferral: 0, authStatistics: 0,
     authMaster: 0, authWeb: 0, authLog: 0,
-    password: "xdBNl3nZ44i33qrb04j+Ej7VIU2A9PV/+EX89vmZK4/A=",
+    password: await AuthService.hashPassword("SuperWebapPPassword9999--!#$%&"),
     facilityId: "",
   },
 ];

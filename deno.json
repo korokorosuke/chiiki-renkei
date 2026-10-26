@@ -39,7 +39,6 @@
   },
   "importMap": "import_map.json",
   "allowScripts": {
-    "allow": [],
-    "deny": []
+    "allow": ["npm:@parcel/watcher@2.5.6", "npm:argon2@0.45.1"]
   }
 }

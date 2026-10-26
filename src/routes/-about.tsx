@@ -69,6 +69,11 @@ export function About(){
           <td>MIT License</td>
           <td>Copyright (c) 2021 Vincent Voyer</td>
         </tr>
+        <tr>
+          <td>node-argon2</td>
+          <td>MIT License</td>
+          <td>Copyright (c) 2015 Ranieri Althoff</td>
+        </tr>
         </tbody>
       </table>
       <div class={css({ textAlign: "left" })}>

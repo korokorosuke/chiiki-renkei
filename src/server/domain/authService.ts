@@ -1,3 +1,4 @@
+import * as argon2 from "argon2"
 import { JWTHeader, JWTPayload } from "./auth.ts"
 import * as base64 from "../../lib/base64.ts"
 import { Crypto } from "../../lib/crypto.ts"
@@ -114,12 +115,16 @@ export class AuthService{
         return JSON.parse(Crypto.decode(base64.decode(ar[1])));
     }
 
-    static async sha256(s: string): Promise<Uint8Array<ArrayBuffer>> {
-        return new Uint8Array(await Crypto.sha256(Crypto.encode(s)));
+    static async hashPassword(password: string): Promise<string> {
+        return await argon2.hash(password);
+    }
+
+    static async verifyPassword(hash: string, password: string): Promise<boolean> {
+        return await argon2.verify(hash, password);
     }
 
     static async getSecret(id: string): Promise<Uint8Array<ArrayBuffer>> {
         const secret = Deno.env.get(SECRET_KEY)
-        return await AuthService.sha256(`__${id}_:_${secret}__`);
+        return new Uint8Array(await Crypto.sha256(Crypto.encode(`__${id}_:_${secret}__`)));
     }
 }

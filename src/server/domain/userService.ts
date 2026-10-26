@@ -1,9 +1,8 @@
 import type { AuthUser, User, Condition } from "./user.ts"
 import { validate } from "./user.ts"
-import { Crypto } from "../../lib/crypto.ts"
-import * as base64 from "../../lib/base64.ts"
 import { type Result, ok, ng } from "../lib/response.ts"
 import { MainService, type IRepository } from "./mainService.ts"
+import { AuthService } from "./authService.ts"
 
 export interface IUserRepository extends IRepository<AuthUser>{
     list(c: Condition): Promise<AuthUser[]>
@@ -39,7 +38,7 @@ export class UserService extends MainService<AuthUser, IUserRepository>{
         const res = validate(val);
         if(res.ok){
             if(val.password){
-                val.password = base64.encode(new Uint8Array(await Crypto.sha256(Crypto.encode(val.password))));
+                val.password = await AuthService.hashPassword(val.password);
             }
             if(await this.getRepository().insert(val)){
                 return ok();
@@ -56,7 +55,7 @@ export class UserService extends MainService<AuthUser, IUserRepository>{
         if(res.ok){
             const password = await this.getPassword(val.id);
             if(val.password && password != val.password){
-                val.password = base64.encode(new Uint8Array(await Crypto.sha256(Crypto.encode(val.password))));
+                val.password = await AuthService.hashPassword(val.password);
             }
             if(await this.getRepository().update(val)){
                 return ok();

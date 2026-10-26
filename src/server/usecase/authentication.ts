@@ -5,7 +5,6 @@ import { setSessionData } from "../lib/session.ts"
 import type { Base } from "../domain/base.ts"
 import { info, writeLogWithBase } from "../lib/log.ts"
 import { type Result, okWithData } from "../lib/response.ts"
-import * as base64 from "../../lib/base64.ts"
 
 interface IUserService {
   get(id: string): Promise<AuthUser | undefined>
@@ -20,12 +19,10 @@ export class Authentication{
   constructor(private userService: IUserService, private baseService: IBaseService){ }
 
   async authenticate(id: string, pwd: string, base: string): Promise<FetchResult<AuthUser>> {
-    const password = base64.encode(await AuthService.sha256(pwd));
-
     const user = await this.userService.get(id);
     if(user && user.locked){
       return ng(["アカウントがロックされています。"]);
-    }else if(user && password === user.password){
+    }else if(user && user.password && await AuthService.verifyPassword(user.password, pwd)){
       if(user.failCount){
         user.failCount = 0;
         await this.userService.update(user);
