@@ -11,6 +11,7 @@
     "npm:@pandacss/dev@^2.4.0": "2.4.0_postcss@8.5.31_@emnapi+core@1.11.3_@emnapi+runtime@1.11.3",
     "npm:@pandacss/preset-base@^2.4.0": "2.4.0",
     "npm:@pandacss/preset-panda@^2.4.0": "2.4.0",
+    "npm:@pandacss/vite@^2.4.0": "2.4.0_vite@8.3.5",
     "npm:@solidjs/testing-library@~0.8.10": "0.8.10_solid-js@1.9.17",
     "npm:@tanstack/devtools-vite@~0.8.5": "0.8.5_vite@8.3.5_@emnapi+core@1.11.3_@emnapi+runtime@1.11.3",
     "npm:@tanstack/router-cli@^1.167.46": "1.167.46",
@@ -807,8 +808,29 @@
         "@pandacss/types"
       ]
     },
+    "@pandacss/transformer@2.4.0_vite@8.3.5": {
+      "integrity": "sha512-GMjDC5XR2l6/jCBM7YViGyAIIGOPPA7jTLYFFo2I/X9vQCIZsTN+OH728uDui3o2n24P+9crJyNzy/eFo+jrtQ==",
+      "dependencies": [
+        "@pandacss/compiler",
+        "@pandacss/compiler-shared",
+        "unplugin@2.3.11",
+        "vite"
+      ],
+      "optionalPeers": [
+        "vite"
+      ]
+    },
     "@pandacss/types@2.4.0": {
       "integrity": "sha512-W2ELCg6MjSyHXOa5/Z9pQ+S39jKcYWRQIC0bu3Ycg6NPDh/qOz8cc9Kr5LMO9Iskd3F8a2MdBl3BuUR+PvR6oQ=="
+    },
+    "@pandacss/vite@2.4.0_vite@8.3.5": {
+      "integrity": "sha512-CViQKInqdmdKgBgvQIoYzqaD8YtN1tWd57+s+3YX8Xj4kZNMEKTCWgUbrU4x9lqQnHsQEUndgSY9foeUUmcdeA==",
+      "dependencies": [
+        "@pandacss/compiler",
+        "@pandacss/compiler-shared",
+        "@pandacss/transformer",
+        "vite"
+      ]
     },
     "@parcel/watcher-android-arm64@2.5.6": {
       "integrity": "sha512-YQxSS34tPF/6ZG7r/Ih9xy+kP/WwediEUsqmtf0cuCV5TPPKw/PQHRhueUo6JdeFJaqV3pyjm0GdYjZotbRt/A==",
@@ -1288,7 +1310,7 @@
         "@tanstack/router-generator",
         "@tanstack/router-utils",
         "chokidar",
-        "unplugin",
+        "unplugin@3.4.0_vite@8.3.5",
         "vite",
         "vite-plugin-solid",
         "zod"
@@ -2662,6 +2684,15 @@
         "pathe"
       ]
     },
+    "unplugin@2.3.11": {
+      "integrity": "sha512-5uKD0nqiYVzlmCRs01Fhs2BdkEgBS3SAVP6ndrBsuK42iC2+JHyxM05Rm9G8+5mkmRtzMZGY8Ct5+mliZxU/Ww==",
+      "dependencies": [
+        "@jridgewell/remapping",
+        "acorn",
+        "picomatch",
+        "webpack-virtual-modules"
+      ]
+    },
     "unplugin@3.4.0_vite@8.3.5": {
       "integrity": "sha512-9skdIFlCsPdFV7wUfZxNsFInlW+7nJmGu2gkTu0OUhF56aXGsHab9x52/QhdJ4lC7ZDPWTxbiC4ANqVlsuaW3w==",
       "dependencies": [
@@ -2823,6 +2854,7 @@
         "npm:@pandacss/dev@^2.4.0",
         "npm:@pandacss/preset-base@^2.4.0",
         "npm:@pandacss/preset-panda@^2.4.0",
+        "npm:@pandacss/vite@^2.4.0",
         "npm:@solidjs/testing-library@~0.8.10",
         "npm:@tanstack/devtools-vite@~0.8.5",
         "npm:@tanstack/router-cli@^1.167.46",

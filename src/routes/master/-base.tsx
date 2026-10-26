@@ -5,7 +5,7 @@ import { type Base, BASE_COLORS } from "../../server/domain/base.ts"
 import type { MessageStatus } from "../../components/Message.tsx"
 import { modificationAreaStyle } from "./-css.ts"
 import { button, input, etc } from "../../styled-system/recipes/"
-import { css, cx } from "../../styled-system/css/"
+import { token } from "../../styled-system/tokens/"
 import { flex } from "../../styled-system/patterns/"
 import { getBase, update } from "../../server/func/base.ts"
 
@@ -71,10 +71,14 @@ export function Base(props: Props){
             <label>色<span class={ etc({ type: "require"}) }>*</span></label>
           </div>
           <div>
-            <select value={selected().color} class={ cx(input({ size: "id" }), css({ bg: selected().color })) }
+            <select value={selected().color} class={ input({ size: "id" }) }
+                style={{/* @ts-ignore */
+                  background: token.var(`colors.${selected().color}`)
+                }}
                 onChange={(e)=>handleChange({color: e.target.value})}>
               <For each={BASE_COLORS}>{(color)=>
-                <option class={ css({ bg: color }) } value={color}></option>
+                <option style={{/* @ts-ignore */
+                  background: token.var(`colors.${color}`) }} value={color}></option>
               }</For>
             </select>
           </div>

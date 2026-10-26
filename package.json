@@ -23,6 +23,7 @@
     "@pandacss/dev": "^2.4.0",
     "@pandacss/preset-base": "^2.4.0",
     "@pandacss/preset-panda": "^2.4.0",
+    "@pandacss/vite": "^2.4.0",
     "zod": "^4.6.7",
     "drizzle-kit": "^1.0.0-rc.4",
     "drizzle-orm": "^1.0.0-rc.4",

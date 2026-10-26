@@ -78,9 +78,9 @@ function App() {
     <>
     <header class={ root }
         /* @ts-ignore */
-        style={{"--color": "white", "--color-bg": token(`colors.${baseData.color}`),
+        style={{"--color": "white", "--color-bg": token.var(`colors.${baseData.color}`),
         /* @ts-ignore */
-        "--color-bg-hover": token(`colors.${baseData.color.replace("600", "500").replace("800", "700")}`)}}>
+        "--color-bg-hover": token.var(`colors.${baseData.color.replace("600", "500").replace("800", "700")}`)}}>
       <nav class={ menu }>
         <div class={ item }>
           <div class={ title }>問診入力</div>

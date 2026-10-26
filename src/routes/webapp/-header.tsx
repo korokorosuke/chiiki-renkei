@@ -24,9 +24,9 @@ export function Header(props: Props){
     return (
         <header class={ root }
             /* @ts-ignore */
-            style={{"--color": "white", "--color-bg": token(`colors.${props.color}`),
+            style={{"--color": "white", "--color-bg": token.var(`colors.${props.color}`),
             /* @ts-ignore */
-            "--color-bg-hover": token(`colors.${props.color.replace("600", "500").replace("800", "700")}`)}}>
+            "--color-bg-hover": token.var(`colors.${props.color.replace("600", "500").replace("800", "700")}`)}}>
         <nav class={ menu }>
             <div class={ item }>
                 <div class={ title }><a href="javascript:void(0)"
