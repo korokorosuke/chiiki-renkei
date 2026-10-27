@@ -9,11 +9,17 @@ import type { Notice } from "../../server/domain/notice.ts"
 import type { Base } from "../../server/domain/base.ts"
 import { getLocalStorage, setLocalStorage } from "../../lib/storage.ts"
 import { getBase } from "../../server/func/base.ts"
+import { del } from "../../server/func/auth.ts"
 import { css } from "../../styled-system/css/"
 import { useQuery } from "@tanstack/solid-query"
 import { createFileRoute } from "@tanstack/solid-router"
 
-export const Route = createFileRoute("/login/{-$base}")({ component: App });
+export const Route = createFileRoute("/login/{-$base}")({
+  component: App,
+  beforeLoad: async ()=>{
+    await del();
+  }
+});
 
 const STORAGE_KEY = "reco_base";
 
