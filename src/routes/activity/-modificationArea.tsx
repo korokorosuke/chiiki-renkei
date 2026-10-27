@@ -34,13 +34,12 @@ export function ModificationArea(props: ViewProps){
     }
   }
 
-  function handleChange(){
-    const list: string[] = [];
-    const sels = document.querySelectorAll<HTMLSelectElement>(".purpose-area input:checked");
-    sels.forEach((e: HTMLSelectElement)=>{
-      list.push(e.value);
-    });
-    setActivity("purpose", list);
+  function handleChange(p: string){
+    if(activity.purpose.includes(p)){
+      setActivity("purpose", activity.purpose.filter(val=>val!==p));
+    }else{
+      setActivity("purpose", [...activity.purpose, p]);
+    }
   }
 
   async function handleRegister(){
@@ -139,7 +138,7 @@ export function ModificationArea(props: ViewProps){
           <label class={ css({ marginRight: "0.8rem", cursor: "pointer" }) }>
             <input type="checkbox" class={ input({ size: "check1_5", type: "checkbox", height: "none" }) }
               checked={activity.purpose.includes(p)} value={p}
-              onChange={(_)=>handleChange()} />
+              onChange={(_)=>handleChange(p)} />
             {p}
           </label>
         }</For>
