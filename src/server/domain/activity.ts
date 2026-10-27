@@ -8,7 +8,7 @@ const activitySchema = z.object({
     date: z.iso.datetime({local: true, message: "実施日時が不正です。"})
         .min(1, "実施日時を入力してください。"),
     toDate: z.union([z.literal(""),
-        z.iso.datetime("実施日時が不正です。")]),
+        z.iso.datetime({local: true, message: "終了日時が不正です。"})]),
     participants: z.string()
         .min(1, "参加者を入力してください。")
         .max(100, "参加者は、１００文字までです。"),
