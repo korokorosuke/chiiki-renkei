@@ -7,7 +7,6 @@ import { About } from "../-about.tsx"
 import type { AuthUser } from "../../server/domain/user.ts"
 import type { Notice } from "../../server/domain/notice.ts"
 import type { Base } from "../../server/domain/base.ts"
-import { getLocalStorage, setLocalStorage } from "../../lib/storage.ts"
 import { getBase } from "../../server/func/base.ts"
 import { del } from "../../server/func/auth.ts"
 import { css } from "../../styled-system/css/"
@@ -74,17 +73,6 @@ function App() {
   const params = Route.useParams();
   const paramBase = params().base;
 
-  if(paramBase){
-    setBase(paramBase);
-  }else{
-    const base = getLocalStorage(STORAGE_KEY);
-    if(base){
-      location.href = `/login/${base}`;
-      return;
-    }
-    return <div>ログイン画面から再度ログインしてください</div>;
-  }
-
   function handleKeyUp(e: KeyboardEvent){
     if(e.key === "Enter" && user() && password()){
       handleClick();
@@ -103,7 +91,7 @@ function App() {
       ...initAuthUser(), id: user(), password: password(), base: base()
     }}}).then(res=>{
       if(res.ok){
-        setLocalStorage(STORAGE_KEY, base());
+        localStorage.setItem(STORAGE_KEY, base());
         if(isWebOnly(res.data)){
           location.href = "/webapp";
           return;
@@ -124,6 +112,17 @@ function App() {
   }
 
   onMount(()=>{
+    if(paramBase){
+      setBase(paramBase);
+    }else{
+      const base = localStorage.getItem(STORAGE_KEY);
+      if(base){
+        location.href = `/login/${base}`;
+        return;
+      }
+      return <div>ログイン画面から再度ログインしてください</div>;
+    }
+
     getBase({data: {id: base()}}).then(setBaseInfo);
     if(input){
       input.focus();
