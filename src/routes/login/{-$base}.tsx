@@ -2,8 +2,6 @@ import { createSignal, onMount, Show, For, Suspense, type JSXElement, type Acces
 import { initAuthUser } from "../../helper/types.ts"
 import { getLoginNotices } from "../../server/func/notice.ts"
 import { create } from "../../server/func/auth.ts"
-import { NormalDialog, showDialog } from "../../components/NormalDialog.tsx"
-import { About } from "../-about.tsx"
 import type { AuthUser } from "../../server/domain/user.ts"
 import type { Notice } from "../../server/domain/notice.ts"
 import type { Base } from "../../server/domain/base.ts"
@@ -195,13 +193,8 @@ function App() {
               disabled={disabled()}>ログイン</button>
           </div>
           <div class={ css({ color: "#ff789e", width: "25rem" }) }>{message()}</div>
-          <a class={ css({ fontSize: "1rem", cursor: "pointer" }) }
-            onClick={showDialog}>このシステムについて</a>
         </div>
       </div>
-      <NormalDialog>
-        <About />
-      </NormalDialog>
     </main>
     </>
   )
